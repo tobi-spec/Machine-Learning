@@ -10,3 +10,16 @@ def multiple_inputs_single_neuron(weights:list, inputs:list, bias:int) -> int:
 # Full Layer
 def multiple_inputs_mutiple_neurons(weights:list, inputs:list, biases:int) -> int:
     return np.dot(weights, inputs) + biases
+
+## max
+
+#activation functions
+## Linear
+## relu
+## Sigmoid
+## Softmax
+
+# Loss function
+# Categorial Cross Entropy
+
+## Accuracy Calculation
