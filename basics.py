@@ -1,25 +1,46 @@
 import numpy as np
+import math
+import random
 
 
-def single_input_single_neuron(weight:int, input:int, bias: int) -> int:
-    return weight*input + bias
+class Layer:
+    def __init__(self, number_of_inputs, number_of_neurons):
+        self.weight = 0.1* np.random.randn(number_of_inputs, number_of_neurons)
+        self.bias = np.zeros(1, number_of_neurons)
 
-def multiple_inputs_single_neuron(weights:list, inputs:list, bias:int) -> int:
-    return np.dot(weights, inputs) + bias
+    def dense(weights:list, inputs:list, biases:int) -> int:
+        self.output = np.dot(self.weights, self.inputs) + self.biases
 
-# Full Layer
-def multiple_inputs_mutiple_neurons(weights:list, inputs:list, biases:int) -> int:
-    return np.dot(weights, inputs) + biases
 
-## max
+class ActivationFuntion:
+    def Linear(self, inputs: int):
+        self.output = inputs
 
-#activation functions
-## Linear
-## relu
-## Sigmoid
-## Softmax
+    def Step(self, inputs: int):
+        if inputs > 0:
+            self.output = 1
+        else:
+            self.output = 0
+    
+    def Relu(self, inputs: int):
+        if inputs > 0:
+            self.output = inputs
+        else:
+            self.output = 0 
 
-# Loss function
+    def Sigmoid(self, inputs: int):
+        self.output = 1/(1+math.e**(-inputs))
+
+    def Softmax(self, inputs):
+        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+        self.output = probabilities
+
+
+## Loss / Cost function
 # Categorial Cross Entropy
+# Sum of Squard Residuals 
 
 ## Accuracy Calculation
+
+## Ableitungen der Funktionen?
