@@ -26,7 +26,7 @@ class LayerDense:
 
     def forward(self, inputs):
         self.inputs = inputs
-        self.output = np.dot(inputs, self.weights) + self.bias
+        self.output = np.dot(inputs, self.weights) + self.biases
 
     def backward(self, dvalues):
         self.dweights = np.dot(self.inputs.T, values)
@@ -46,6 +46,7 @@ class ActivationReLu:
 
 class ActivationSoftMax:
     def forward(self, inputs):
+        self.inputs = inputs
         exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
         probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
         self.output = probabilities
@@ -116,14 +117,14 @@ if __name__ == "__main__":
     dense2 = LayerDense(3, 3)
     activation2 = ActivationSoftMax()
 
+    loss_function = LossCategoricalCrossEntropy()
+
     dense1.forward(X)
     activation1.forward(dense1.output)
 
     dense2.forward(activation1.output)
     activation2.forward(dense2.output)
-    print(activation2.output[:5])
 
-    loss_function = LossCategoricalCrossEntropy()
     loss = loss_function.calculate(activation2.output, y)
 
     print("LOSS: ", loss)

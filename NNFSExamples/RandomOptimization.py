@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from nnfs.datasets import vertical_data
-import main
+from NNFS import *
 
 # Data
 X, y = vertical_data(samples=100, classes=3)
