@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-from nnfs.datasets import vertical_data
 
 np.random.seed(0)
 
@@ -106,12 +105,39 @@ class Activation_Softmax_Loss_CategorialCrossentropy:
         self.dinputs = self.dinputs / samples
 
 class Optimizer_SGD:
-    def __init__(self, learning_rate=1.0):
+    def __init__(self, learning_rate=1.0, decay=0., momentum=0.):
         self.learning_rate = learning_rate
+        self.current_learning_rate = learning_rate
+        self.decay = decay
+        self.iterations = 0 
+        self.momentum = momentum
+
+    def pre_update_params(self):
+        if self.decay:
+            self.current_learning_rate = self.learning_rate * (1. / (1. + self.decay * self.iterations))
     
     def update_params(self, layer):
-        layer.weights += -self.learning_rate * layer.dweights
-        layer.biases += -self.learning_rate * layer.dbiases
+        # Irgendwas ist hier noch falsch
+        if self.momentum:
+            if not hasattr(layer, 'weight_momentums'):
+                layer.weight_momentums = np.zeros_like(layer.weights)
+                layer.bias_momentums = np.zeros_like(layer.biases)
+            
+            weight_updates = self.momentum * layer.weight_momentums - self.current_learning_rate * layer.dweights
+            layer.weights_momentums = weight_updates
+
+            bias_updates = self.momentum * layer.bias_momentums - self.current_learning_rate * layer.dbiases
+            layer.bias_momentums = bias_updates
+
+        else:
+            weight_updates += -self.current_learning_rate * layer.dweights
+            bias_updates += -self.current_learning_rate * layer.dbiases
+        
+        layer.weights += weight_updates
+        layer.biases += bias_updates
+
+    def post_update_params(self):
+        self.iterations += 1
 
 if __name__ == "__main__":
 
@@ -122,7 +148,7 @@ if __name__ == "__main__":
     activation1 = ActivationReLu()
     dense2 = LayerDense(64, 3)
     loss_activation = Activation_Softmax_Loss_CategorialCrossentropy()
-    optimizer = Optimizer_SGD()
+    optimizer = Optimizer_SGD(decay=0.001, momentum=0.5)
 
     for epoch in range(10001):
         # Forward pass
@@ -132,16 +158,17 @@ if __name__ == "__main__":
         loss = loss_activation.forward(dense2.output, y)
 
         # Accuracy
-
         predictions = np.argmax(loss_activation.output, axis=1)
         if len(y.shape) == 2:
             y = np.argmax(y, axis=1)
         accuracy = np.mean(predictions==y)
 
         if not epoch % 100:
-            print(  f"epoch: {epoch}," +
-                    f"accuracy: {accuracy:.3f}," + 
-                    f"loss: {loss:.3f}")
+            print(  f"epoch: {epoch}, " +
+                    f"accuracy: {accuracy:.3f}, " + 
+                    f"loss: {loss:.3f}, " +
+                    f"learning rate: {optimizer.current_learning_rate:.5f}"
+                )
 
         # Backward pass
         loss_activation.backward(loss_activation.output, y)
@@ -150,8 +177,9 @@ if __name__ == "__main__":
         dense1.backward(activation1.dinputs)
 
         # Update weights and biases
-
+        optimizer.pre_update_params()
         optimizer.update_params(dense1)
         optimizer.update_params(dense2)
+        optimizer.post_update_params()
 
 
