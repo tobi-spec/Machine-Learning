@@ -88,33 +88,21 @@ class Optimizer_SGD:
 
     # Update parameters
     def update_params(self, layer):
-    # If we use momentum
-        #print(self.momentum)
         if self.momentum:
-            # If layer does not contain momentum arrays, create them
-            # filled with zeros
             if not hasattr(layer, 'weight_momentums'):
                 layer.weight_momentums = np.zeros_like(layer.weights)
                 layer.bias_momentums = np.zeros_like(layer.biases)
  
-            weight_updates = \
-            self.momentum * layer.weight_momentums - \
-            self.current_learning_rate * layer.dweights
+            weight_updates = self.momentum * layer.weight_momentums - self.current_learning_rate * layer.dweights
             layer.weight_momentums = weight_updates
 
-            bias_updates = \
-            self.momentum * layer.bias_momentums - \
-            self.current_learning_rate * layer.dbiases
+            bias_updates = self.momentum * layer.bias_momentums - self.current_learning_rate * layer.dbiases
             layer.bias_momentums = bias_updates
-            #print("11111111111111111111111111")
+ 
         else:
-            weight_updates = -self.current_learning_rate * \
-            layer.dweights
-            bias_updates = -self.current_learning_rate * \
-            layer.dbiases
-            #print("222222222222222222222222222222")
+            weight_updates = -self.current_learning_rate * layer.dweights
+            bias_updates = -self.current_learning_rate * layer.dbiases
 
-        #print("333333333333333333333333333333333333333")
         layer.weights += weight_updates
         layer.biases += bias_updates
 
