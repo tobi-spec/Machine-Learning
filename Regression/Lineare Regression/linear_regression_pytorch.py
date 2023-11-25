@@ -62,10 +62,10 @@ def validate(model, val_loader, criterion):
 
 
 data = pd.read_csv("./IceCreamData.csv", delimiter=",")
-print("Icecreamdata - rev: ", type(data["Revenue"].to_numpy()))
-print("Icecreamdata - temp: ", type(data["Temperature"].to_numpy()))
+x_values = data[["Temperature"]].to_numpy()
+y_values = data["Revenue"].to_numpy()
 
-dataset = RegressionDataset(data[["Temperature"]].to_numpy(), data["Revenue"].to_numpy())
+dataset = RegressionDataset(x_values, y_values)
 
 train_dataset, test_dataset = random_split(dataset, lengths=[0.8, 0.2])
 
@@ -99,7 +99,7 @@ for temperatur in x_calculate:
     prediction = model.linear(torch.Tensor([temperatur]))
     y_prediction.append(prediction.tolist()[0])
 
-plt.scatter(data[["Temperature"]].to_numpy(), data["Revenue"].to_numpy(), color="grey")
+plt.scatter(x_values, y_values, color="grey")
 plt.plot(x_calculate, y_prediction, color="red")
 plt.xlabel("revenue [dolars]")
 plt.ylabel("temperature [degC]")

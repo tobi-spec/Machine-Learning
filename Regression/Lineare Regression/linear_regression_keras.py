@@ -8,8 +8,8 @@ from sklearn.model_selection import train_test_split
 
 IceCream = pd.read_csv("IceCreamData.csv")
 
-y_values = IceCream["Revenue"]
 x_values = IceCream[["Temperature"]]
+y_values = IceCream["Revenue"]
 
 x_train, x_test, y_train, y_test = train_test_split(x_values, y_values, test_size=0.25)
 
@@ -27,7 +27,7 @@ for temperatur in x_calculate:
 
 plt.scatter(x_train, y_train, color="grey")
 plt.plot(x_calculate, y_prediction, color="red")
-plt.xlabel("revenue [dolars]")
-plt.ylabel("temperature [degC]")
+plt.xlabel("temperature [degC]")
+plt.ylabel("revenue [dollars]")
 plt.title('Revenue Generated vs. Temperature for Ice Cream Stand')
 plt.show()
