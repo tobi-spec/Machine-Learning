@@ -7,5 +7,5 @@ TODO:
 
 Implementing in NNFS, TensorFlow, Pytorch:
     linear function
-    quadratic function
+    quadratic function  
     image classification

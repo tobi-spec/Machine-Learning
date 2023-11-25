@@ -7,6 +7,7 @@ from sklearn.datasets import make_regression
 
 # Source https://datagy.io/pytorch-linear-regression/
 
+
 class RegressionDataset(Dataset):
     def __init__(self, x, y):
         super().__init__()
@@ -21,12 +22,9 @@ class RegressionDataset(Dataset):
 
 
 class LinearRegressionModel(nn.Module):
-    def __init__(self, in_features=1, out_features=1):
+    def __init__(self):
         super().__init__()
-        self.linear = nn.Linear(
-                    in_features=in_features,
-                    out_features=out_features
-                )
+        self.linear = nn.Linear(1, 1)
 
     def forward(self, inputs):
         return self.linear(inputs)
@@ -63,11 +61,9 @@ def validate(model, val_loader, criterion):
     print(f'Validation Loss: {avg_loss:.4f}')
     val_losses.append(avg_loss)
 
-
-
 bias = 10
 X_numpy, y_numpy, coef = make_regression(
-    n_samples=5000,
+    n_samples=500,
     n_features=1,
     n_targets=1,
     noise=5,
@@ -75,20 +71,27 @@ X_numpy, y_numpy, coef = make_regression(
     coef=True,
     random_state=42
 )
+
+print("tesdata-x: ", type(X_numpy))
+print("testdata-y: ", type(y_numpy))
+
+data = pd.read_csv("./IceCreamData.csv", delimiter=",")
+print("Icecreamdata - rev: ", type(data["Revenue"].to_numpy()))
+print("Icecreamdata - temp: ", type(data["Temperature"].to_numpy()))
+
 dataset = RegressionDataset(X_numpy, y_numpy)
 
 train_dataset, test_dataset = random_split(dataset, lengths=[0.8, 0.2])
 
-
 train_loader = DataLoader(
     dataset=train_dataset,
-    batch_size=64,
+    batch_size=1,
     shuffle=True
 )
 
 test_loader = DataLoader(
     dataset=test_dataset,
-    batch_size=64,
+    batch_size=1,
     shuffle=True
 )
 
@@ -99,8 +102,21 @@ optimiser = torch.optim.SGD(model.parameters(), lr=0.01)
 train_losses = []
 val_losses = []
 
-num_epochs = 30
+num_epochs = 15
 for epoch in range(num_epochs):
     train(model, train_loader, loss_function, optimiser, epoch, num_epochs)
     validate(model, test_loader, loss_function)
+
+x_calculate = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45]
+y_prediction = []
+for temperatur in x_calculate:
+    prediction = model.linear(torch.Tensor([temperatur]))
+    y_prediction.append(prediction.tolist()[0])
+
+plt.scatter(X_numpy, y_numpy, color="grey")
+plt.plot(x_calculate, y_prediction, color="red")
+plt.xlabel("revenue [dolars]")
+plt.ylabel("temperature [degC]")
+plt.title('Revenue Generated vs. Temperature for Ice Cream Stand')
+plt.show()
 
