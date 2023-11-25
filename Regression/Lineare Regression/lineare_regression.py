@@ -26,5 +26,6 @@ plt.plot(x_train, y_predict, color="red")
 plt.xlabel("temperature [degC]")
 plt.ylabel("revenue [dollars]")
 plt.title('Revenue Generated vs. Temperature for Ice Cream Stand')
+plt.savefig("linear_regression")
 plt.show()
 

@@ -104,5 +104,6 @@ plt.plot(x_calculate, y_prediction, color="red")
 plt.xlabel("revenue [dolars]")
 plt.ylabel("temperature [degC]")
 plt.title('Revenue Generated vs. Temperature for Ice Cream Stand')
+plt.savefig("linear_regression_pytorch")
 plt.show()
 
