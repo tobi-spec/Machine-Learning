@@ -88,7 +88,7 @@ optimiser = torch.optim.Adam(model.parameters(), lr=0.001)
 train_losses = []
 val_losses = []
 
-num_epochs = 15
+num_epochs = 100
 for epoch in range(num_epochs):
     train(model, train_loader, loss_function, optimiser, epoch, num_epochs)
     validate(model, test_loader, loss_function)
