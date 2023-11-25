@@ -3,7 +3,6 @@ import torch.nn as nn
 import pandas as pd
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, Dataset, random_split
-from sklearn.datasets import make_regression
 
 # Source https://datagy.io/pytorch-linear-regression/
 
@@ -61,25 +60,12 @@ def validate(model, val_loader, criterion):
     print(f'Validation Loss: {avg_loss:.4f}')
     val_losses.append(avg_loss)
 
-bias = 10
-X_numpy, y_numpy, coef = make_regression(
-    n_samples=500,
-    n_features=1,
-    n_targets=1,
-    noise=5,
-    bias=bias,
-    coef=True,
-    random_state=42
-)
-
-print("tesdata-x: ", type(X_numpy))
-print("testdata-y: ", type(y_numpy))
 
 data = pd.read_csv("./IceCreamData.csv", delimiter=",")
 print("Icecreamdata - rev: ", type(data["Revenue"].to_numpy()))
 print("Icecreamdata - temp: ", type(data["Temperature"].to_numpy()))
 
-dataset = RegressionDataset(data[["Revenue"]].to_numpy(), data["Temperature"].to_numpy())
+dataset = RegressionDataset(data[["Temperature"]].to_numpy(), data["Revenue"].to_numpy())
 
 train_dataset, test_dataset = random_split(dataset, lengths=[0.8, 0.2])
 
@@ -113,7 +99,7 @@ for temperatur in x_calculate:
     prediction = model.linear(torch.Tensor([temperatur]))
     y_prediction.append(prediction.tolist()[0])
 
-plt.scatter(X_numpy, y_numpy, color="grey")
+plt.scatter(data[["Temperature"]].to_numpy(), data["Revenue"].to_numpy(), color="grey")
 plt.plot(x_calculate, y_prediction, color="red")
 plt.xlabel("revenue [dolars]")
 plt.ylabel("temperature [degC]")
