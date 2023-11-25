@@ -79,7 +79,7 @@ data = pd.read_csv("./IceCreamData.csv", delimiter=",")
 print("Icecreamdata - rev: ", type(data["Revenue"].to_numpy()))
 print("Icecreamdata - temp: ", type(data["Temperature"].to_numpy()))
 
-dataset = RegressionDataset(X_numpy, y_numpy)
+dataset = RegressionDataset(data[["Revenue"]].to_numpy(), data["Temperature"].to_numpy())
 
 train_dataset, test_dataset = random_split(dataset, lengths=[0.8, 0.2])
 
@@ -97,7 +97,7 @@ test_loader = DataLoader(
 
 model = LinearRegressionModel()
 loss_function = nn.MSELoss()
-optimiser = torch.optim.SGD(model.parameters(), lr=0.01)
+optimiser = torch.optim.Adam(model.parameters(), lr=0.001)
 
 train_losses = []
 val_losses = []
