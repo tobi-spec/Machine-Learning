@@ -1,4 +1,5 @@
 import torch
+import timeit
 import torch.nn as nn
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ from torch.utils.data import DataLoader, Dataset, random_split
 
 
 # Source https://datagy.io/pytorch-linear-regression/
-
+start = timeit.default_timer()
 
 class RegressionDataset(Dataset):
     def __init__(self, x, y):
@@ -95,11 +96,13 @@ y_prediction = []
 for temperatur in x_calculate:
     prediction = model.linear(torch.Tensor([temperatur]))
     y_prediction.append(prediction.tolist()[0])
+stop = timeit.default_timer()
 
 plt.scatter(x_values, y_values, color="grey")
 plt.plot(x_calculate, y_prediction, color="red")
 plt.xlabel("revenue [dolars]")
 plt.ylabel("temperature [degC]")
 plt.title('Revenue Generated vs. Temperature for Ice Cream Stand')
+plt.figtext(0.2, 0.8, f"run time[s]: {stop-start}")
 plt.savefig("./img/linear_regression_pytorch")
 plt.show()

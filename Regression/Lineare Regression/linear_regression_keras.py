@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import timeit
 
 # train a neuronal network with single neuron -> linear.
 # make predictions about linear correlation between temperature and ice cream revenue
-
+start = timeit.default_timer()
 IceCream = pd.read_csv("IceCreamData.csv")
 
 x_values = IceCream[["Temperature"]]
@@ -24,11 +25,13 @@ y_prediction = []
 for temperatur in x_calculate:
     prediction = model.predict([temperatur])
     y_prediction.append(prediction[0])
+stop = timeit.default_timer()
 
 plt.scatter(x_train, y_train, color="grey")
 plt.plot(x_calculate, y_prediction, color="red")
 plt.xlabel("temperature [degC]")
 plt.ylabel("revenue [dollars]")
 plt.title('Revenue Generated vs. Temperature for Ice Cream Stand')
+plt.figtext(0.2, 0.8, f"run time[s]: {stop-start}")
 plt.savefig("./img/linear_regression_keras")
 plt.show()
