@@ -35,7 +35,7 @@ model.add(tf.keras.layers.Flatten(input_shape=(28, 28)))
 model.add(tf.keras.layers.Dense(units=128, activation="relu"))
 model.add(tf.keras.layers.Dense(units=10, activation="softmax"))
 model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True))
-model.fit(mnist.train_images, mnist.train_labels, epochs = 15)
+model.fit(mnist.train_images, mnist.train_labels, epochs = 15, batch_size=32)
 
 prediction = model.predict(mnist.test_images[6758:6759])
 print("predicted number: ", np.argmax(prediction))
