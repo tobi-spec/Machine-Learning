@@ -45,7 +45,6 @@ class LinearRegressionModel(nn.Module):
 
         average_loss = train_loss / len(train_loader)
         print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {average_loss:.4f}")
-        train_losses.append(train_loss / len(train_loader))
 
     def validate(self, val_loader):
         val_loss = 0.0
@@ -58,7 +57,6 @@ class LinearRegressionModel(nn.Module):
 
         avg_loss = val_loss / len(val_loader)
         print(f'Validation Loss: {avg_loss:.4f}')
-        val_losses.append(avg_loss)
 
 
 data = pd.read_csv("./IceCreamData.csv", delimiter=",")
@@ -66,7 +64,6 @@ x_values = data[["Temperature"]].to_numpy()
 y_values = data["Revenue"].to_numpy()
 
 dataset = RegressionDataset(x_values, y_values)
-
 train_dataset, test_dataset = random_split(dataset, lengths=[0.8, 0.2])
 
 train_loader = DataLoader(
@@ -82,10 +79,6 @@ test_loader = DataLoader(
 )
 
 model = LinearRegressionModel()
-
-train_losses = []
-val_losses = []
-
 num_epochs = 100
 for epoch in range(num_epochs):
     model.backward(train_loader, epoch, num_epochs)

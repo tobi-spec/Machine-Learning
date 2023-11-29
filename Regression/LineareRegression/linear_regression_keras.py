@@ -4,21 +4,17 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import timeit
 
-# train a neuronal network with single neuron -> linear.
-# make predictions about linear correlation between temperature and ice cream revenue
 start = timeit.default_timer()
-IceCream = pd.read_csv("IceCreamData.csv")
 
+IceCream = pd.read_csv("IceCreamData.csv")
 x_values = IceCream[["Temperature"]]
 y_values = IceCream["Revenue"]
-
 x_train, x_test, y_train, y_test = train_test_split(x_values, y_values, test_size=0.25)
 
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(units=1))
-
 model.compile(optimizer=tf.keras.optimizers.Adam(0.5), loss='mean_squared_error')
-epochs_hist = model.fit(x_train, y_train, epochs = 100)
+model.fit(x_train, y_train, epochs = 100)
 
 x_calculate = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45]
 y_prediction = []
