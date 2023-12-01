@@ -2,7 +2,9 @@ import numpy as np
 import tensorflow as tf
 import idx2numpy
 import matplotlib.pyplot as plt
+import timeit
 
+start = timeit.default_timer()
 
 class MNISTDataLoader:
     def __init__(self):
@@ -38,5 +40,7 @@ model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss=tf.keras.losses.Sp
 model.fit(mnist.train_images, mnist.train_labels, epochs = 15, batch_size=32)
 
 prediction = model.predict(mnist.test_images[6758:6759])
+stop = timeit.default_timer()
 print("predicted number: ", np.argmax(prediction))
 print("correct number ",mnist.test_labels[6758:6759])
+print(f"run time[s]: {stop-start}")

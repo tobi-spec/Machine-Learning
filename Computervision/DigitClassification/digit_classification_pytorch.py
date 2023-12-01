@@ -3,7 +3,9 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
 import idx2numpy
 import numpy as np
+import timeit
 
+start = timeit.default_timer()
 
 class MNISTDataset(Dataset):
     def __init__(self, images, labels):
@@ -85,8 +87,10 @@ for epoch in range(num_epochs):
     model.validate(test_loader)
 
 prediction = model.forward(torch.Tensor(mnist_test.images[786]).view(1, -1))
+stop = timeit.default_timer()
 print("predicted number: ", np.argmax(prediction.detach().numpy()))
 print("correct number ",mnist_test.labels[786])
+print(f"run time[s]: {stop-start}")
 
 
 
