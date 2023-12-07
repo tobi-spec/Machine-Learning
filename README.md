@@ -31,7 +31,8 @@ Classification Losses
  - Sparse Categorical Cross Entropy
 
 ### Optimizer Functions
-
+pytorch: https://pytorch.org/docs/stable/optim.html
+keras: https://keras.io/api/optimizers/
 
 ##Link list:
 List of useful videos and articles to learn deep learning
