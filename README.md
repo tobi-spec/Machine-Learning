@@ -14,6 +14,25 @@ All scripts produces images of data points + line of several predictions of the 
 Classifier for the mnist dataset of handwritten digit. MNIST is implementent in original data files to learn on data preparation.
 Digit classification is done in keras and pytorch with and without the use of CNNs. 
 
+## Glossar
+
+#### Loss Functions
+pytorch: https://pytorch.org/docs/stable/nn.html#loss-functions
+keras: https://keras.io/api/losses/
+
+Regression Losses
+ - Mean Square Error(MSE)
+ - Mean Absolute Error(MAE)
+ - Mean Bias Error (MBE)
+
+Classification Losses
+ - Binary Cross Entropy 
+ - Categorical Cross Entropy 
+ - Sparse Categorical Cross Entropy
+
+### Optimizer Functions
+
+
 ##Link list:
 List of useful videos and articles to learn deep learning
 
