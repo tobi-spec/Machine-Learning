@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as T
 from torch.utils.data import DataLoader, Dataset
 import idx2numpy
 import numpy as np
@@ -10,14 +11,15 @@ start = timeit.default_timer()
 class MNISTDataset(Dataset):
     def __init__(self, images, labels):
         super().__init__()
-        self.images = idx2numpy.convert_from_file(images)
-        self.labels = idx2numpy.convert_from_file(labels)
+        self.images = torch.tensor(idx2numpy.convert_from_file(images), dtype=torch.float32)
+        labels_as_tensor = torch.tensor(idx2numpy.convert_from_file(labels), dtype=torch.long)
+        self.labels = T.one_hot(labels_as_tensor, num_classes=10).float()
 
     def __len__(self):
         return len(self.images)
 
     def __getitem__(self, index):
-        return torch.tensor(self.images[index], dtype=torch.float32), torch.tensor(self.labels[index], dtype=torch.long)
+        return self.images[index], self.labels[index]
 
 
 class MNISTClassificationModel(nn.Module):
@@ -40,6 +42,7 @@ class MNISTClassificationModel(nn.Module):
         return inputs
 
     def backward(self, train_loader, epoch, num_epochs):
+        self.train()
         train_loss = 0.0
 
         for x_values, y_values in train_loader:
@@ -54,6 +57,7 @@ class MNISTClassificationModel(nn.Module):
         print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {average_loss:.4f}")
 
     def validate(self, val_loader):
+        self.valid()
         val_loss = 0.0
 
         with torch.no_grad():
@@ -78,7 +82,7 @@ train_loader = DataLoader(
 test_loader = DataLoader(
     dataset=mnist_test,
     batch_size=32,
-    shuffle=True
+    shuffle=False
 )
 model = MNISTClassificationModel()
 num_epochs = 15
@@ -89,7 +93,7 @@ for epoch in range(num_epochs):
 prediction = model.forward(torch.Tensor(mnist_test.images[786]).view(1, -1))
 stop = timeit.default_timer()
 print("predicted number: ", np.argmax(prediction.detach().numpy()))
-print("correct number ",mnist_test.labels[786])
+print("correct number ", mnist_test.labels[786])
 print(f"run time[s]: {stop-start}")
 
 
