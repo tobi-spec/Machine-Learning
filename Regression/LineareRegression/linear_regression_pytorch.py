@@ -27,7 +27,8 @@ class LinearRegressionModel(nn.Module):
         super().__init__()
         self.linear = nn.Linear(1, 1)
         self.loss_function = nn.MSELoss()
-        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.001)
+        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.5)
+        torch.nn.init.normal_(self.linear.weight, mean=0.0, std=1.0)
 
     def forward(self, inputs):
         return self.linear(inputs)
@@ -79,7 +80,7 @@ test_loader = DataLoader(
 )
 
 model = LinearRegressionModel()
-num_epochs = 100
+num_epochs = 25
 for epoch in range(num_epochs):
     model.backward(train_loader, epoch, num_epochs)
     model.validate(test_loader)

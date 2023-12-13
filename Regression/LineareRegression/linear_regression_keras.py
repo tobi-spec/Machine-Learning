@@ -12,9 +12,12 @@ y_values = IceCream["Revenue"]
 x_train, x_test, y_train, y_test = train_test_split(x_values, y_values, test_size=0.25)
 
 model = tf.keras.Sequential()
-model.add(tf.keras.layers.Dense(units=1))
+model.add(tf.keras.layers.Dense(units=1,
+                                kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                bias_initializer=tf.keras.initializers.Zeros())
+          )
 model.compile(optimizer=tf.keras.optimizers.Adam(0.5), loss='mean_squared_error')
-model.fit(x_train, y_train, epochs = 100, batch_size=1)
+model.fit(x_train, y_train, epochs=25, batch_size=1)
 
 x_calculate = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45]
 y_prediction = []
