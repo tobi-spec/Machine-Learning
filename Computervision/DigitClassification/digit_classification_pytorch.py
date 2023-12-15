@@ -44,11 +44,11 @@ class MNISTClassificationModel(nn.Module):
         self.train()
 
         for x_values, y_values in train_loader:
-            self.optimizer_function.zero_grad()
             prediction = self.forward(x_values)
             loss = self.loss_function(prediction, y_values)
             loss.backward()
             self.optimizer_function.step()
+            self.optimizer_function.zero_grad()
 
         print(f"Epoch [{epoch + 1}/{num_epochs}] | Train Loss: {loss.item():.4f}")
 
