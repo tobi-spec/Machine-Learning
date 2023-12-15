@@ -8,6 +8,7 @@ import timeit
 
 start = timeit.default_timer()
 
+
 class MNISTDataset(Dataset):
     def __init__(self, images, labels):
         super().__init__()
@@ -29,7 +30,7 @@ class MNISTClassificationModel(nn.Module):
         self.linear1 = nn.Linear(784, 128)
         self.activation1 = nn.ReLU()
         self.linear2 = nn.Linear(128, 10)
-        self.activation2 = nn.Softmax(dim=1) # korrekt?
+        self.activation2 = nn.Softmax(dim=1)
         self.loss_function = nn.CrossEntropyLoss()
         self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.001)
 
@@ -46,46 +47,32 @@ class MNISTClassificationModel(nn.Module):
 
     def backward(self, train_loader, epoch, num_epochs):
         self.train()
-        train_loss = 0.0
 
         for x_values, y_values in train_loader:
             self.optimizer_function.zero_grad()
             prediction = self.forward(x_values)
             loss = self.loss_function(prediction, y_values)
-            train_loss += loss.item()
             loss.backward()
             self.optimizer_function.step()
 
-        average_loss = train_loss / len(train_loader)
-        print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {average_loss:.4f}")
+        print(f"Epoch [{epoch + 1}/{num_epochs}] | Train Loss: {loss.item():.4f}")
 
     def validate(self, val_loader):
-        val_loss = 0.0
+        self.eval()
 
         with torch.no_grad():
-            for inputs, targets in val_loader:
-                outputs = self.forward(inputs)
-                loss = self.loss_function(outputs, targets)
-                val_loss += loss.item()
+            for x_values, y_values in val_loader:
+                prediction = self.forward(x_values)
+                loss = self.loss_function(prediction, y_values)
 
-        avg_loss = val_loss / len(val_loader)
-        print(f'Validation Loss: {avg_loss:.4f}')
+        print(f'Validation Loss: {loss.item():.4f}')
 
 
 mnist_training = MNISTDataset(images="./MNIST/train-images.idx3-ubyte", labels="./MNIST/train-labels.idx1-ubyte")
 mnist_test = MNISTDataset(images="./MNIST/t10k-images.idx3-ubyte", labels="./MNIST/t10k-labels.idx1-ubyte")
 
-train_loader = DataLoader(
-    dataset=mnist_training,
-    batch_size=32,
-    shuffle=True
-)
-
-test_loader = DataLoader(
-    dataset=mnist_test,
-    batch_size=32,
-    shuffle=False
-)
+train_loader = DataLoader(dataset=mnist_training, batch_size=32, shuffle=True)
+test_loader = DataLoader(dataset=mnist_test, batch_size=32, shuffle=False)
 
 model = MNISTClassificationModel()
 
