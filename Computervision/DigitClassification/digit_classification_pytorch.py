@@ -33,6 +33,9 @@ class MNISTClassificationModel(nn.Module):
         self.loss_function = nn.CrossEntropyLoss()
         self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.001)
 
+        torch.nn.init.normal_(self.linear1.weight, mean=0.0, std=1.0)
+        torch.nn.init.normal_(self.linear2.weight, mean=0.0, std=1.0)
+
     def forward(self, inputs):
         inputs = self.flatten(inputs)
         inputs = self.linear1(inputs)
@@ -46,9 +49,9 @@ class MNISTClassificationModel(nn.Module):
         train_loss = 0.0
 
         for x_values, y_values in train_loader:
+            self.optimizer_function.zero_grad()
             prediction = self.forward(x_values)
             loss = self.loss_function(prediction, y_values)
-            self.optimizer_function.zero_grad()
             train_loss += loss.item()
             loss.backward()
             self.optimizer_function.step()
@@ -57,7 +60,6 @@ class MNISTClassificationModel(nn.Module):
         print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {average_loss:.4f}")
 
     def validate(self, val_loader):
-        self.valid()
         val_loss = 0.0
 
         with torch.no_grad():
@@ -84,7 +86,9 @@ test_loader = DataLoader(
     batch_size=32,
     shuffle=False
 )
+
 model = MNISTClassificationModel()
+
 num_epochs = 15
 for epoch in range(num_epochs):
     model.backward(train_loader, epoch, num_epochs)

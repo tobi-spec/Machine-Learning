@@ -33,8 +33,8 @@ mnist.info()
 
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Flatten(input_shape=(28, 28)))
-model.add(tf.keras.layers.Dense(units=128, activation="relu"))
-model.add(tf.keras.layers.Dense(units=10, activation="softmax"))
+model.add(tf.keras.layers.Dense(units=128, activation="relu", kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01), bias_initializer=tf.keras.initializers.Zeros()))
+model.add(tf.keras.layers.Dense(units=10, activation="softmax", kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01), bias_initializer=tf.keras.initializers.Zeros()))
 model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss=tf.keras.losses.CategoricalCrossentropy())
 model.fit(mnist.train_images, mnist.train_labels, epochs = 15, batch_size=32)
 
