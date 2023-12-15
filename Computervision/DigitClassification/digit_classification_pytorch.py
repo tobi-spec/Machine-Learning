@@ -77,7 +77,7 @@ for epoch in range(num_epochs):
     model.backward(train_loader, epoch, num_epochs)
     model.validate(test_loader)
 
-prediction = model.forward(torch.Tensor(mnist_test.images[786]).view(1, -1))
+prediction = model(torch.Tensor(mnist_test.images[786]).view(1, -1))
 stop = timeit.default_timer()
 print("predicted number: ", np.argmax(prediction.detach().numpy()))
 print("correct number ", mnist_test.labels[786])
