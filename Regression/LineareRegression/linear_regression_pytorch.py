@@ -49,7 +49,6 @@ class LinearRegressionModel(nn.Module):
         print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {average_loss:.4f}")
 
     def validate(self, val_loader):
-        self.valid()
         val_loss = 0.0
 
         with torch.no_grad():
