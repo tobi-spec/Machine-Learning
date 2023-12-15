@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as T
 from torch.utils.data import DataLoader, Dataset
 import idx2numpy
 import numpy as np
@@ -13,8 +12,7 @@ class MNISTDataset(Dataset):
     def __init__(self, images, labels):
         super().__init__()
         self.images = torch.tensor(idx2numpy.convert_from_file(images), dtype=torch.float32)
-        labels_as_tensor = torch.tensor(idx2numpy.convert_from_file(labels), dtype=torch.long)
-        self.labels = T.one_hot(labels_as_tensor, num_classes=10).float()
+        self.labels = torch.tensor(idx2numpy.convert_from_file(labels), dtype=torch.long)
 
     def __len__(self):
         return len(self.images)
@@ -31,7 +29,6 @@ class MNISTClassificationModel(nn.Module):
             nn.Linear(784, 128),
             nn.ReLU(),
             nn.Linear(128, 10),
-            nn.Softmax(dim=1),
         )
         self.loss_function = nn.CrossEntropyLoss()
         self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.001)
@@ -52,6 +49,7 @@ class MNISTClassificationModel(nn.Module):
             loss = self.loss_function(prediction, y_values)
             loss.backward()
             self.optimizer_function.step()
+
         print(f"Epoch [{epoch + 1}/{num_epochs}] | Train Loss: {loss.item():.4f}")
 
     def validate(self, val_loader):
@@ -61,6 +59,7 @@ class MNISTClassificationModel(nn.Module):
             for x_values, y_values in val_loader:
                 prediction = self.forward(x_values)
                 loss = self.loss_function(prediction, y_values)
+
         print(f'Validation Loss: {loss.item():.4f}')
 
 
