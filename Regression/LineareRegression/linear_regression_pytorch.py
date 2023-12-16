@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, Dataset, random_split
 
 
-# Source https://datagy.io/pytorch-linear-regression/
 start = timeit.default_timer()
+
 
 class RegressionDataset(Dataset):
     def __init__(self, x, y):
@@ -35,30 +35,25 @@ class LinearRegressionModel(nn.Module):
 
     def backward(self, train_loader, epoch, num_epochs):
         self.train()
-        train_loss = 0.0
 
         for x_values, y_values in train_loader:
             prediction = self.linear(x_values)
             loss = self.loss_function(prediction, y_values)
-            self.optimizer_function.zero_grad()
-            train_loss += loss.item()
             loss.backward()
             self.optimizer_function.step()
+            self.optimizer_function.zero_grad()
 
-        average_loss = train_loss / len(train_loader)
-        print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {average_loss:.4f}")
+        print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {loss.item():.4f}")
 
     def validate(self, val_loader):
-        val_loss = 0.0
+        self.eval()
 
         with torch.no_grad():
             for inputs, targets in val_loader:
                 outputs = self.linear(inputs)
                 loss = self.loss_function(outputs, targets)
-                val_loss += loss.item()
 
-        avg_loss = val_loss / len(val_loader)
-        print(f'Validation Loss: {avg_loss:.4f}')
+        print(f'Validation Loss: {loss.item():.4f}')
 
 
 data = pd.read_csv("./IceCreamData.csv", delimiter=",")
