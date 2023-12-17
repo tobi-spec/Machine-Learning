@@ -61,19 +61,9 @@ x_values = data[["Temperature"]].to_numpy()
 y_values = data["Revenue"].to_numpy()
 
 dataset = RegressionDataset(x_values, y_values)
-train_dataset, test_dataset = random_split(dataset, lengths=[0.8, 0.2])
-
-train_loader = DataLoader(
-    dataset=train_dataset,
-    batch_size=1,
-    shuffle=True
-)
-
-test_loader = DataLoader(
-    dataset=test_dataset,
-    batch_size=1,
-    shuffle=True
-)
+train_dataset, test_dataset = random_split(dataset, lengths=[0.75, 0.25])
+train_loader = DataLoader(dataset=train_dataset, batch_size=1, shuffle=True)
+test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=True)
 
 model = LinearRegressionModel()
 num_epochs = 25
