@@ -30,7 +30,6 @@ class MNISTClassificationModel(nn.Module):
         self.linear1 = nn.Linear(1568, 128)
         self.activation1 = nn.ReLU()
         self.linear2 = nn.Linear(128, 10)
-        self.activation2 = nn.Softmax(dim=1)
         self.loss_function = nn.CrossEntropyLoss()
         self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.001)
 
@@ -42,7 +41,6 @@ class MNISTClassificationModel(nn.Module):
         inputs = self.linear1(inputs)
         inputs = self.activation1(inputs)
         inputs = self.linear2(inputs)
-        inputs = self.activation2(inputs)
         return inputs
 
     def backward(self, train_loader, epoch, num_epochs):
