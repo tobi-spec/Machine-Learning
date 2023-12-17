@@ -10,15 +10,15 @@ start = timeit.default_timer()
 class MNISTDataset(Dataset):
     def __init__(self, images, labels):
         super().__init__()
-        self.images = idx2numpy.convert_from_file(images)
-        self.labels = idx2numpy.convert_from_file(labels)
+        self.images = torch.tensor(idx2numpy.convert_from_file(images), dtype=torch.float32)
+        self.labels = torch.tensor(idx2numpy.convert_from_file(labels), dtype=torch.long)
 
     def __len__(self):
         return len(self.images)
 
     def __getitem__(self, index):
         images = self.images[:, np.newaxis, :, :]
-        return torch.tensor(images[index], dtype=torch.float32), torch.tensor(self.labels[index], dtype=torch.long)
+        return images[index], self.labels[index]
 
 
 class MNISTClassificationModel(nn.Module):
