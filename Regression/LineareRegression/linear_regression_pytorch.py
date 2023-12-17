@@ -27,7 +27,7 @@ class LinearRegressionModel(nn.Module):
         super().__init__()
         self.linear = nn.Linear(1, 1)
         self.loss_function = nn.MSELoss()
-        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.5)
+        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.01)
         torch.nn.init.normal_(self.linear.weight, mean=0.0, std=1.0)
 
     def forward(self, inputs):
