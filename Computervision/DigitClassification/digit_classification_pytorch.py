@@ -42,6 +42,7 @@ class MNISTClassificationModel(nn.Module):
 
     def backward(self, train_loader, epoch, num_epochs):
         self.train()
+        cumulative_loss = 0
 
         for x_values, y_values in train_loader:
             prediction = self.forward(x_values)
@@ -49,18 +50,20 @@ class MNISTClassificationModel(nn.Module):
             loss.backward()
             self.optimizer_function.step()
             self.optimizer_function.zero_grad()
+            cumulative_loss += loss.item()
 
-        print(f"Epoch [{epoch + 1}/{num_epochs}] | Train Loss: {loss.item():.4f}")
+        print(f"Epoch [{epoch + 1}/{num_epochs}] | Train Loss: {cumulative_loss / len(train_loader):.4f}")
 
     def validate(self, val_loader):
         self.eval()
+        loss = 0
 
         with torch.no_grad():
             for x_values, y_values in val_loader:
                 prediction = self.forward(x_values)
-                loss = self.loss_function(prediction, y_values)
+                loss += self.loss_function(prediction, y_values).item()
 
-        print(f'Validation Loss: {loss.item():.4f}')
+        print(f'Validation Loss: {loss / len(val_loader):.4f}')
 
 
 mnist_training = MNISTDataset(images="./MNIST/train-images.idx3-ubyte", labels="./MNIST/train-labels.idx1-ubyte")
