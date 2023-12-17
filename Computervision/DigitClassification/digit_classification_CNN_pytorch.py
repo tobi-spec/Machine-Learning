@@ -84,7 +84,7 @@ test_loader = DataLoader(
     shuffle=True
 )
 model = MNISTClassificationModel()
-num_epochs = 15
+num_epochs = 10
 for epoch in range(num_epochs):
     model.backward(train_loader, epoch, num_epochs)
     model.validate(test_loader)
