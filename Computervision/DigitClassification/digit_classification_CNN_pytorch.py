@@ -28,47 +28,45 @@ class MNISTClassificationModel(nn.Module):
         self.maxpool = nn.MaxPool2d(kernel_size=(2, 2))
         self.flatten = nn.Flatten()
         self.linear1 = nn.Linear(1568, 128)
-        self.activation1 = nn.ReLU()
+        self.activation = nn.ReLU()
         self.linear2 = nn.Linear(128, 10)
         self.loss_function = nn.CrossEntropyLoss()
         self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.001)
 
     def forward(self, inputs):
         inputs = self.conv2d(inputs)
-        inputs = self.activation1(inputs)
+        inputs = self.activation(inputs)
         inputs = self.maxpool(inputs)
         inputs = self.flatten(inputs)
         inputs = self.linear1(inputs)
-        inputs = self.activation1(inputs)
+        inputs = self.activation(inputs)
         inputs = self.linear2(inputs)
         return inputs
 
     def backward(self, train_loader, epoch, num_epochs):
         self.train()
-        train_loss = 0.0
+        cumulative_loss = 0
 
         for x_values, y_values in train_loader:
             prediction = self.forward(x_values)
             loss = self.loss_function(prediction, y_values)
-            self.optimizer_function.zero_grad()
-            train_loss += loss.item()
             loss.backward()
             self.optimizer_function.step()
+            self.optimizer_function.zero_grad()
+            cumulative_loss += loss.item()
 
-        average_loss = train_loss / len(train_loader)
-        print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {average_loss:.4f}")
+        print(f"Epoch [{epoch + 1}/{num_epochs}] | Train Loss: {cumulative_loss / len(train_loader):.4f}")
 
     def validate(self, val_loader):
-        val_loss = 0.0
+        self.eval()
+        loss = 0
 
         with torch.no_grad():
-            for inputs, targets in val_loader:
-                outputs = self.forward(inputs)
-                loss = self.loss_function(outputs, targets)
-                val_loss += loss.item()
+            for x_values, y_values in val_loader:
+                prediction = self.forward(x_values)
+                loss += self.loss_function(prediction, y_values).item()
 
-        avg_loss = val_loss / len(val_loader)
-        print(f'Validation Loss: {avg_loss:.4f}')
+        print(f'Validation Loss: {loss / len(val_loader):.4f}')
 
 
 mnist_training = MNISTDataset(images="./MNIST/train-images.idx3-ubyte", labels="./MNIST/train-labels.idx1-ubyte")
