@@ -19,6 +19,11 @@ model.add(tf.keras.layers.Dense(units=1,
 model.compile(optimizer=tf.keras.optimizers.Adam(0.01), loss='mean_squared_error')
 model.fit(x_train, y_train, epochs=25, batch_size=1)
 
+results = model.evaluate(x_test, y_test, batch_size=1)
+print("____________________________")
+print("validation: ", results)
+print("____________________________")
+
 x_calculate = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45]
 y_prediction = []
 for temperatur in x_calculate:

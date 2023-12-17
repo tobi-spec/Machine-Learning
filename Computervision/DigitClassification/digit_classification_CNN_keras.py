@@ -42,6 +42,11 @@ model.add(tf.keras.layers.Dense(units=10, activation="softmax"))
 model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True))
 model.fit(mnist.train_images, mnist.train_labels, epochs = 15, batch_size=32)
 
+results = model.evaluate(mnist.test_images, mnist.test_labels, batch_size=32)
+print("____________________________")
+print("validation: ", results)
+print("____________________________")
+
 prediction = model.predict(mnist.test_images[6758:6759])
 stop = timeit.default_timer()
 print("predicted number: ", np.argmax(prediction))
