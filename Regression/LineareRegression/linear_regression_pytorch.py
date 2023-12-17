@@ -35,6 +35,7 @@ class LinearRegressionModel(nn.Module):
 
     def backward(self, train_loader, epoch, num_epochs):
         self.train()
+        cumulative_loss = 0
 
         for x_values, y_values in train_loader:
             prediction = self.linear(x_values)
@@ -42,18 +43,20 @@ class LinearRegressionModel(nn.Module):
             loss.backward()
             self.optimizer_function.step()
             self.optimizer_function.zero_grad()
+            cumulative_loss += loss.item()
 
-        print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {loss.item():.4f}")
+        print(f"Epoch [{epoch + 1:03}/{num_epochs:3}] | Train Loss: {cumulative_loss / len(train_loader):.4f}")
 
     def validate(self, val_loader):
         self.eval()
+        loss = 0
 
         with torch.no_grad():
             for inputs, targets in val_loader:
                 outputs = self.linear(inputs)
-                loss = self.loss_function(outputs, targets)
+                loss += self.loss_function(outputs, targets).item()
 
-        print(f'Validation Loss: {loss.item():.4f}')
+        print(f'Validation Loss: {loss / len(val_loader):.4f}')
 
 
 data = pd.read_csv("./IceCreamData.csv", delimiter=",")
