@@ -16,6 +16,15 @@ Digit classification is done in keras and pytorch with and without the use of CN
 
 ## Glossar
 
+Epoch: One forward pass and one backward pass of all the training examples. <br>
+
+Batch: Since one epoch is too big to feed to the computer at once, we divide it in serveral smaller batches. 
+After every batch backward pass and After one epoch the weights decent is calculated<br>
+
+Batch Size: Total number of traninf examples in a single batch <br>
+
+Iteration: Number of batches needed to complete one Epoch
+
 ### Layer weight initializers
 pytorch: https://pytorch.org/docs/stable/nn.init.html <br>
 keras: https://keras.io/api/layers/initializers/ <br>
@@ -35,6 +44,9 @@ loss functions are divided in regression losses like Mean Error functions and cl
 ### Optimizer Functions
 pytorch: https://pytorch.org/docs/stable/optim.html <br>
 keras: https://keras.io/api/optimizers/ <br>
+
+- Momentum: Running Average of the last x gradients to overcome local minima
+- Learning rate decay: Makes learning steps small and small to not overstep global minimum
 
 ##Link list:
 List of useful videos and articles to learn deep learning
