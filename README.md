@@ -60,3 +60,6 @@ Neuronal Networks from Scratch Playlist: https://www.youtube.com/playlist?list=P
 https://www.youtube.com/watch?v=YRhxdVk_sIs&t=345s <br>
 https://www.youtube.com/watch?v=ZjM_XQa5s6s&t=447s <br>
 https://www.youtube.com/watch?v=KuXjwB4LzSA <br>
+
+### Recurrent Neuronal Networks
+https://www.youtube.com/watch?v=LHXXI4-IEns
