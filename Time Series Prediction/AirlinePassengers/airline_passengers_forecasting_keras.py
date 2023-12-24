@@ -2,7 +2,6 @@ import pandas as pd
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-# https://machinelearningmastery.com/time-series-prediction-with-deep-learning-in-python-with-keras/
 
 class AirlinePassengersDataSet:
     def __init__(self):
@@ -42,9 +41,11 @@ predictions = []
 for element in test["Passengers"]:
     prediction = model.predict([element])
     predictions.append(prediction[0])
+test["Predictions"] = predictions
+test.to_csv("./AirlinePassengersTestResults.csv")
 
 plt.plot(train["Month"], train["Passengers"], color="green", label="training")
-plt.plot(test["Month"], predictions, color="red", label="prediction")
+plt.plot(test["Month"], test["Predictions"], color="red", label="prediction")
 plt.plot(test["Month"], test["Passengers"], color="blue", label="test")
 plt.title("airline passengers prediction")
 plt.xlabel("Time[Month]")
