@@ -43,6 +43,11 @@ for element in test["Passengers"]:
     prediction = model.predict([element])
     predictions.append(prediction[0])
 
-plt.plot(train["Month"], train["Passengers"])
-plt.plot(test["Month"], predictions)
+plt.plot(train["Month"], train["Passengers"], color="green", label="training")
+plt.plot(test["Month"], predictions, color="red", label="prediction")
+plt.plot(test["Month"], test["Passengers"], color="blue", label="test")
+plt.title("airline passengers prediction")
+plt.xlabel("Time[Month]")
+plt.ylabel("Passengers[x1000]")
+plt.legend(loc="upper left")
 plt.show()
