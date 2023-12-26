@@ -4,26 +4,39 @@ This repo is a summary for deep learning / neuronal network practice.
 The different examples are implemented in pytorch, tensorflow keras 
 and also a "from scratch" implementation according to the "neuronal networks from scratch" series.
 
-### Linear Regression
-basic idea of neuronal networks in keras and pytorch, additionally to a traditionally linear regression model approach for comparison.
+## Overview
+
+### Time Series Forecast
+Predicting future values based on the analysis of past data points in a chronological sequence. 
+It is commonly used to anticipate trends, patterns, or behaviors in time-ordered datasets
+
+**IceCreamRevenue**: Basic idea of neuronal networks, additionally to a traditionally linear regression model approach for comparison.
 All models are used to find the linear relationship between revenue of a ice cream salar and the temperature( data is of course not real world)
-All scripts produces images of data points + line of several predictions of the model + run time for easy comparison
 
+**AirlinePassengers**: Predictor for airline passenger forecast, simple neuronal network for basic understanding timeseries forecasting. 
 
-### Digit Classification
-Classifier for the mnist dataset of handwritten digit. MNIST is implementent in original data files to learn on data preparation.
-Digit classification is done in keras and pytorch with and without the use of CNNs. 
+### Computervision
+Extract, process, and comprehend information from visual data, typically in the form of images or videos.
+Involves image recognition, object detection, and scene understanding.
+
+**Digit Classification**: Classifier for the mnist dataset of handwritten digit. MNIST is implementent in original data files to learn on data preparation.
+Done with and without the use of CNNs.
+
+### Natural Language Processing
+Giving computers the ability to support and manipulate human language. 
+Involve speech recognition, natural-language understanding, and natural-language generation.
+
 
 ## Glossar
 
-Epoch: One forward pass and one backward pass of all the training examples. <br>
+**Epoch**: One forward pass and one backward pass of all the training examples. <br>
 
-Batch: Since one epoch is too big to feed to the computer at once, we divide it in serveral smaller batches. 
+**Batch**: Since one epoch is too big to feed to the computer at once, we divide it in serveral smaller batches. 
 After every batch backward pass and After one epoch the weights decent is calculated<br>
 
-Batch Size: Total number of traninf examples in a single batch <br>
+**Batch Size**: Total number of traninf examples in a single batch <br>
 
-Iteration: Number of batches needed to complete one Epoch
+**Iteration**: Number of batches needed to complete one Epoch
 
 ### Layer weight initializers
 pytorch: https://pytorch.org/docs/stable/nn.init.html <br>
