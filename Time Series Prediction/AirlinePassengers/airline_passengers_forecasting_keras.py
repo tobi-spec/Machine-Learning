@@ -43,7 +43,7 @@ for element in test["Passengers"]:
     predictions.append(prediction[0])
 test["Predictions"] = predictions
 
-test.drop(["Passengers+1"], axis=1).to_csv("./AirlinePassengersResults.csv")
+test.drop(["Passengers+1"], axis=1).to_csv("./AirlinePassengersResultsKeras.csv")
 
 plt.plot(train["Month"], train["Passengers"], color="green", label="training")
 plt.plot(test["Month"], test["Predictions"], color="red", label="prediction")
