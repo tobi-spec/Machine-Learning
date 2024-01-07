@@ -61,15 +61,15 @@ keras: https://keras.io/api/optimizers/ <br>
 - Momentum: Running Average of the last x gradients to overcome local minima
 - Learning rate decay: Makes learning steps small and small to not overstep global minimum
 
-##Link list:
+## Link list:
 List of useful videos and articles to learn deep learning
 
-###Basics:
-3Blue1Brown Playlist about Deep Learning: https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi <br>
-Statequest Playlist about Deep Learning: https://www.youtube.com/playlist?list=PLblh5JKOoLUIxGDQs4LFFD--41Vzf-ME1 <br>
-Neuronal Networks from Scratch Playlist: https://www.youtube.com/playlist?list=PLQVvvaa0QuDcjD5BAw2DxE6OF2tius3V3 <br>
+### Basics:
+3Blue1Brown Playlist about Deep Learning: <br> https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi <br>
+Statequest Playlist about Deep Learning: <br> https://www.youtube.com/playlist?list=PLblh5JKOoLUIxGDQs4LFFD--41Vzf-ME1 <br>
+Neuronal Networks from Scratch Playlist: <br> https://www.youtube.com/playlist?list=PLQVvvaa0QuDcjD5BAw2DxE6OF2tius3V3 <br>
 
-###Convolutional Neuronal Networks 
+### Convolutional Neuronal Networks 
 https://www.youtube.com/watch?v=YRhxdVk_sIs&t=345s <br>
 https://www.youtube.com/watch?v=ZjM_XQa5s6s&t=447s <br>
 https://www.youtube.com/watch?v=KuXjwB4LzSA <br>
