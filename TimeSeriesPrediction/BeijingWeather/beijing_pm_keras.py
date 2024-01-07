@@ -3,7 +3,7 @@ from datetime import datetime
 
 dataset = pd.read_csv(
     filepath_or_buffer="BeijingParticulateMatter.csv",
-    delimiter=";",
+    delimiter=",",
     index_col=0,
     parse_dates=[[1 ,2 , 3, 4]],
     date_format='%Y %m %d %H')
