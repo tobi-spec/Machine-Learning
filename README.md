@@ -76,3 +76,6 @@ https://www.youtube.com/watch?v=KuXjwB4LzSA <br>
 
 ### Recurrent Neuronal Networks
 https://www.youtube.com/watch?v=LHXXI4-IEns
+
+### Time Series Forecast
+https://machinelearningmastery.com/convert-time-series-supervised-learning-problem-python/
