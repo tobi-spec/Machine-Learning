@@ -4,27 +4,8 @@ This repo is a summary for deep learning / neuronal network practice.
 The different examples are implemented in pytorch, tensorflow keras 
 and also a "from scratch" implementation according to the "neuronal networks from scratch" series.
 
-## Overview
-
-### Time Series Forecast
-Predicting future values based on the analysis of past data points in a chronological sequence. 
-It is commonly used to anticipate trends, patterns, or behaviors in time-ordered datasets
-
-**Linear Regression**: Basic idea of neuronal networks, additionally to a traditionally linear regression model approach for comparison.
-All models are used to find the linear relationship between revenue of a ice cream salar and the temperature(data is of course not real world)
-
-**Univariant Time Series Forecast**: Predictor for airline passenger forecast, simple neuronal network for basic understanding timeseries forecasting. 
-
-### Computervision
-Extract, process, and comprehend information from visual data, typically in the form of images or videos.
-Involves image recognition, object detection, and scene understanding.
-
-**SimpleImageClassification**: Classifier for the mnist dataset of handwritten digit. MNIST is implementent in original data files to learn on data preparation.
-Done with and without the use of CNNs.
-
-### Natural Language Processing
-Giving computers the ability to support and manipulate human language. 
-Involve speech recognition, natural-language understanding, and natural-language generation.
+This README contains all general information and links for machine learning. 
+For explanition and information of each subtopic (e.g. Time Series, Computer version etc.) look in the READMEs of the respective folders 
 
 
 ## Glossar
@@ -77,5 +58,3 @@ https://www.youtube.com/watch?v=KuXjwB4LzSA <br>
 ### Recurrent Neuronal Networks
 https://www.youtube.com/watch?v=LHXXI4-IEns
 
-### Time Series Forecast
-https://machinelearningmastery.com/convert-time-series-supervised-learning-problem-python/
