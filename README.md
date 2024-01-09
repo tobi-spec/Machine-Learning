@@ -10,16 +10,16 @@ and also a "from scratch" implementation according to the "neuronal networks fro
 Predicting future values based on the analysis of past data points in a chronological sequence. 
 It is commonly used to anticipate trends, patterns, or behaviors in time-ordered datasets
 
-**IceCreamRevenue**: Basic idea of neuronal networks, additionally to a traditionally linear regression model approach for comparison.
-All models are used to find the linear relationship between revenue of a ice cream salar and the temperature( data is of course not real world)
+**Linear Regression**: Basic idea of neuronal networks, additionally to a traditionally linear regression model approach for comparison.
+All models are used to find the linear relationship between revenue of a ice cream salar and the temperature(data is of course not real world)
 
-**AirlinePassengers**: Predictor for airline passenger forecast, simple neuronal network for basic understanding timeseries forecasting. 
+**Univariant Time Series Forecast**: Predictor for airline passenger forecast, simple neuronal network for basic understanding timeseries forecasting. 
 
 ### Computervision
 Extract, process, and comprehend information from visual data, typically in the form of images or videos.
 Involves image recognition, object detection, and scene understanding.
 
-**Digit Classification**: Classifier for the mnist dataset of handwritten digit. MNIST is implementent in original data files to learn on data preparation.
+**SimpleImageClassification**: Classifier for the mnist dataset of handwritten digit. MNIST is implementent in original data files to learn on data preparation.
 Done with and without the use of CNNs.
 
 ### Natural Language Processing
