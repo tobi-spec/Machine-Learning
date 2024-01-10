@@ -10,14 +10,11 @@ class AirlinePassengersDataSet:
         self.passengers = self.data.loc[:, "Passengers"]
         self.passengers_plus_1 = None
 
-    def create_passengers_plus_1(self):
-        series1 = self.passengers[1:]
-        series2 = pd.Series([0], index=[144])
-        self.passengers_plus_1 = pd.concat([series1, series2])
-
-    def add_passengers_plus_1(self):
-        self.data["Passengers+1"] = self.passengers_plus_1.reset_index(drop=True)
-        self.data.drop(self.data.tail(1).index, inplace=True)
+    def create_forecast_sequence(self):
+        self.passengers_plus_1 = self.passengers.shift(-1)
+        self.passengers_plus_1 = self.passengers_plus_1.iloc[:-1]
+        self.data["Passengers+1"] = self.passengers_plus_1
+        self.passengers = self.passengers.iloc[:-1]
 
     def get_train_test(self):
         train = self.data[0:107]
@@ -26,10 +23,10 @@ class AirlinePassengersDataSet:
 
 
 timeseries = AirlinePassengersDataSet()
-timeseries.create_passengers_plus_1()
-timeseries.add_passengers_plus_1()
-
+timeseries.create_forecast_sequence()
 train, test = timeseries.get_train_test()
+
+print(train)
 
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(units=8, activation="relu"))
