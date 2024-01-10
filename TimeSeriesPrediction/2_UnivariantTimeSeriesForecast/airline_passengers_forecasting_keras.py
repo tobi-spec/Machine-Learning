@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 class AirlinePassengersDataSet:
     def __init__(self):
         self.data = pd.read_csv("./AirlinePassengers.csv", sep=";")
-        self.month = self.data["Month"]
-        self.passengers = self.data["Passengers"]
+        self.month = self.data.loc[:, "Month"]
+        self.passengers = self.data.loc[:, "Passengers"]
         self.passengers_plus_1 = None
 
     def create_passengers_plus_1(self):
@@ -35,10 +35,10 @@ model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(units=8, activation="relu"))
 model.add(tf.keras.layers.Dense(units=1))
 model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss='mean_squared_error')
-model.fit(train["Passengers"], train["Passengers+1"], epochs=25, batch_size=1)
+model.fit(train.loc[:, "Passengers"], train.loc[:, "Passengers+1"], epochs=25, batch_size=1)
 
 predictions = []
-for element in test["Passengers"]:
+for element in test.loc[:, "Passengers"]:
     prediction = model.predict([element])
     predictions.append(prediction[0])
 test["Predictions"] = predictions

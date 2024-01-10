@@ -11,7 +11,7 @@ dataset = pd.read_csv(
 dataset.drop(["No"], axis=1, inplace=True)
 dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']
 dataset.index.name = 'date'
-dataset["pollution"] = dataset["pollution"].fillna(0)
+dataset["pollution"] = dataset.loc[:, "pollution"].fillna(0)
 dataset = dataset[24:]
 dataset.to_csv("./pollution.csv")
 print(dataset)

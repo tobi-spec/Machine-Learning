@@ -9,8 +9,8 @@ import timeit
 start = timeit.default_timer()
 IceCream = pd.read_csv("IceCreamData.csv")
 
-x_values = IceCream[["Temperature"]]
-y_values = IceCream["Revenue"]
+x_values = IceCream.loc[:, "Temperature"].to_frame()
+y_values = IceCream.loc[:, "Revenue"]
 
 x_train, x_test, y_train, y_test = train_test_split(x_values, y_values, test_size=0.25)
 

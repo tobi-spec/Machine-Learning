@@ -8,8 +8,8 @@ from torch.utils.data import DataLoader, Dataset
 class AirlinePassengersPreparer:
     def __init__(self):
         self.data = pd.read_csv("./AirlinePassengers.csv", sep=";")
-        self.month = self.data["Month"]
-        self.passengers = self.data["Passengers"]
+        self.month = self.data.loc[:, "Month"]
+        self.passengers = self.data.loc[:, "Passengers"]
         self.passengers_plus_1 = None
 
     def create_passengers_plus_1(self):
@@ -85,10 +85,10 @@ timeseries.create_passengers_plus_1()
 timeseries.add_passengers_plus_1()
 train, test = timeseries.get_train_test()
 
-train_dataset = AirlinePassengersDataset(train["Passengers"].to_numpy(), train["Passengers+1"].to_numpy())
+train_dataset = AirlinePassengersDataset(train.loc[:, "Passengers"].to_numpy(), train.loc[:, "Passengers+1"].to_numpy())
 train_loader = DataLoader(dataset=train_dataset, batch_size=1, shuffle=False)
 
-test_dataset = AirlinePassengersDataset(test["Passengers"].to_numpy(), test["Passengers+1"].to_numpy())
+test_dataset = AirlinePassengersDataset(test.loc[:, "Passengers"].to_numpy(), test.loc[:, "Passengers+1"].to_numpy())
 test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False)
 
 model = AirlinePassengersModel()
@@ -98,7 +98,7 @@ for epoch in range(num_epochs):
     model.validate(test_loader)
 
 predictions = []
-for element in test["Passengers"]:
+for element in test.loc[:, "Passengers"]:
     prediction = model(torch.Tensor([element]))
     predictions.append(prediction.item())
 test["Predictions"] = predictions

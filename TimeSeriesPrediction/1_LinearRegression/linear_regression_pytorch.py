@@ -60,8 +60,8 @@ class LinearRegressionModel(nn.Module):
 
 
 data = pd.read_csv("./IceCreamData.csv", delimiter=",")
-x_values = data[["Temperature"]].to_numpy()
-y_values = data["Revenue"].to_numpy()
+x_values = data.loc[:, "Temperature"].to_numpy()
+y_values = data.loc[:, "Revenue"].to_numpy()
 
 dataset = RegressionDataset(x_values, y_values)
 train_dataset, test_dataset = random_split(dataset, lengths=[0.75, 0.25])

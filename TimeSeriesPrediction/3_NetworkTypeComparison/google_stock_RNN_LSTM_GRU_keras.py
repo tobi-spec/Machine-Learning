@@ -40,13 +40,13 @@ lenght_training_data = math.ceil(len(data)*0.8)
 scaler = MinMaxScaler(feature_range=(0, 1))
 
 train = data[:lenght_training_data].iloc[:, :1]
-dataset_train = train.Open.values
-train_dataset = StockDataSet(train.Open.values)
+dataset_train = train.loc[:, "Open"]
+train_dataset = StockDataSet(dataset_train)
 train_dataset.normalise().split_input_target().reshape()
 
 test = data[lenght_training_data:].iloc[:, :1]
-dataset_test = test.Open.values
-test_dataset = StockDataSet(test.Open.values)
+dataset_test = test.loc[:, "Open"]
+test_dataset = StockDataSet(dataset_test)
 test_dataset.normalise().split_input_target().reshape()
 
 
