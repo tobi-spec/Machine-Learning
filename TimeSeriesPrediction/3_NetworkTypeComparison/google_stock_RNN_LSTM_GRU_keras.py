@@ -116,5 +116,5 @@ axs[2].title.set_text("GRU")
 plt.xlabel("Days")
 plt.ylabel("Open price")
 
-plt.savefig("./comparison_RMM_LSTM_GRU_keras.png")
+plt.savefig("./comparison_RNN_LSTM_GRU_keras.png")
 plt.show()
