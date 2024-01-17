@@ -18,18 +18,21 @@ class TimeSeriesConstructor:
     def __init__(self, series):
         self.dataframe = pd.DataFrame(data=series)
 
-    # TODO: Handle first and last results
-    def get_sequence(self, span: int):
+    def create_sequences(self, span: int):
         inputs = list()
         series.reset_index(drop=True, inplace=True)
         for index, value in series.items():
             inputs.append(series.iloc[index - span:index].to_list())
         self.dataframe["inputs"] = inputs
 
+    def drop_empty_sequences(self):
+        self.dataframe = self.dataframe[self.dataframe.inputs.str.len() != 0]
+
 
 series = dataset.loc[:, "pollution"]
 timeSeries = TimeSeriesConstructor(series)
-timeSeries.get_sequence(span=3)
+timeSeries.create_sequences(span=3)
+timeSeries.drop_empty_sequences()
 print(timeSeries.dataframe)
 
 
