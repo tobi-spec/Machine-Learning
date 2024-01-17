@@ -19,7 +19,7 @@ class TimeSeriesConstructor:
         self.dataframe = pd.DataFrame(data=series)
 
     # TODO: Handle first and last results
-    def last_results(self, span: int):
+    def get_sequence(self, span: int):
         inputs = list()
         series.reset_index(drop=True, inplace=True)
         for index, value in series.items():
@@ -29,7 +29,7 @@ class TimeSeriesConstructor:
 
 series = dataset.loc[:, "pollution"]
 timeSeries = TimeSeriesConstructor(series)
-timeSeries.last_results(3)
+timeSeries.get_sequence(span=3)
 print(timeSeries.dataframe)
 
 
