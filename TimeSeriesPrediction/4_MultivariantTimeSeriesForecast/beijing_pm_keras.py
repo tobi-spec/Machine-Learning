@@ -14,7 +14,7 @@ dataset["pollution"] = dataset.loc[:, "pollution"].fillna(0)
 dataset = dataset[24:]
 dataset.to_csv("./pollution.csv")
 
-class TimeSeries:
+class TimeSeriesConstructor:
     def __init__(self, series):
         self.dataframe = pd.DataFrame(data=series)
 
@@ -28,7 +28,7 @@ class TimeSeries:
 
 
 series = dataset.loc[:, "pollution"]
-timeSeries = TimeSeries(series)
+timeSeries = TimeSeriesConstructor(series)
 timeSeries.last_results(3)
 print(timeSeries.dataframe)
 
