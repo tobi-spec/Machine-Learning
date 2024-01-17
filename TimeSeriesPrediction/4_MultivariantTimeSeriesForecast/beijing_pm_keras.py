@@ -1,5 +1,4 @@
 import pandas as pd
-from datetime import datetime
 
 dataset = pd.read_csv(
     filepath_or_buffer="BeijingParticulateMatter.csv",
@@ -15,21 +14,24 @@ dataset["pollution"] = dataset.loc[:, "pollution"].fillna(0)
 dataset = dataset[24:]
 dataset.to_csv("./pollution.csv")
 
+class TimeSeries:
+    def __init__(self, series):
+        self.dataframe = pd.DataFrame(data=series)
 
-# TODO: Handle first and last results
-def last_results(series, range: int):
-    inputs = list()
-    label = list()
-    series.reset_index(drop=True, inplace=True)
-    for index, value in series.items():
-        inputs.append(series.iloc[index - range:index])
-        label.append(value)
-    return inputs, label
+    # TODO: Handle first and last results
+    def last_results(self, span: int):
+        inputs = list()
+        series.reset_index(drop=True, inplace=True)
+        for index, value in series.items():
+            inputs.append(series.iloc[index - span:index].to_list())
+        self.dataframe["inputs"] = inputs
 
 
 series = dataset.loc[:, "pollution"]
-x, y = last_results(series, 3)
-print(x)
+timeSeries = TimeSeries(series)
+timeSeries.last_results(3)
+print(timeSeries.dataframe)
+
 
 
 # https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/
