@@ -5,6 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
+
 dataset = pd.read_csv(
     filepath_or_buffer="BeijingParticulateMatter.csv",
     delimiter=",",
@@ -28,28 +29,43 @@ dataset.dropna(inplace=True)
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled = scaler.fit_transform(dataset)
 dataset = pd.DataFrame(scaled)
-dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain', "target"]
+dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain',
+                   "target"]
 
-hours_of_year = 365*24
+hours_of_year = 365 * 24
 train = dataset.loc[:hours_of_year, :]
 train_X = train.loc[:, ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']]
 train_y = train.loc[:, "target"]
 
 test = dataset.loc[hours_of_year:, :]
 test_X = test.loc[:, ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']]
+test_X.reset_index(inplace=True, drop=True)
 test_y = test.loc[:, "target"]
 
-train_X = train_X.to_numpy().reshape((train_X.shape[0], 1, train_X.shape[1]))
-test_X = test_X.to_numpy().reshape((test_X.shape[0], 1, test_X.shape[1]))
+train_X_timeseries = list()
+for i in range(5, len(train_X)):
+    train_X_timeseries.append(train_X.loc[i - 5:i, :])
+train_X_timeseries = np.array(train_X_timeseries)
+
+test_X_timeseries = list()
+for i in range(5, len(test_X)):
+    test_X_timeseries.append(test_X.loc[i - 5:i, :])
+test_X_timeseries = np.array(test_X_timeseries)
+
+
+train_y = train_y[5:]
+test_y = test_y[5:]
+
+print(train_X_timeseries.shape)
+print(train.shape)
 
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.LSTM(50))
 model.add(tf.keras.layers.Dense(1))
 model.compile(loss='mae', optimizer='adam')
-model.fit(train_X, train_y, epochs=10, batch_size=72)
+model.fit(train_X_timeseries, train_y, epochs=10, batch_size=72)
 
-predictions = model.predict(test_X)
-
+predictions = model.predict(test_X_timeseries)
 
 predictions = pd.DataFrame(predictions, columns=["pollution_prediction"])
 test.reset_index(inplace=True, drop=True)
@@ -57,7 +73,8 @@ predictions.reset_index(inplace=True, drop=True)
 test.loc[:, "pollution"] = predictions.loc[:, "pollution_prediction"]
 test = scaler.inverse_transform(test)
 test = pd.DataFrame(test)
-test.columns = ['pollution_prediction', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain', "target"]
+test.columns = ['pollution_prediction', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow',
+                'rain', "target"]
 
 results = pd.DataFrame()
 results["target"] = test["target"]
