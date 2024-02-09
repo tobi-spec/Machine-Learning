@@ -22,13 +22,13 @@ dataset.to_csv("./beijing_pollution.csv")
 encoder = LabelEncoder()
 dataset.loc[:, "wind_direction"] = encoder.fit_transform(dataset.loc[:, "wind_direction"])
 
-scaler = MinMaxScaler(feature_range=(0, 1))
-scaled = scaler.fit_transform(dataset)
-
-dataset = pd.DataFrame(scaled)
-dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']
 dataset["target"] = dataset.loc[:, "pollution"].shift(-1)
 dataset.dropna(inplace=True)
+
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled = scaler.fit_transform(dataset)
+dataset = pd.DataFrame(scaled)
+dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain', "target"]
 
 hours_of_year = 365*24
 train = dataset.loc[:hours_of_year, :]
@@ -50,9 +50,18 @@ model.fit(train_X, train_y, epochs=10, batch_size=72)
 
 predictions = model.predict(test_X)
 
+
+predictions = pd.DataFrame(predictions, columns=["pollution"])
+test.reset_index(inplace=True, drop=True)
+predictions.reset_index(inplace=True, drop=True)
+test.loc[:, "pollution"] = predictions.loc[:, "pollution"]
+test = scaler.inverse_transform(test)
+test = pd.DataFrame(test)
+test.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain', "target"]
+
 results = pd.DataFrame()
-results["target"] = test_y
-results["prediction"] = predictions
+results["target"] = test["target"]
+results["prediction"] = test["pollution"]
 results.to_csv("./beijing_results.csv")
 
 plt.plot(results["target"].head(150))
