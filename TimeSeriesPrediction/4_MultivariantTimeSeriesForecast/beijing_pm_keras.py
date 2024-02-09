@@ -63,7 +63,7 @@ model = tf.keras.Sequential()
 model.add(tf.keras.layers.LSTM(50))
 model.add(tf.keras.layers.Dense(1))
 model.compile(loss='mae', optimizer='adam')
-model.fit(train_X_timeseries, train_y, epochs=10, batch_size=72)
+model.fit(train_X_timeseries, train_y, epochs=10, batch_size=16)
 
 predictions = model.predict(test_X_timeseries)
 
