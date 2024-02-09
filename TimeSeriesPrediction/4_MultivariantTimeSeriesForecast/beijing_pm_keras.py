@@ -51,17 +51,17 @@ model.fit(train_X, train_y, epochs=10, batch_size=72)
 predictions = model.predict(test_X)
 
 
-predictions = pd.DataFrame(predictions, columns=["pollution"])
+predictions = pd.DataFrame(predictions, columns=["pollution_prediction"])
 test.reset_index(inplace=True, drop=True)
 predictions.reset_index(inplace=True, drop=True)
-test.loc[:, "pollution"] = predictions.loc[:, "pollution"]
+test.loc[:, "pollution"] = predictions.loc[:, "pollution_prediction"]
 test = scaler.inverse_transform(test)
 test = pd.DataFrame(test)
-test.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain', "target"]
+test.columns = ['pollution_prediction', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain', "target"]
 
 results = pd.DataFrame()
 results["target"] = test["target"]
-results["prediction"] = test["pollution"]
+results["prediction"] = test["pollution_prediction"]
 results.to_csv("./beijing_results.csv")
 
 plt.plot(results["target"].head(150))
