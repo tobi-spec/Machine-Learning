@@ -52,12 +52,8 @@ for i in range(1, len(test_X)):
     test_X_timeseries.append(test_X.loc[i - 1:i, :])
 test_X_timeseries = np.array(test_X_timeseries)
 
-
 train_y = train_y[1:]
 test_y = test_y[1:]
-
-print(train_X_timeseries.shape)
-print(train.shape)
 
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.LSTM(50))
