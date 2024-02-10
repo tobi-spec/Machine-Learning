@@ -77,11 +77,11 @@ results["target"] = test["target"]
 results["prediction"] = test["pollution_prediction"]
 results.to_csv("./beijing_results.csv")
 
-plt.plot(results["target"].head(150))
-plt.plot(results["prediction"].head(150))
+plt.plot(results["target"].head(150), label="test_data", color="b")
+plt.plot(results["prediction"].head(150), label="prediction_data", color="r")
 plt.xlabel("time")
 plt.ylabel("Pollution[pm 2.5]")
-plt.legend(loc="upper left")
+plt.legend(loc="upper right")
 plt.savefig("./beijing_results.png")
 plt.show()
 
