@@ -5,7 +5,6 @@ from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-
 dataset = pd.read_csv(
     filepath_or_buffer="BeijingParticulateMatter.csv",
     delimiter=",",
@@ -39,21 +38,21 @@ train_y = train.loc[:, "target"]
 
 test = dataset.loc[hours_of_year:, :]
 test_X = test.loc[:, ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']]
-test_X.reset_index(inplace=True, drop=True)
 test_y = test.loc[:, "target"]
+test_X.reset_index(inplace=True, drop=True)
 
-train_X_timeseries = list()
-for i in range(1, len(train_X)):
-    train_X_timeseries.append(train_X.loc[i - 1:i, :])
-train_X_timeseries = np.array(train_X_timeseries)
 
-test_X_timeseries = list()
-for i in range(1, len(test_X)):
-    test_X_timeseries.append(test_X.loc[i - 1:i, :])
-test_X_timeseries = np.array(test_X_timeseries)
+def create_timeseries(inputs, targets, span):
+    timeseries = list()
+    for i in range(span, len(inputs)):
+        timeseries.append(inputs.loc[i - span:i, :])
+    timeseries = np.array(timeseries)
+    targets = targets[span:]
+    return timeseries, targets
 
-train_y = train_y[1:]
-test_y = test_y[1:]
+
+train_X_timeseries, train_y = create_timeseries(train_X, train_y, 1)
+test_X_timeseries, test_y = create_timeseries(test_X, test_y, 1)
 
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.LSTM(50))
