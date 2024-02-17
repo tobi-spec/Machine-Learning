@@ -41,12 +41,27 @@ dataset.encode_labels()
 dataset.add_targets()
 dataset = dataset.return_dataframe()
 
+class Normalizer:
+    def __init__(self):
+        self.scaler = MinMaxScaler(feature_range=(0, 1))
 
-scaler = MinMaxScaler(feature_range=(0, 1))
-scaled = scaler.fit_transform(dataset)
-dataset = pd.DataFrame(scaled)
-dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain',
-                   "target"]
+    def transform(self, dataset):
+        columns = dataset.columns
+        scaled = self.scaler.fit_transform(dataset)
+        dataset = pd.DataFrame(scaled)
+        dataset.columns = columns
+        return dataset
+
+    def retransform(self, dataset):
+        columns = dataset.columns
+        dataset = self.scaler.inverse_transform(dataset)
+        dataset = pd.DataFrame(dataset)
+        dataset.columns = columns
+        return dataset
+
+
+normalizer = Normalizer()
+dataset = normalizer.transform(dataset)
 
 
 def create_inputs_targets(data):
@@ -88,14 +103,14 @@ predictions = pd.DataFrame(predictions, columns=["pollution_prediction"])
 test.reset_index(inplace=True, drop=True)
 predictions.reset_index(inplace=True, drop=True)
 test.loc[:, "pollution"] = predictions.loc[:, "pollution_prediction"]
-test = scaler.inverse_transform(test)
-test = pd.DataFrame(test)
-test.columns = ['pollution_prediction', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow',
-                'rain', "target"]
+print(test)
+
+test = normalizer.retransform(test)
+print(test)
 
 results = pd.DataFrame()
 results["target"] = test["target"]
-results["prediction"] = test["pollution_prediction"]
+results["prediction"] = test["pollution"]
 results.to_csv("./beijing_results.csv")
 
 plt.plot(results["target"].head(150), label="test_data", color="blue")
