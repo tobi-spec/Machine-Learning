@@ -32,14 +32,19 @@ dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_directio
                    "target"]
 
 hours_of_year = 365 * 24
+
+def create_inputs_targets(data):
+    inputs = data.loc[:,
+              ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']]
+    inputs.reset_index(inplace=True, drop=True)
+    targets = data.loc[:, "target"]
+    return inputs, targets
+
 train = dataset.loc[:hours_of_year, :]
-train_X = train.loc[:, ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']]
-train_y = train.loc[:, "target"]
+train_X, train_y = create_inputs_targets(train)
 
 test = dataset.loc[hours_of_year:, :]
-test_X = test.loc[:, ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']]
-test_y = test.loc[:, "target"]
-test_X.reset_index(inplace=True, drop=True)
+test_X, test_y = create_inputs_targets(test)
 
 
 def create_timeseries(inputs, targets, span):
