@@ -5,25 +5,42 @@ from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-dataset = pd.read_csv(
-    filepath_or_buffer="BeijingParticulateMatter.csv",
-    delimiter=",",
-    index_col=0,
-    parse_dates=[[1, 2, 3, 4]],
-    date_format='%Y %m %d %H')
+class BeijinDataSet:
+    def __init__(self):
+        self.dataset = pd.read_csv(
+            filepath_or_buffer="BeijingParticulateMatter.csv",
+            delimiter=",",
+            index_col=0,
+            parse_dates=[[1, 2, 3, 4]],
+            date_format='%Y %m %d %H')
 
-dataset.drop(["No"], axis=1, inplace=True)
-dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']
-dataset.index.name = 'date'
-dataset["pollution"] = dataset.loc[:, "pollution"].fillna(0)
-dataset = dataset[24:]
-dataset.to_csv("./beijing_pollution.csv")
+        self.dataset.drop(["No"], axis=1, inplace=True)
+        self.dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']
+        self.dataset.index.name = 'date'
+        self.dataset["pollution"] = self.dataset.loc[:, "pollution"].fillna(0)
+        self.dataset = self.dataset[24:]
 
-encoder = LabelEncoder()
-dataset.loc[:, "wind_direction"] = encoder.fit_transform(dataset.loc[:, "wind_direction"])
+    def encode_labels(self):
+        encoder = LabelEncoder()
+        self.dataset.loc[:, "wind_direction"] = encoder.fit_transform(self.dataset.loc[:, "wind_direction"])
 
-dataset["target"] = dataset.loc[:, "pollution"].shift(-1)
-dataset.dropna(inplace=True)
+    def add_targets(self):
+        self.dataset["target"] = self.dataset.loc[:, "pollution"].shift(-1)
+        self.dataset.dropna(inplace=True)
+
+    def save(self):
+        self.dataset.to_csv("./beijing_pollution.csv")
+
+    def return_dataframe(self):
+        return self.dataset
+
+
+dataset = BeijinDataSet()
+dataset.save()
+dataset.encode_labels()
+dataset.add_targets()
+dataset = dataset.return_dataframe()
+
 
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled = scaler.fit_transform(dataset)
@@ -31,7 +48,6 @@ dataset = pd.DataFrame(scaled)
 dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain',
                    "target"]
 
-hours_of_year = 365 * 24
 
 def create_inputs_targets(data):
     inputs = data.loc[:,
@@ -40,6 +56,7 @@ def create_inputs_targets(data):
     targets = data.loc[:, "target"]
     return inputs, targets
 
+hours_of_year = 365 * 24
 train = dataset.loc[:hours_of_year, :]
 train_X, train_y = create_inputs_targets(train)
 
