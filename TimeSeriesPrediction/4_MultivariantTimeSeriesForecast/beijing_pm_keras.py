@@ -105,12 +105,13 @@ predictions = pd.DataFrame(predictions, columns=["predictions"])
 results = test[size_of_timespan-1:]
 results.reset_index(inplace=True, drop=True)
 results.loc[:, "pollution"] = predictions.loc[:, "predictions"]
+results.rename(columns={"pollution": "predictions"}, inplace=True)
 results = normalizer.retransform(results)
-results = results.loc[:, ["pollution", "target"]]
+results = results.loc[:, ["predictions", "target"]]
 results.to_csv("./beijing_results.csv")
 
 plt.plot(results["target"].head(150), label="test_data", color="blue")
-plt.plot(results["pollution"].head(150), label="prediction_data", color="orange")
+plt.plot(results["predictions"].head(150), label="prediction_data", color="orange")
 plt.xlabel("time")
 plt.ylabel("Pollution[pm 2.5]")
 plt.legend(loc="upper right")
