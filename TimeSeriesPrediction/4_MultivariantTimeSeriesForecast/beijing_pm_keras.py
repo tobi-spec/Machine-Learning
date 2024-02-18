@@ -89,8 +89,9 @@ def create_timeseries(inputs, targets, span):
     return timeseries, targets
 
 
-train_X_timeseries, train_y = create_timeseries(train_X, train_y, 1)
-test_X_timeseries, test_y = create_timeseries(test_X, test_y, 1)
+size_of_timespan = 10
+train_X_timeseries, train_y = create_timeseries(train_X, train_y, size_of_timespan)
+test_X_timeseries, test_y = create_timeseries(test_X, test_y, size_of_timespan)
 
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.LSTM(50))
@@ -101,7 +102,7 @@ model.fit(train_X_timeseries, train_y, epochs=10, batch_size=16)
 predictions = model.predict(test_X_timeseries)
 predictions = pd.DataFrame(predictions, columns=["predictions"])
 
-results = test
+results = test[size_of_timespan-1:]
 results.reset_index(inplace=True, drop=True)
 results.loc[:, "pollution"] = predictions.loc[:, "predictions"]
 results = normalizer.retransform(results)
