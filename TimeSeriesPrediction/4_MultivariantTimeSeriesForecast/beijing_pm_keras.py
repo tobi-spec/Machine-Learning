@@ -5,7 +5,8 @@ from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-class BeijinDataSet:
+
+class BeijingDataSet:
     def __init__(self):
         self.dataset = pd.read_csv(
             filepath_or_buffer="BeijingParticulateMatter.csv",
@@ -17,7 +18,7 @@ class BeijinDataSet:
         self.dataset.drop(["No"], axis=1, inplace=True)
         self.dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']
         self.dataset.index.name = 'date'
-        self.dataset["pollution"] = self.dataset.loc[:, "pollution"].fillna(0)
+        self.dataset.loc[:, "pollution"].fillna(0, inplace=True)
         self.dataset = self.dataset[24:]
 
     def encode_labels(self):
@@ -35,7 +36,7 @@ class BeijinDataSet:
         return self.dataset
 
 
-dataset = BeijinDataSet()
+dataset = BeijingDataSet()
 dataset.save()
 dataset.encode_labels()
 dataset.add_targets()
@@ -71,13 +72,13 @@ def create_inputs_targets(data):
     targets = data.loc[:, "target"]
     return inputs, targets
 
+
 hours_of_year = 365 * 24
 train = dataset.loc[:hours_of_year, :]
 train_X, train_y = create_inputs_targets(train)
 
 test = dataset.loc[hours_of_year:, :]
 test_X, test_y = create_inputs_targets(test)
-
 
 def create_timeseries(inputs, targets, span):
     timeseries = list()
@@ -98,23 +99,17 @@ model.compile(loss='mae', optimizer='adam')
 model.fit(train_X_timeseries, train_y, epochs=10, batch_size=16)
 
 predictions = model.predict(test_X_timeseries)
+predictions = pd.DataFrame(predictions, columns=["predictions"])
 
-predictions = pd.DataFrame(predictions, columns=["pollution_prediction"])
-test.reset_index(inplace=True, drop=True)
-predictions.reset_index(inplace=True, drop=True)
-test.loc[:, "pollution"] = predictions.loc[:, "pollution_prediction"]
-print(test)
-
-test = normalizer.retransform(test)
-print(test)
-
-results = pd.DataFrame()
-results["target"] = test["target"]
-results["prediction"] = test["pollution"]
+results = test
+results.reset_index(inplace=True, drop=True)
+results.loc[:, "pollution"] = predictions.loc[:, "predictions"]
+results = normalizer.retransform(results)
+results = results.loc[:, ["pollution", "target"]]
 results.to_csv("./beijing_results.csv")
 
 plt.plot(results["target"].head(150), label="test_data", color="blue")
-plt.plot(results["prediction"].head(150), label="prediction_data", color="orange")
+plt.plot(results["pollution"].head(150), label="prediction_data", color="orange")
 plt.xlabel("time")
 plt.ylabel("Pollution[pm 2.5]")
 plt.legend(loc="upper right")
