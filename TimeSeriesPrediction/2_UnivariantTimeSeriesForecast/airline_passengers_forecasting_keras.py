@@ -32,8 +32,13 @@ model.add(tf.keras.layers.Dense(units=1))
 model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss='mean_squared_error')
 model.fit(train.loc[:, "Passengers"], train.loc[:, "Passengers+1"], epochs=25, batch_size=1)
 
-predictions = model.predict(test.loc[:, "Passengers"])
-test["Predictions"] = predictions
+
+def validation_forecast(inputs):
+    return model.predict(inputs)
+
+
+validation_inputs = test.loc[:, "Passengers"]
+test["Predictions"] = validation_forecast(validation_inputs)
 
 
 def one_step_ahead_forecast(current_value):
@@ -43,6 +48,7 @@ def one_step_ahead_forecast(current_value):
         one_step_ahead_forecast.append(prediction[0][0])
         current_value = prediction[0]
     return one_step_ahead_forecast
+
 
 start_value = train.iloc[-1:, 1]
 test["one_step_prediction"] = one_step_ahead_forecast(start_value)
