@@ -44,8 +44,8 @@ def one_step_ahead_forecast(current_value):
         current_value = prediction[0]
     return one_step_ahead_forecast
 
-current_value = train.iloc[-1:, 1]
-test["one_step_prediction"] = one_step_ahead_forecast(current_value)
+start_value = train.iloc[-1:, 1]
+test["one_step_prediction"] = one_step_ahead_forecast(start_value)
 test.to_csv("./AirlinePassengersResultsKeras.csv")
 
 plt.plot(train["Month"], train["Passengers"], color="green", label="training")
