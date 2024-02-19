@@ -26,21 +26,15 @@ timeseries = AirlinePassengersDataSet()
 timeseries.create_forecast_sequence()
 train, test = timeseries.get_train_test()
 
-print(train)
-
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(units=8, activation="relu"))
 model.add(tf.keras.layers.Dense(units=1))
 model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss='mean_squared_error')
 model.fit(train.loc[:, "Passengers"], train.loc[:, "Passengers+1"], epochs=25, batch_size=1)
 
-predictions = []
-for element in test.loc[:, "Passengers"]:
-    prediction = model.predict([element])
-    predictions.append(prediction[0])
+predictions = model.predict(test.loc[:, "Passengers"])
 test["Predictions"] = predictions
-
-test.drop(["Passengers+1"], axis=1).to_csv("./AirlinePassengersResultsKeras.csv")
+test.to_csv("./AirlinePassengersResultsKeras.csv")
 
 plt.plot(train["Month"], train["Passengers"], color="green", label="training")
 plt.plot(test["Month"], test["Predictions"], color="red", label="prediction")
