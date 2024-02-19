@@ -34,11 +34,21 @@ model.fit(train.loc[:, "Passengers"], train.loc[:, "Passengers+1"], epochs=25, b
 
 predictions = model.predict(test.loc[:, "Passengers"])
 test["Predictions"] = predictions
+
+current_value = train.iloc[-1:, 1]
+one_step_ahead_forecast = list()
+for element in range(0, len(test)):
+    prediction = model.predict([current_value])
+    one_step_ahead_forecast.append(prediction[0][0])
+    current_value = prediction[0]
+test["one_step_prediction"] = one_step_ahead_forecast
+
 test.to_csv("./AirlinePassengersResultsKeras.csv")
 
 plt.plot(train["Month"], train["Passengers"], color="green", label="training")
 plt.plot(test["Month"], test["Predictions"], color="red", label="prediction")
 plt.plot(test["Month"], test["Passengers"], color="blue", label="test")
+plt.plot(test["Month"], test["one_step_prediction"], color="orange", label="one_step_prediction")
 plt.title("airline passengers prediction")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
