@@ -93,13 +93,16 @@ size_of_timespan = 10
 train_X_timeseries, train_y = create_timeseries(train_X, train_y, size_of_timespan)
 test_X_timeseries, test_y = create_timeseries(test_X, test_y, size_of_timespan)
 
-model = tf.keras.Sequential()
-model.add(tf.keras.layers.LSTM(50))
-model.add(tf.keras.layers.Dense(1))
-model.compile(loss='mae', optimizer='adam')
-model.fit(train_X_timeseries, train_y, epochs=10, batch_size=16)
+def LSTM_model():
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.LSTM(50))
+    model.add(tf.keras.layers.Dense(1))
+    model.compile(loss='mae', optimizer='adam')
+    model.fit(train_X_timeseries, train_y, epochs=10, batch_size=16)
+    return model
 
-predictions = model.predict(test_X_timeseries)
+lstm_model = LSTM_model()
+predictions = lstm_model.predict(test_X_timeseries)
 predictions = pd.DataFrame(predictions, columns=["predictions"])
 
 results = test[size_of_timespan-1:]
