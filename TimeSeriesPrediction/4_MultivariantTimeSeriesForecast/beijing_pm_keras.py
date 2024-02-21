@@ -42,6 +42,7 @@ dataset.encode_labels()
 dataset.add_targets()
 dataset = dataset.return_dataframe()
 
+
 class Normalizer:
     def __init__(self):
         self.scaler = MinMaxScaler(feature_range=(0, 1))
@@ -92,7 +93,6 @@ def create_timeseries(inputs, targets, span):
 
 size_of_timespan = 10
 train_X_timeseries, train_y = create_timeseries(train_X, train_y, size_of_timespan)
-test_X_timeseries, test_y = create_timeseries(test_X, test_y, size_of_timespan)
 
 
 def LSTM_model():
@@ -105,12 +105,19 @@ def LSTM_model():
 
 
 lstm_model = LSTM_model()
-predictions = lstm_model.predict(test_X_timeseries)
-predictions = pd.DataFrame(predictions, columns=["predictions"])
+test_X_timeseries, test_y = create_timeseries(test_X, test_y, size_of_timespan)
+
+
+def validation_prediction(model, timeseries):
+    predictions = model.predict(timeseries)
+    return pd.DataFrame(predictions, columns=["predictions"])
+
+
+validation_results = validation_prediction(lstm_model, test_X_timeseries)
 
 results = test[size_of_timespan-1:]
 results.reset_index(inplace=True, drop=True)
-results.loc[:, "pollution"] = predictions.loc[:, "predictions"]
+results.loc[:, "pollution"] = validation_results.loc[:, "predictions"]
 results.rename(columns={"pollution": "predictions"}, inplace=True)
 results = normalizer.retransform(results)
 results = results.loc[:, ["predictions", "target"]]
