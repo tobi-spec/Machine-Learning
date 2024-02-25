@@ -14,24 +14,38 @@ class AirlinePassengersDataSet:
         self.data = self.data[:-2]
 
     def get_train_inputs(self):
-        return self.data.loc[0:107, "Passengers"]
+        return self.data.loc[0:107, "Passengers"].reset_index(drop=True)
 
     def get_train_targets(self):
-        return self.data.loc[0:107, "Passengers+1"]
+        return self.data.loc[0:107, "Passengers+1"].reset_index(drop=True)
 
     def get_test_inputs(self):
-        return self.data.loc[107:142, "Passengers"]
+        return self.data.loc[107:142, "Passengers"].reset_index(drop=True)
 
     def get_test_targets(self):
-        return self.data.loc[107:142, "Passengers+1"]
-
-    def get_last_train_input(self):
-        return self.data.loc[0:107, "Passengers"].tail(1).item()
+        return self.data.loc[107:142, "Passengers+1"].reset_index(drop=True)
 
 
 airlinePassengers = AirlinePassengersDataSet()
 airlinePassengers.create_targets()
 
+
+def create_timeseries(inputs, targets, span):
+    timeseries = list()
+    for i in range(span, len(inputs)):
+        timeseries.append(inputs.loc[i - span:i])
+    timeseries = np.array(timeseries)
+    targets = targets[span:]
+    return timeseries, targets
+
+
+train_input_timeseries, train_targets = create_timeseries(airlinePassengers.get_train_inputs(),
+                                                          airlinePassengers.get_train_targets(), 5)
+
+test_input_timeseries, test_targets = create_timeseries(airlinePassengers.get_test_inputs(),
+                                                        airlinePassengers.get_test_targets(), 5)
+
+print(train_input_timeseries.shape)
 
 def create_FFN(inputs, targets):
     model = tf.keras.Sequential()
@@ -42,10 +56,7 @@ def create_FFN(inputs, targets):
     return model
 
 
-ffn = create_FFN(airlinePassengers.get_train_inputs(), airlinePassengers.get_train_targets())
-
-results = pd.DataFrame()
-results["true"] = airlinePassengers.get_test_targets().shift(1)
+ffn = create_FFN(train_input_timeseries, train_targets)
 
 
 def validation_forecast(model, inputs):
@@ -53,8 +64,9 @@ def validation_forecast(model, inputs):
     return predictions.flatten().tolist()
 
 
-validation_inputs = airlinePassengers.get_test_inputs()
-results["validation"] = validation_forecast(ffn, validation_inputs)
+results = pd.DataFrame()
+results["true"] = test_targets.shift(1)
+results["validation"] = validation_forecast(ffn, test_input_timeseries)
 
 
 def one_step_ahead_forecast(model, current_value, number_of_predictions):
@@ -62,16 +74,23 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
     for element in range(0, number_of_predictions):
         prediction = model.predict([current_value])
         one_step_ahead_forecast.append(prediction[0][0])
-        current_value = prediction[0]
+        current_value = np.delete(current_value, 0)
+        current_value = np.append(current_value, prediction)
+        current_value = current_value.reshape(1, current_value.shape[0])
     return one_step_ahead_forecast
 
 
-start_value = airlinePassengers.get_last_train_input()
-results["one_step_prediction"] = one_step_ahead_forecast(ffn, start_value, len(airlinePassengers.get_test_targets()))
+start_value = test_input_timeseries[-1]
+start_value_reshaped = start_value.reshape(1, start_value.shape[0])
+print(start_value_reshaped.shape)
+results["one_step_prediction"] = one_step_ahead_forecast(ffn, start_value_reshaped, len(test_targets))
+results.index += 107
+print(airlinePassengers.get_train_inputs())
+print(results)
 
 plt.plot(airlinePassengers.get_train_inputs(), color="green", label="training")
-plt.plot(results["true"], color="red", label="prediction")
-plt.plot(results["validation"], color="blue", label="test")
+plt.plot(results["true"], color="red", label="true")
+plt.plot(results["validation"], color="blue", label="validation")
 plt.plot(results["one_step_prediction"], color="orange", label="one_step_prediction")
 plt.title("airline passengers prediction")
 plt.xlabel("Time[Month]")
