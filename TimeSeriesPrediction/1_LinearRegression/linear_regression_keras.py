@@ -6,33 +6,48 @@ import timeit
 
 start = timeit.default_timer()
 
-IceCream = pd.read_csv("IceCreamData.csv")
-x_values = IceCream.loc[:, "Temperature"]
-y_values = IceCream.loc[:, "Revenue"]
+
+class IceCreamData:
+    def __init__(self):
+        self.data = pd.read_csv("IceCreamData.csv")
+
+    def get_temperature(self):
+        return self.data.loc[:, "Temperature"]
+
+    def get_revenue(self):
+        return self.data.loc[:, "Revenue"]
+
+
+iceCreamData = IceCreamData()
+x_values = iceCreamData.get_temperature()
+y_values = iceCreamData.get_revenue()
 x_train, x_test, y_train, y_test = train_test_split(x_values, y_values, test_size=0.25)
 
-model = tf.keras.Sequential()
-model.add(tf.keras.layers.Dense(units=1,
-                                kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                bias_initializer=tf.keras.initializers.Zeros())
-          )
-model.compile(optimizer=tf.keras.optimizers.Adam(0.01), loss='mean_squared_error')
-model.fit(x_train, y_train, epochs=25, batch_size=1)
 
-results = model.evaluate(x_test, y_test, batch_size=1)
-print("____________________________")
-print("validation: ", results)
-print("____________________________")
+def create_linear_model():
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Dense(units=1,
+                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=tf.keras.initializers.Zeros())
+              )
+    model.compile(optimizer=tf.keras.optimizers.Adam(0.01), loss='mean_squared_error')
+    return model
 
-x_calculate = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45]
-y_prediction = []
-for temperatur in x_calculate:
-    prediction = model.predict([temperatur])
-    y_prediction.append(prediction[0])
+
+linear_model = create_linear_model()
+linear_model.fit(x_train, y_train, epochs=20, batch_size=1)
+
+
+def validation_prediction():
+    return linear_model.predict([x_test])
+
+
+validation_results = validation_prediction()
+
 stop = timeit.default_timer()
 
 plt.scatter(x_train, y_train, color="grey")
-plt.plot(x_calculate, y_prediction, color="red")
+plt.scatter(x_test, validation_results, color="red")
 plt.xlabel("temperature [degC]")
 plt.ylabel("revenue [dollars]")
 plt.title('Linear regression with Keras')
