@@ -8,6 +8,16 @@ from torch.utils.data import DataLoader, Dataset, random_split
 
 start = timeit.default_timer()
 
+class IceCreamData:
+    def __init__(self):
+        self.data = pd.read_csv("IceCreamData.csv")
+
+    def get_temperature(self):
+        return self.data.loc[:, "Temperature"].to_numpy()
+
+    def get_revenue(self):
+        return self.data.loc[:, "Revenue"].to_numpy()
+
 
 class RegressionDataset(Dataset):
     def __init__(self, x, y):
@@ -59,9 +69,9 @@ class LinearRegressionModel(nn.Module):
         print(f'Validation Loss: {loss / len(val_loader):.4f}')
 
 
-data = pd.read_csv("./IceCreamData.csv", delimiter=",")
-x_values = data.loc[:, "Temperature"].to_numpy()
-y_values = data.loc[:, "Revenue"].to_numpy()
+iceCreamData = IceCreamData()
+x_values = iceCreamData.get_temperature()
+y_values = iceCreamData.get_revenue()
 
 dataset = RegressionDataset(x_values, y_values)
 train_dataset, test_dataset = random_split(dataset, lengths=[0.75, 0.25])
