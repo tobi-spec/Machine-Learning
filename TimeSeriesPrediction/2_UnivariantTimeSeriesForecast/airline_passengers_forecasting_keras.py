@@ -33,16 +33,16 @@ airlinePassengers = AirlinePassengersDataSet()
 airlinePassengers.create_targets()
 
 
-def create_FFN():
+def create_FFN(inputs, targets):
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Dense(units=8, activation="relu"))
     model.add(tf.keras.layers.Dense(units=1))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss='mean_squared_error')
-    model.fit(airlinePassengers.get_train_inputs(), airlinePassengers.get_train_targets(), epochs=25, batch_size=1)
+    model.fit(inputs, targets, epochs=25, batch_size=1)
     return model
 
 
-ffn = create_FFN()
+ffn = create_FFN(airlinePassengers.get_train_inputs(), airlinePassengers.get_train_targets())
 
 results = pd.DataFrame()
 results["true"] = airlinePassengers.get_test_targets().shift(1)
