@@ -38,14 +38,13 @@ def create_timeseries(inputs, targets, span):
     targets = targets[span:]
     return timeseries, targets
 
-
+size_of_timeseries = 15
 train_input_timeseries, train_targets = create_timeseries(airlinePassengers.get_train_inputs(),
-                                                          airlinePassengers.get_train_targets(), 5)
+                                                          airlinePassengers.get_train_targets(), size_of_timeseries)
 
 test_input_timeseries, test_targets = create_timeseries(airlinePassengers.get_test_inputs(),
-                                                        airlinePassengers.get_test_targets(), 5)
+                                                        airlinePassengers.get_test_targets(), size_of_timeseries)
 
-print(train_input_timeseries.shape)
 
 def create_FFN(inputs, targets):
     model = tf.keras.Sequential()
@@ -82,11 +81,8 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
 
 start_value = test_input_timeseries[-1]
 start_value_reshaped = start_value.reshape(1, start_value.shape[0])
-print(start_value_reshaped.shape)
 results["one_step_prediction"] = one_step_ahead_forecast(ffn, start_value_reshaped, len(test_targets))
 results.index += 107
-print(airlinePassengers.get_train_inputs())
-print(results)
 
 plt.plot(airlinePassengers.get_train_inputs(), color="green", label="training")
 plt.plot(results["true"], color="red", label="true")
