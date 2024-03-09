@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 class AirlinePassengersDataSet:
     def __init__(self):
-        self.data = pd.read_csv("./AirlinePassengers.csv", sep=";")
+        self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
         self.data.drop(["Month"], inplace=True, axis=1)
 
     def create_targets(self):
@@ -60,7 +60,7 @@ ffn = create_FFN(train_input_timeseries, train_targets)
 
 def validation_forecast(model, inputs):
     predictions = model.predict(inputs)
-    return predictions.flatten().tolist()
+    return predictions.tolist()
 
 
 results = pd.DataFrame()
@@ -92,5 +92,5 @@ plt.title("airline passengers prediction")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
 plt.legend(loc="upper left")
-plt.savefig("./img/airlinePassengers_keras.png")
+plt.savefig("./airlinePassengers_keras.png")
 plt.show()

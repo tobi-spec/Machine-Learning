@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, Dataset
 
 class AirlinePassengersPreparer:
     def __init__(self):
-        self.data = pd.read_csv("./AirlinePassengers.csv", sep=";")
+        self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
         self.month = self.data.loc[:, "Month"]
         self.passengers = self.data.loc[:, "Passengers"]
         self.passengers_plus_1 = None
@@ -108,5 +108,5 @@ plt.title("airline passengers prediction")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
 plt.legend(loc="upper left")
-plt.savefig("./img/airlinePassengers_pytorch.png")
+plt.savefig("./airlinePassengers_pytorch.png")
 plt.show()
