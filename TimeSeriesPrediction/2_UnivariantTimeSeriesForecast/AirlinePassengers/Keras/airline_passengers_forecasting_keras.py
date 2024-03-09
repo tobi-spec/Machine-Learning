@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 class AirlinePassengersDataSet:
     def __init__(self):
-        self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
+        self.data = pd.read_csv("../AirlinePassengers.csv", sep=";")
         self.data.drop(["Month"], inplace=True, axis=1)
 
     def create_targets(self):

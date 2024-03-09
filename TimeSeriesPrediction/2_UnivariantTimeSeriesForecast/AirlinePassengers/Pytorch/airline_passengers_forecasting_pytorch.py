@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, Dataset
 
 class AirlinePassengersPreparer:
     def __init__(self):
-        self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
+        self.data = pd.read_csv("../AirlinePassengers.csv", sep=";")
         self.month = self.data.loc[:, "Month"]
         self.passengers = self.data.loc[:, "Passengers"]
         self.passengers_plus_1 = None
