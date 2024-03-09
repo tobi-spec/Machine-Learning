@@ -4,7 +4,11 @@ from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-# Read Data -> Sort Data -> Split Train/Validate -> normalize each Set
+'''
+Average Daily Rate (ADR) is recognised as one of the most important metrics for hotels.
+Essentially, ADR is measuring the average price of a hotel room over a given period.
+It is calculated as follows: ADR = Revenue ÷ sold rooms
+'''
 
 
 class HotelRevenueData:
