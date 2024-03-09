@@ -60,7 +60,7 @@ ffn = create_FFN(train_input_timeseries, train_targets)
 
 def validation_forecast(model, inputs):
     predictions = model.predict(inputs)
-    return predictions.tolist()
+    return predictions.flatten()
 
 
 results = pd.DataFrame()
@@ -83,6 +83,8 @@ start_value = test_input_timeseries[-1]
 start_value_reshaped = start_value.reshape(1, start_value.shape[0])
 results["one_step_prediction"] = one_step_ahead_forecast(ffn, start_value_reshaped, len(test_targets))
 results.index += 107
+
+print(results)
 
 plt.plot(airlinePassengers.get_train_inputs(), color="green", label="training")
 plt.plot(results["true"], color="red", label="true")
