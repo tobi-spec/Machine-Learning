@@ -63,9 +63,10 @@ def validation_forecast(model, inputs):
     return predictions.flatten()
 
 
-results = pd.DataFrame()
-results["true"] = test_targets.shift(1)
-results["validation"] = validation_forecast(ffn, test_input_timeseries)
+validation = pd.DataFrame()
+validation["true"] = test_targets.shift(1)
+validation["validation"] = validation_forecast(ffn, test_input_timeseries)
+validation.index += 107
 
 
 def one_step_ahead_forecast(model, current_value, number_of_predictions):
@@ -79,17 +80,18 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
     return one_step_ahead_forecast
 
 
-start_value = test_input_timeseries[-1]
+start_value = train_input_timeseries[-1]
 start_value_reshaped = start_value.reshape(1, start_value.shape[0])
-results["one_step_prediction"] = one_step_ahead_forecast(ffn, start_value_reshaped, len(test_targets))
-results.index += 107
+number_of_predictions = 40
 
-print(results)
+prediction = pd.DataFrame()
+prediction["one_step_prediction"] = one_step_ahead_forecast(ffn, start_value_reshaped, number_of_predictions)
+prediction.index += 107
 
 plt.plot(airlinePassengers.get_train_inputs(), color="green", label="training")
-plt.plot(results["true"], color="red", label="true")
-plt.plot(results["validation"], color="blue", label="validation")
-plt.plot(results["one_step_prediction"], color="orange", label="one_step_prediction")
+plt.plot(validation["true"], color="red", label="true")
+plt.plot(validation["validation"], color="blue", label="validation")
+plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
 plt.title("airline passengers prediction")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
