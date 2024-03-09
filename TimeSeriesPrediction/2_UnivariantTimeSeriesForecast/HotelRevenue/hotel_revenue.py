@@ -13,7 +13,7 @@ It is calculated as follows: ADR = Revenue ÷ sold rooms
 
 class HotelRevenueData:
     def __init__(self):
-        self.data = pd.read_csv(filepath_or_buffer="./H1.csv",
+        self.data = pd.read_csv(filepath_or_buffer="H1.csv",
                                 parse_dates=[[2, 3, 5]],
                                 )
         self.data.rename(columns={"ArrivalDateYear_ArrivalDArrivalDateMonth_ArrivalDateDayOfMonth": "Date"},
