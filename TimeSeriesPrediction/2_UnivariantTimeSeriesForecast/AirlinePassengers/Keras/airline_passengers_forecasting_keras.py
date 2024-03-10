@@ -61,9 +61,11 @@ def validation_forecast(model, inputs):
     return predictions.flatten()
 
 
+validation_results = validation_forecast(ffn, test_inputs)
+
 validation = pd.DataFrame()
 validation["true"] = scaler.inverse_transform([test_targets]).flatten()
-validation["validation"] = scaler.inverse_transform([validation_forecast(ffn, test_inputs)]).flatten()
+validation["validation"] = scaler.inverse_transform([validation_results]).flatten()
 validation.index += airlinePassengers.threshold
 
 
@@ -80,9 +82,10 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
 
 start_value = train_inputs[-1]
 number_of_predictions = 40
+prediction_results = one_step_ahead_forecast(ffn, start_value, number_of_predictions)
 
 prediction = pd.DataFrame()
-prediction["one_step_prediction"] = scaler.inverse_transform([one_step_ahead_forecast(ffn, start_value, number_of_predictions)]).flatten()
+prediction["one_step_prediction"] = scaler.inverse_transform([prediction_results]).flatten()
 prediction.index += airlinePassengers.threshold
 
 plt.plot(airlinePassengers.get_train_data(), color="green", label="training")
