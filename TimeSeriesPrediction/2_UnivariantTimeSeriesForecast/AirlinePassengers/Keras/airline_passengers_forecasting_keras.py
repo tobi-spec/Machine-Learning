@@ -4,8 +4,6 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
-# Normalizer, LSTM, LSTM-Architecture, Beschreibung
-
 
 class AirlinePassengersDataSet:
     def __init__(self):
@@ -36,20 +34,24 @@ def create_timeseries(data, previous=1):
     return np.array(inputs), np.array(targets)
 
 
-lookback = 15
+lookback = 30
 train_inputs, train_targets = create_timeseries(train, lookback)
 test_inputs, test_targets = create_timeseries(test, lookback)
 
 train_inputs = np.reshape(train_inputs, (train_inputs.shape[0], 1, train_inputs.shape[1]))
 test_inputs = np.reshape(test_inputs, (test_inputs.shape[0], 1, test_inputs.shape[1]))
 
-
+# training scedular learning rate wird angepasst nach x epochs
+# Bidirectionales lernen - Zeitreihe umkehren - https://keras.io/examples/nlp/bidirectional_lstm_imdb/
+# Kompletten daten fürs Training nehmen
+# Masked traning - Lücken in Traningsdaten schließen
 def create_LSTM_model(inputs, targets, lookback):
     model = tf.keras.Sequential()
-    model.add(tf.keras.layers.LSTM(8, input_shape=(1, lookback)))
+    model.add(tf.keras.layers.LSTM(50, input_shape=(1, lookback)))
+    #model.add(tf.keras.layers.Dropout)
     model.add(tf.keras.layers.Dense(units=1))
-    model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss='mean_squared_error')
-    model.fit(inputs, targets, epochs=25, batch_size=1)
+    model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
+    model.fit(inputs, targets, epochs=200, batch_size=1)
     return model
 
 
@@ -80,7 +82,7 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
     return one_step_ahead_forecast
 
 
-start_value = train_inputs[-1]
+start_value = test_inputs[0]
 start_value_reshaped = start_value.reshape(start_value.shape[0], 1, start_value.shape[1])
 number_of_predictions = 40
 prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
