@@ -85,21 +85,25 @@ class AirlinePassengersModel(nn.Module):
         print(f'Validation Loss: {loss / len(val_loader):.4f}')
 
 
-model = AirlinePassengersModel()
+airline_passenger_model = AirlinePassengersModel()
 num_epochs = 50
 for epoch in range(num_epochs):
-    model.backward(train_loader, epoch, num_epochs)
-    model.validate(test_loader)
+    airline_passenger_model.backward(train_loader, epoch, num_epochs)
+    airline_passenger_model.validate(test_loader)
 
-predictions = []
-for element in test_inputs:
-    prediction = model(torch.Tensor(element))
-    predictions.append(prediction.item())
-print(predictions)
 
+def validation_forecast(model):
+    predictions = []
+    for element in test_inputs:
+        prediction = model(torch.Tensor(element))
+        predictions.append(prediction.item())
+    return predictions
+
+
+validation_predictions = validation_forecast(airline_passenger_model)
 validation = pd.DataFrame()
 validation["true"] = scaler.inverse_transform(test_targets).flatten()
-validation["Predictions"] = scaler.inverse_transform([predictions]).flatten()
+validation["Predictions"] = scaler.inverse_transform([validation_predictions]).flatten()
 validation.index += airline_passengers.threshold
 
 plt.plot(airline_passengers.get_train_data(), color="green", label="training")
