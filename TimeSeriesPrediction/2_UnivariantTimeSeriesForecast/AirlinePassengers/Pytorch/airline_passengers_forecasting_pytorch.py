@@ -98,11 +98,12 @@ for element in test_inputs:
 print(predictions)
 
 validation = pd.DataFrame()
+validation["true"] = scaler.inverse_transform(test_targets).flatten()
 validation["Predictions"] = scaler.inverse_transform([predictions]).flatten()
 validation.index += airline_passengers.threshold
 
 plt.plot(airline_passengers.get_train_data(), color="green", label="training")
-plt.plot(airline_passengers.get_test_data(), color="red", label="prediction")
+plt.plot(validation["true"], color="red", label="prediction")
 plt.plot(validation["Predictions"], color="blue", label="test")
 plt.title("airline passengers prediction")
 plt.xlabel("Time[Month]")
