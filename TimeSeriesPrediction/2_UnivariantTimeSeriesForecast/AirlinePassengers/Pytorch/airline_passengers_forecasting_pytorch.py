@@ -106,9 +106,31 @@ validation["true"] = scaler.inverse_transform(test_targets).flatten()
 validation["Predictions"] = scaler.inverse_transform([validation_predictions]).flatten()
 validation.index += airline_passengers.threshold
 
+
+def one_step_ahead_forecast(model, current_value, number_of_predictions):
+    one_step_ahead_forecast = list()
+    for element in range(0, number_of_predictions):
+        prediction = model(torch.Tensor(current_value))
+        one_step_ahead_forecast.append(prediction.item())
+        current_value = np.delete(current_value, 0)
+        current_value = np.append(current_value, prediction.item())
+        current_value = current_value.reshape(1, 1, current_value.shape[0])
+    return one_step_ahead_forecast
+
+
+start_value = torch.Tensor(test_inputs[0])
+number_of_predictions = 40
+prediction_results = one_step_ahead_forecast(airline_passenger_model, start_value, number_of_predictions)
+
+prediction = pd.DataFrame()
+prediction["one_step_prediction"] = scaler.inverse_transform([prediction_results]).flatten()
+prediction.index += airline_passengers.threshold
+
+
 plt.plot(airline_passengers.get_train_data(), color="green", label="training")
 plt.plot(validation["true"], color="red", label="prediction")
 plt.plot(validation["Predictions"], color="blue", label="test")
+plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
 plt.title("airline passengers prediction")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
