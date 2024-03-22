@@ -38,8 +38,10 @@ lookback = 30
 train_inputs, train_targets = create_timeseries(train, lookback)
 test_inputs, test_targets = create_timeseries(test, lookback)
 
-train_inputs = np.reshape(train_inputs, (train_inputs.shape[0], 1, train_inputs.shape[1]))
-test_inputs = np.reshape(test_inputs, (test_inputs.shape[0], 1, test_inputs.shape[1]))
+# samples, timesteps, features
+train_inputs = np.reshape(train_inputs, (train_inputs.shape[0], train_inputs.shape[1], 1))
+test_inputs = np.reshape(test_inputs, (test_inputs.shape[0],  test_inputs.shape[1], 1))
+
 
 # training scedular learning rate wird angepasst nach x epochs
 # Bidirectionales lernen - Zeitreihe umkehren - https://keras.io/examples/nlp/bidirectional_lstm_imdb/
@@ -47,7 +49,7 @@ test_inputs = np.reshape(test_inputs, (test_inputs.shape[0], 1, test_inputs.shap
 # Masked traning - Lücken in Traningsdaten schließen
 def create_LSTM_model(inputs, targets, lookback):
     model = tf.keras.Sequential()
-    model.add(tf.keras.layers.LSTM(50, input_shape=(1, lookback)))
+    model.add(tf.keras.layers.LSTM(50, input_shape=(lookback, 1)))
     #model.add(tf.keras.layers.Dropout)
     model.add(tf.keras.layers.Dense(units=1))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
@@ -77,15 +79,15 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
         prediction = model.predict([current_value])
         one_step_ahead_forecast.append(prediction[0][0])
         current_value = np.delete(current_value, 0)
-        current_value = np.append(current_value, prediction)
-        current_value = current_value.reshape(1, 1, current_value.shape[0])
+        current_value = np.append(current_value, prediction[0])
+        current_value = current_value.reshape(current_value.shape[0], 1)
     return one_step_ahead_forecast
 
 
 start_value = test_inputs[0]
-start_value_reshaped = start_value.reshape(start_value.shape[0], 1, start_value.shape[1])
 number_of_predictions = 40
-prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
+prediction_results = one_step_ahead_forecast(model, start_value, number_of_predictions)
+print(prediction_results)
 
 prediction = pd.DataFrame()
 prediction["one_step_prediction"] = scaler.inverse_transform([prediction_results]).flatten()
