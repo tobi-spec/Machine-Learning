@@ -41,15 +41,6 @@ test_inputs, test_targets = create_timeseries(test, lookback)
 train_inputs = np.reshape(train_inputs, (train_inputs.shape[0], train_inputs.shape[1], 1))
 test_inputs = np.reshape(test_inputs, (test_inputs.shape[0], test_inputs.shape[1], 1))
 
-train_targets = np.reshape(train_targets, (train_targets.shape[0], 1))
-test_targets = np.reshape(test_targets, (test_targets.shape[0], 1))
-
-print(train_inputs.shape)
-print(train_targets.shape)
-print(test_inputs.shape)
-print(test_targets.shape)
-
-
 # training scedular learning rate wird angepasst nach x epochs
 # Bidirectionales lernen - Zeitreihe umkehren - https://keras.io/examples/nlp/bidirectional_lstm_imdb/
 # Kompletten daten fürs Training nehmen
@@ -60,7 +51,7 @@ def create_LSTM_model(inputs, targets, lookback):
     #model.add(tf.keras.layers.Dropout)
     model.add(tf.keras.layers.Dense(units=1))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
-    model.fit(inputs, targets, epochs=300, batch_size=1)
+    model.fit(inputs, targets, epochs=200, batch_size=1)
     return model
 
 
@@ -75,7 +66,7 @@ def validation_forecast(model, inputs):
 validation_results = validation_forecast(model, test_inputs)
 
 validation = pd.DataFrame()
-validation["true"] = scaler.inverse_transform([test_targets.flatten()]).flatten()
+validation["true"] = scaler.inverse_transform([test_targets]).flatten()
 validation["validation"] = scaler.inverse_transform([validation_results]).flatten()
 validation.index += airlinePassengers.threshold
 
