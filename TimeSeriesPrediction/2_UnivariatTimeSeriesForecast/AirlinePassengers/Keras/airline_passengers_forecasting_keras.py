@@ -51,7 +51,7 @@ def create_LSTM_model(inputs, targets, lookback):
     #model.add(tf.keras.layers.Dropout)
     model.add(tf.keras.layers.Dense(units=1))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
-    model.fit(inputs, targets, epochs=200, batch_size=1)
+    model.fit(inputs, targets, epochs=1000, batch_size=1)
     return model
 
 

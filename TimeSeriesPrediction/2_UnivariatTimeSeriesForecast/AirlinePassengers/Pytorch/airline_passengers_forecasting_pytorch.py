@@ -86,7 +86,7 @@ class AirlinePassengersModel(nn.Module):
 
 
 airline_passenger_model = AirlinePassengersModel()
-num_epochs = 200
+num_epochs = 1000
 for epoch in range(num_epochs):
     airline_passenger_model.backward(train_loader, epoch, num_epochs)
     airline_passenger_model.validate(test_loader)
