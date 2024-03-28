@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 class AirlinePassengersDataSet:
     def __init__(self):
-        self.data = pd.read_csv("../AirlinePassengers.csv", sep=";")
+        self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
         self.threshold = 107
 
     def get_train_data(self):
@@ -38,24 +38,17 @@ lookback = 30
 train_inputs, train_targets = create_timeseries(train, lookback)
 test_inputs, test_targets = create_timeseries(test, lookback)
 
-train_inputs = np.reshape(train_inputs, (train_inputs.shape[0], 1, train_inputs.shape[1]))
-test_inputs = np.reshape(test_inputs, (test_inputs.shape[0], 1, test_inputs.shape[1]))
-
-# training scedular learning rate wird angepasst nach x epochs
-# Bidirectionales lernen - Zeitreihe umkehren - https://keras.io/examples/nlp/bidirectional_lstm_imdb/
-# Kompletten daten fürs Training nehmen
-# Masked traning - Lücken in Traningsdaten schließen
-def create_LSTM_model(inputs, targets, lookback):
+def create_LSTM_model(inputs, targets):
     model = tf.keras.Sequential()
-    model.add(tf.keras.layers.LSTM(50, input_shape=(1, lookback)))
-    #model.add(tf.keras.layers.Dropout)
+    model.add(tf.keras.layers.Dense(units=50,
+                                    activation="relu"))
     model.add(tf.keras.layers.Dense(units=1))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
     model.fit(inputs, targets, epochs=1000, batch_size=1)
     return model
 
 
-model = create_LSTM_model(train_inputs, train_targets, lookback)
+model = create_LSTM_model(train_inputs, train_targets)
 
 
 def validation_forecast(model, inputs):
@@ -78,12 +71,12 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
         one_step_ahead_forecast.append(prediction[0][0])
         current_value = np.delete(current_value, 0)
         current_value = np.append(current_value, prediction)
-        current_value = current_value.reshape(1, 1, current_value.shape[0])
+        current_value = current_value.reshape(1, current_value.shape[0])
     return one_step_ahead_forecast
 
 
 start_value = test_inputs[0]
-start_value_reshaped = start_value.reshape(start_value.shape[0], 1, start_value.shape[1])
+start_value_reshaped = start_value.reshape(1, start_value.shape[0])
 number_of_predictions = 40
 prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
 
@@ -95,9 +88,9 @@ plt.plot(airlinePassengers.get_train_data(), color="green", label="training")
 plt.plot(validation["true"], color="red", label="true")
 plt.plot(validation["validation"], color="blue", label="validation")
 plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
-plt.title("airline passengers prediction")
+plt.title("airline passengers prediction FF")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
 plt.legend(loc="upper left")
-plt.savefig("./airlinePassengers_keras.png")
+plt.savefig("./airlinePassengers_keras_ff.png")
 plt.show()
