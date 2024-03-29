@@ -11,11 +11,11 @@ class AirlinePassengersDataSet:
 
     def get_train_data(self):
         data = self.data.loc[0:self.threshold, "Passengers"].reset_index(drop=True)
-        return pd.DataFrame(data)
+        return pd.Series(data)
 
     def get_test_data(self):
         data = self.data.loc[self.threshold:142, "Passengers"].reset_index(drop=True)
-        return pd.DataFrame(data)
+        return pd.Series(data)
 
 
 airlinePassengers = AirlinePassengersDataSet()
@@ -46,7 +46,6 @@ lookback = 30
 train_inputs, train_targets = TimeSeriesGenerator(train, lookback).create_timeseries()
 test_inputs, test_targets = TimeSeriesGenerator(test, lookback).create_timeseries()
 
-
 def create_LSTM_model(inputs, targets):
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Dense(units=50,
@@ -58,7 +57,7 @@ def create_LSTM_model(inputs, targets):
                                     kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
                                     bias_initializer=tf.keras.initializers.Zeros()))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
-    model.fit(inputs, targets, epochs=100, batch_size=1)
+    model.fit(inputs, targets, epochs=1000, batch_size=1)
     return model
 
 
@@ -75,7 +74,9 @@ validation_results = validation_forecast(model, test_inputs)
 validation = pd.DataFrame()
 validation["true"] = test_targets
 validation["validation"] = validation_results
-validation.index += airlinePassengers.threshold
+validation.index += airlinePassengers.threshold+lookback
+
+print(validation["true"])
 
 
 def one_step_ahead_forecast(model, current_value, number_of_predictions):
@@ -96,7 +97,7 @@ prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number
 
 prediction = pd.DataFrame()
 prediction["one_step_prediction"] = prediction_results
-prediction.index += airlinePassengers.threshold
+prediction.index += airlinePassengers.threshold+lookback
 
 plt.plot(airlinePassengers.data["Passengers"], color="pink", label="dataset")
 plt.plot(airlinePassengers.get_train_data(), color="green", label="training")
