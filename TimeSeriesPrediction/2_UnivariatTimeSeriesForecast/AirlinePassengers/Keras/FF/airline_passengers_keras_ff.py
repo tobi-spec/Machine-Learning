@@ -41,8 +41,13 @@ test_inputs, test_targets = create_timeseries(test, lookback)
 def create_LSTM_model(inputs, targets):
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Dense(units=50,
-                                    activation="relu"))
-    model.add(tf.keras.layers.Dense(units=1))
+                                    activation="relu",
+                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=tf.keras.initializers.Zeros())
+    )
+    model.add(tf.keras.layers.Dense(units=1,
+                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=tf.keras.initializers.Zeros()))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
     model.fit(inputs, targets, epochs=1000, batch_size=1)
     return model
@@ -76,6 +81,7 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
 
 
 start_value = test_inputs[0]
+
 start_value_reshaped = start_value.reshape(1, start_value.shape[0])
 number_of_predictions = 40
 prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
@@ -91,6 +97,8 @@ plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_pred
 plt.title("airline passengers prediction FF")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
+plt.xticks(range(0, 150, 20))
+plt.yticks(range(0, 1000, 100))
 plt.legend(loc="upper left")
 plt.savefig("./airlinePassengers_keras_ff.png")
 plt.show()
