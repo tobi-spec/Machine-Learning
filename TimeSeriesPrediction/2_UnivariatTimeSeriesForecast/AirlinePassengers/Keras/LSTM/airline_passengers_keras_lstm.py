@@ -50,8 +50,14 @@ def create_LSTM_model(inputs, targets, lookback):
     model.add(tf.keras.layers.LSTM(units=50,
                                    activation="tanh",
                                    recurrent_activation="sigmoid",
-                                   input_shape=(1, lookback)))
-    model.add(tf.keras.layers.Dense(units=1))
+                                   input_shape=(1, lookback),
+                                   kernel_initializer="glorot_uniform",
+                                   recurrent_initializer="orthogonal",
+                                   bias_initializer="zeros",
+                                   ))
+    model.add(tf.keras.layers.Dense(units=1,
+                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=tf.keras.initializers.Zeros()))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
     model.fit(inputs, targets, epochs=1000, batch_size=1)
     return model
@@ -100,6 +106,8 @@ plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_pred
 plt.title("airline passengers prediction LSTM")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
+plt.xticks(range(0, 150, 20))
+plt.yticks(range(0, 1000, 100))
 plt.legend(loc="upper left")
 plt.savefig("./airlinePassengers_keras_lstm.png")
 plt.show()
