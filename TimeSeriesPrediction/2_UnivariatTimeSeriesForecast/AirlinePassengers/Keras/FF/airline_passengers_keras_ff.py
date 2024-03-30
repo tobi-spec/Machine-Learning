@@ -53,7 +53,13 @@ def create_FF_model(inputs, targets):
                                     kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
                                     bias_initializer=tf.keras.initializers.Zeros())
     )
+    model.add(tf.keras.layers.Dense(units=50,
+                                    activation="relu",
+                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=tf.keras.initializers.Zeros())
+    )
     model.add(tf.keras.layers.Dense(units=1,
+                                    activation="relu",
                                     kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
                                     bias_initializer=tf.keras.initializers.Zeros()))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
