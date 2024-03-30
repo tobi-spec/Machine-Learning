@@ -46,7 +46,7 @@ lookback = 30
 train_inputs, train_targets = TimeSeriesGenerator(train, lookback).create_timeseries()
 test_inputs, test_targets = TimeSeriesGenerator(test, lookback).create_timeseries()
 
-def create_LSTM_model(inputs, targets):
+def create_FF_model(inputs, targets):
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Dense(units=50,
                                     activation="relu",
@@ -61,7 +61,7 @@ def create_LSTM_model(inputs, targets):
     return model
 
 
-model = create_LSTM_model(train_inputs, train_targets)
+model = create_FF_model(train_inputs, train_targets)
 
 
 def validation_forecast(model, inputs):
@@ -96,7 +96,7 @@ prediction = pd.DataFrame()
 prediction["one_step_prediction"] = prediction_results
 prediction.index += airlinePassengers.threshold+start_index
 
-plt.plot(airlinePassengers.data["Passengers"], color="pink", label="dataset")
+plt.plot(airlinePassengers.data["Passengers"], color="red", label="dataset")
 plt.plot(airlinePassengers.get_train_data(), color="green", label="training")
 plt.plot(validation["validation"], color="blue", label="validation")
 plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
