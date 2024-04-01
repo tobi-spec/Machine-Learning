@@ -95,7 +95,7 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
 start_index = -1
 start_value = train_inputs[start_index]
 start_value_reshaped = start_value.reshape(1, start_value.shape[0])
-number_of_predictions = 40
+number_of_predictions = 80
 prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
 
 prediction = pd.DataFrame()
@@ -109,7 +109,7 @@ plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_pred
 plt.title("airline passengers prediction FF")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
-plt.xticks(range(0, 150, 20))
+plt.xticks(range(0, 200, 20))
 plt.yticks(range(0, 1000, 100))
 plt.legend(loc="upper left")
 plt.savefig("./airlinePassengers_keras_ff.png")
