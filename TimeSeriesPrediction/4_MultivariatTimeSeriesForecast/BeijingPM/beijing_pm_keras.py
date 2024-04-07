@@ -19,116 +19,130 @@ class BeijingDataSet:
         self.dataset.columns = ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']
         self.dataset.index.name = 'date'
         self.dataset.loc[:, "pollution"].fillna(0, inplace=True)
-        self.dataset = self.dataset[24:]
+        self.dataset = self.dataset[24:] #First 24 entries have NaN in 'pollution' column
+        self.threshold = int(len(self.dataset)*0.8)
 
     def encode_labels(self):
         encoder = LabelEncoder()
         self.dataset.loc[:, "wind_direction"] = encoder.fit_transform(self.dataset.loc[:, "wind_direction"])
 
-    def add_targets(self):
-        self.dataset["target"] = self.dataset.loc[:, "pollution"].shift(-1)
-        self.dataset.dropna(inplace=True)
-
     def save(self):
         self.dataset.to_csv("./beijing_pollution.csv")
 
-    def return_dataframe(self):
-        return self.dataset
+    def get_train(self):
+        data = self.dataset[:self.threshold]
+        return pd.DataFrame(data)
+
+    def get_test(self):
+        data = self.dataset[self.threshold:]
+        return pd.DataFrame(data)
 
 
-dataset = BeijingDataSet()
-dataset.save()
-dataset.encode_labels()
-dataset.add_targets()
-dataset = dataset.return_dataframe()
+beijingData = BeijingDataSet()
+beijingData.encode_labels()
+train = beijingData.get_train()
+test = beijingData.get_test()
+
+scaler = MinMaxScaler((0, 1))
+scaled_train = scaler.fit_transform(train)
+scaled_test = scaler.fit_transform(test)
 
 
-class Normalizer:
-    def __init__(self):
-        self.scaler = MinMaxScaler(feature_range=(0, 1))
+class TimeSeriesGenerator:
+    def __init__(self, data, lookback):
+        self.data = data
+        self.lookback = lookback
 
-    def transform(self, dataset):
-        columns = dataset.columns
-        scaled = self.scaler.fit_transform(dataset)
-        dataset = pd.DataFrame(scaled)
-        dataset.columns = columns
-        return dataset
+    def create_timeseries(self):
+        inputs, targets = list(), list()
+        for element in range(self.lookback, len(self.data)-1):
+            inputs.append(self.__get_timeseries(element))
+            targets.append([self.__get_targets(element)])
+        return np.array(inputs), np.array(targets)
 
-    def retransform(self, dataset):
-        columns = dataset.columns
-        dataset = self.scaler.inverse_transform(dataset)
-        dataset = pd.DataFrame(dataset)
-        dataset.columns = columns
-        return dataset
+    def __get_targets(self, element):
+        return self.data[element]
 
-
-normalizer = Normalizer()
-dataset = normalizer.transform(dataset)
+    def __get_timeseries(self, element):
+        return self.data[element-self.lookback: element]
 
 
-def create_inputs_targets(data):
-    inputs = data.loc[:,
-              ['pollution', 'dew', 'temperature', 'pressure', 'wind_direction', 'wind_speed', 'snow', 'rain']]
-    inputs.reset_index(inplace=True, drop=True)
-    targets = data.loc[:, "target"]
-    return inputs, targets
+lookback = 30
+train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
+test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
 
 
-hours_of_year = 365 * 24
-train = dataset.loc[:hours_of_year, :]
-train_X, train_y = create_inputs_targets(train)
-
-test = dataset.loc[hours_of_year:, :]
-test_X, test_y = create_inputs_targets(test)
-
-
-def create_timeseries(inputs, targets, span):
-    timeseries = list()
-    for i in range(span, len(inputs)):
-        timeseries.append(inputs.loc[i - span:i, :])
-    timeseries = np.array(timeseries)
-    targets = targets[span:]
-    return timeseries, targets
-
-
-size_of_timespan = 10
-train_X_timeseries, train_y = create_timeseries(train_X, train_y, size_of_timespan)
-
-
-def LSTM_model():
+def create_FF_model(inputs, targets):
     model = tf.keras.Sequential()
-    model.add(tf.keras.layers.LSTM(50))
-    model.add(tf.keras.layers.Dense(1))
-    model.compile(loss='mae', optimizer='adam')
-    model.fit(train_X_timeseries, train_y, epochs=10, batch_size=16)
+    model.add(tf.keras.layers.Dense(units=50,
+                                    activation="relu",
+                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=tf.keras.initializers.Zeros())
+    )
+    model.add(tf.keras.layers.Dense(units=50,
+                                    activation="relu",
+                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=tf.keras.initializers.Zeros())
+    )
+    model.add(tf.keras.layers.Dense(units=8,
+                                    activation="relu",
+                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=tf.keras.initializers.Zeros()))
+    model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
+    model.fit(inputs, targets, epochs=10, batch_size=16)
     return model
 
 
-lstm_model = LSTM_model()
-test_X_timeseries, test_y = create_timeseries(test_X, test_y, size_of_timespan)
+model = create_FF_model(train_timeseries, train_targets)
 
 
-def validation_prediction(model, timeseries):
-    predictions = model.predict(timeseries)
-    return pd.DataFrame(predictions, columns=["predictions"])
+def validation_forecast(model, inputs):
+    predictions = model.predict(inputs)
+    return pd.DataFrame(predictions)
 
 
-validation_results = validation_prediction(lstm_model, test_X_timeseries)
+validation_results = validation_forecast(model, test_timeseries)
+print(validation_results)
+validation = pd.DataFrame()
+validation["validation"] = validation_results
+validation.index += beijingData.threshold+lookback
 
-results = test[size_of_timespan-1:]
-results.reset_index(inplace=True, drop=True)
-results.loc[:, "pollution"] = validation_results.loc[:, "predictions"]
-results.rename(columns={"pollution": "predictions"}, inplace=True)
-results = normalizer.retransform(results)
-results = results.loc[:, ["predictions", "target"]]
-results.to_csv("./beijing_results.csv")
 
-plt.plot(results["target"].head(150), label="test_data", color="blue")
-plt.plot(results["predictions"].head(150), label="prediction_data", color="orange")
-plt.xlabel("time")
-plt.ylabel("Pollution[pm 2.5]")
-plt.legend(loc="upper right")
-plt.savefig("./beijing_results.png")
+
+
+def one_step_ahead_forecast(model, current_value, number_of_predictions):
+    one_step_ahead_forecast = list()
+    for element in range(0, number_of_predictions):
+        prediction = model.predict([current_value])
+        one_step_ahead_forecast.append(prediction[0][0])
+        current_value = np.delete(current_value, 0, axis=1)
+        temp = prediction[0][0]
+        temp = temp.reshape(1, 1, temp.shape[0])
+        current_value = np.concatenate((current_value, temp), axis=1)
+    return pd.DataFrame(one_step_ahead_forecast)
+
+
+start_index = -1
+start_value = train_timeseries[start_index]
+start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
+number_of_predictions = 80
+prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
+
+print(prediction_results)
+
+prediction = pd.DataFrame()
+prediction["one_step_prediction"] = scaler.inverse_transform([prediction_results]).flatten()
+prediction.index += beijingData.threshold+start_index
+
+plt.plot(beijingData.dataset["pollution"], color="red", label="dataset")
+plt.plot(beijingData.get_train()["pollution"], color="green", label="training")
+#plt.plot(validation["validation"], color="blue", label="validation")
+#plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
+plt.title("beijing pollution prediction FF")
+plt.xlabel("Time[Month]")
+plt.ylabel("Passengers[x1000]")
+plt.legend(loc="upper left")
+plt.savefig("./beijing_keras_ff.png")
 plt.show()
 
 # https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/
