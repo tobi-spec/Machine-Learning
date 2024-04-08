@@ -4,6 +4,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 
 
 class BeijingDataSet:
@@ -42,6 +43,7 @@ beijingData = BeijingDataSet()
 beijingData.encode_labels()
 train = beijingData.get_train()
 test = beijingData.get_test()
+
 
 scaler = MinMaxScaler((0, 1))
 scaled_train = scaler.fit_transform(train)
@@ -89,25 +91,11 @@ def create_FF_model(inputs, targets):
                                     kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
                                     bias_initializer=tf.keras.initializers.Zeros()))
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
-    model.fit(inputs, targets, epochs=10, batch_size=16)
+    model.fit(inputs, targets, epochs=2, batch_size=16)
     return model
 
 
 model = create_FF_model(train_timeseries, train_targets)
-
-
-def validation_forecast(model, inputs):
-    predictions = model.predict(inputs)
-    return pd.DataFrame(predictions)
-
-
-validation_results = validation_forecast(model, test_timeseries)
-print(validation_results)
-validation = pd.DataFrame()
-validation["validation"] = validation_results
-validation.index += beijingData.threshold+lookback
-
-
 
 
 def one_step_ahead_forecast(model, current_value, number_of_predictions):
@@ -119,7 +107,7 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
         temp = prediction[0][0]
         temp = temp.reshape(1, 1, temp.shape[0])
         current_value = np.concatenate((current_value, temp), axis=1)
-    return pd.DataFrame(one_step_ahead_forecast)
+    return np.array(one_step_ahead_forecast)
 
 
 start_index = -1
@@ -128,16 +116,25 @@ start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.
 number_of_predictions = 80
 prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
 
-print(prediction_results)
+prediction_rescaled = scaler.inverse_transform(prediction_results)
 
-prediction = pd.DataFrame()
-prediction["one_step_prediction"] = scaler.inverse_transform([prediction_results]).flatten()
-prediction.index += beijingData.threshold+start_index
+prediction = pd.DataFrame(prediction_rescaled)
+prediction.columns = beijingData.dataset.columns
+
+
+def create_dates_for_forecast(start, number):
+    indicies = list()
+    indicies.append(start)
+    for element in range(1, number):
+        indicies.append(indicies[-1] + pd.Timedelta(hours=1))
+    return indicies
+
+
+prediction.index = create_dates_for_forecast(train.index[-1], number_of_predictions)
 
 plt.plot(beijingData.dataset["pollution"], color="red", label="dataset")
 plt.plot(beijingData.get_train()["pollution"], color="green", label="training")
-#plt.plot(validation["validation"], color="blue", label="validation")
-#plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
+plt.plot(prediction["pollution"], color="orange", label="one_step_prediction")
 plt.title("beijing pollution prediction FF")
 plt.xlabel("Time[Month]")
 plt.ylabel("Passengers[x1000]")
