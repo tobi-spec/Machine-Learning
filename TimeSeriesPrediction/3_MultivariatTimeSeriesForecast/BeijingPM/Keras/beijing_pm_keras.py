@@ -98,23 +98,35 @@ def create_FF_model(inputs, targets):
 model = create_FF_model(train_timeseries, train_targets)
 
 
-def one_step_ahead_forecast(model, current_value, number_of_predictions):
-    one_step_ahead_forecast = list()
-    for element in range(0, number_of_predictions):
-        prediction = model.predict([current_value])
-        one_step_ahead_forecast.append(prediction[0][0])
-        current_value = np.delete(current_value, 0, axis=1)
-        temp = prediction[0][0]
-        temp = temp.reshape(1, 1, temp.shape[0])
-        current_value = np.concatenate((current_value, temp), axis=1)
-    return np.array(one_step_ahead_forecast)
+class Forecaster:
+    def __init__(self, model, start_value, number_of_forecasts):
+        self.model = model
+        self.current_value = start_value
+        self.forecasts = number_of_forecasts
+
+    def one_step_ahead_forecast(self):
+        forecast = list()
+        for element in range(0, self.forecasts):
+            predictions = self.model.predict([self.current_value])
+            features = self.__getFeatures(predictions)
+            forecast.append(features)
+            self.current_value = self.__move_numpy_queue(features)
+        return np.array(forecast)
+
+    def __move_numpy_queue(self, features):
+        current_value = np.delete(self.current_value, 0, axis=1)
+        temp = features.reshape(1, 1, features.shape[0])
+        return np.concatenate((current_value, temp), axis=1)
+
+    def __getFeatures(self, prediction):
+        return prediction[0][0]
 
 
 start_index = -1
 start_value = train_timeseries[start_index]
 start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
 number_of_predictions = 80
-prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
+prediction_results = Forecaster(model, start_value_reshaped, number_of_predictions).one_step_ahead_forecast()
 
 prediction_rescaled = scaler.inverse_transform(prediction_results)
 
@@ -123,11 +135,11 @@ prediction.columns = beijingData.dataset.columns
 
 
 def create_dates_for_forecast(start, number):
-    indicies = list()
-    indicies.append(start)
+    indices = list()
+    indices.append(start)
     for element in range(1, number):
-        indicies.append(indicies[-1] + pd.Timedelta(hours=1))
-    return indicies
+        indices.append(indices[-1] + pd.Timedelta(hours=1))
+    return indices
 
 
 prediction.index = create_dates_for_forecast(train.index[-1], number_of_predictions)
