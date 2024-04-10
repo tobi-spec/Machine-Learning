@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 class BeijingDataSet:
     def __init__(self):
         self.dataset = pd.read_csv(
-            filepath_or_buffer="BeijingParticulateMatter.csv",
+            filepath_or_buffer="../BeijingParticulateMatter.csv",
             delimiter=",",
             index_col=0,
             parse_dates=[[1, 2, 3, 4]],
@@ -28,7 +28,7 @@ class BeijingDataSet:
         self.dataset.loc[:, "wind_direction"] = encoder.fit_transform(self.dataset.loc[:, "wind_direction"])
 
     def save(self):
-        self.dataset.to_csv("./beijing_pollution.csv")
+        self.dataset.to_csv("../beijing_pollution.csv")
 
     def get_train(self):
         data = self.dataset[:self.threshold]
