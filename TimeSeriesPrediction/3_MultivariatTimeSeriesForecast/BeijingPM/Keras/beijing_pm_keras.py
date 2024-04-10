@@ -4,12 +4,11 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
 
 
 class BeijingDataSet:
     def __init__(self):
-        self.dataset = pd.read_csv(
+        self.dataset: pd.DataFrame = pd.read_csv(
             filepath_or_buffer="../BeijingParticulateMatter.csv",
             delimiter=",",
             index_col=0,
@@ -41,17 +40,17 @@ class BeijingDataSet:
 
 beijingData = BeijingDataSet()
 beijingData.encode_labels()
-train = beijingData.get_train()
-test = beijingData.get_test()
+train: pd.DataFrame = beijingData.get_train()
+test: pd.DataFrame = beijingData.get_test()
 
 
 scaler = MinMaxScaler((0, 1))
-scaled_train = scaler.fit_transform(train)
-scaled_test = scaler.fit_transform(test)
+scaled_train: np.array = scaler.fit_transform(train)
+scaled_test: np.array = scaler.fit_transform(test)
 
 
 class TimeSeriesGenerator:
-    def __init__(self, data, lookback):
+    def __init__(self, data: np.array, lookback: int):
         self.data = data
         self.lookback = lookback
 
@@ -69,12 +68,12 @@ class TimeSeriesGenerator:
         return self.data[element-self.lookback: element]
 
 
-lookback = 30
+lookback: int = 30
 train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
 test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
 
 
-def create_FF_model(inputs, targets):
+def create_FF_model(inputs: np.array, targets: np.array) -> tf.keras.Sequential:
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Dense(units=50,
                                     activation="relu",
@@ -95,11 +94,11 @@ def create_FF_model(inputs, targets):
     return model
 
 
-model = create_FF_model(train_timeseries, train_targets)
+feed_forward_model = create_FF_model(train_timeseries, train_targets)
 
 
 class Forecaster:
-    def __init__(self, model, start_value, number_of_forecasts):
+    def __init__(self, model: tf.keras.Sequential, start_value: np.array, number_of_forecasts: int):
         self.model = model
         self.current_value = start_value
         self.forecasts = number_of_forecasts
@@ -122,19 +121,19 @@ class Forecaster:
         return prediction[0][0]
 
 
-start_index = -1
-start_value = train_timeseries[start_index]
-start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
-number_of_predictions = 80
-prediction_results = Forecaster(model, start_value_reshaped, number_of_predictions).one_step_ahead_forecast()
+start_index: int = -1
+start_value: np.array = train_timeseries[start_index]
+start_value_reshaped: np.array = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
+number_of_predictions: int = 80
+prediction_results: np.array = Forecaster(feed_forward_model, start_value_reshaped, number_of_predictions).one_step_ahead_forecast()
 
-prediction_rescaled = scaler.inverse_transform(prediction_results)
+prediction_rescaled: np.array = scaler.inverse_transform(prediction_results)
 
 prediction = pd.DataFrame(prediction_rescaled)
 prediction.columns = beijingData.dataset.columns
 
 
-def create_dates_for_forecast(start, number):
+def create_dates_for_forecast(start: pd.Timestamp, number: int):
     indices = list()
     indices.append(start)
     for element in range(1, number):
