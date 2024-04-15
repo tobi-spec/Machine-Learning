@@ -20,9 +20,11 @@ class AirlinePassengersDataSet:
 
 
 airlinePassengers = AirlinePassengersDataSet()
-scaler = MinMaxScaler(feature_range=(0, 1))
-train = scaler.fit_transform(airlinePassengers.get_train_data())
-test = scaler.fit_transform(airlinePassengers.get_test_data())
+train_scaler = MinMaxScaler(feature_range=(0, 1))
+train = train_scaler.fit_transform(airlinePassengers.get_train_data())
+
+test_scaler = MinMaxScaler(feature_range=(0, 1))
+test = test_scaler.fit_transform(airlinePassengers.get_test_data())
 
 
 def create_timeseries(data, previous=1):
@@ -75,7 +77,7 @@ def validation_forecast(model, inputs):
 validation_results = validation_forecast(model, test_inputs)
 
 validation = pd.DataFrame()
-validation["validation"] = scaler.inverse_transform([validation_results]).flatten()
+validation["validation"] = test_scaler.inverse_transform([validation_results]).flatten()
 validation.index += airlinePassengers.threshold+lookback
 
 
@@ -97,7 +99,7 @@ number_of_predictions = 80
 prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
 
 prediction = pd.DataFrame()
-prediction["one_step_prediction"] = scaler.inverse_transform([prediction_results]).flatten()
+prediction["one_step_prediction"] = train_scaler.inverse_transform([prediction_results]).flatten()
 prediction.index += airlinePassengers.threshold+start_index
 
 plt.plot(airlinePassengers.data["Passengers"], color="red", label="dataset")
