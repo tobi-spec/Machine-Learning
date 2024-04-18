@@ -21,27 +21,34 @@ class AirlinePassengersDataSet:
 
 airlinePassengers = AirlinePassengersDataSet()
 train_scaler = MinMaxScaler(feature_range=(0, 1))
-train = train_scaler.fit_transform(airlinePassengers.get_train_data())
+scaled_train = train_scaler.fit_transform(airlinePassengers.get_train_data())
 
 test_scaler = MinMaxScaler(feature_range=(0, 1))
-test = test_scaler.fit_transform(airlinePassengers.get_test_data())
+scaled_test = test_scaler.fit_transform(airlinePassengers.get_test_data())
 
 
-def create_timeseries(data, previous=1):
-    inputs, targets = list(), list()
-    for i in range(len(data)-previous-1):
-        a = data[i: (i+previous), 0]
-        inputs.append(a)
-        targets.append(data[i + previous, 0])
-    return np.array(inputs), np.array(targets)
+class TimeSeriesGenerator:
+    def __init__(self, data: np.array, lookback: int):
+        self.data = data
+        self.lookback = lookback
+
+    def create_timeseries(self):
+        inputs, targets = list(), list()
+        for element in range(self.lookback, len(self.data)-1):
+            inputs.append(self.__get_timeseries(element))
+            targets.append([self.__get_targets(element)])
+        return np.array(inputs), np.array(targets)
+
+    def __get_targets(self, element):
+        return self.data[element]
+
+    def __get_timeseries(self, element):
+        return self.data[element-self.lookback: element]
 
 
-lookback = 30
-train_inputs, train_targets = create_timeseries(train, lookback)
-test_inputs, test_targets = create_timeseries(test, lookback)
-
-train_inputs = np.reshape(train_inputs, (train_inputs.shape[0], train_inputs.shape[1], 1))
-test_inputs = np.reshape(test_inputs, (test_inputs.shape[0], test_inputs.shape[1], 1))
+lookback: int = 30
+train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
+test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
 
 
 # training scedular learning rate wird angepasst nach x epochs
@@ -66,7 +73,7 @@ def create_LSTM_model(inputs, targets, lookback):
     return model
 
 
-model = create_LSTM_model(train_inputs, train_targets, lookback)
+model = create_LSTM_model(train_timeseries, train_targets, lookback)
 
 
 def validation_forecast(model, inputs):
@@ -74,7 +81,7 @@ def validation_forecast(model, inputs):
     return predictions.flatten()
 
 
-validation_results = validation_forecast(model, test_inputs)
+validation_results = validation_forecast(model, test_timeseries)
 
 validation = pd.DataFrame()
 validation["validation"] = test_scaler.inverse_transform([validation_results]).flatten()
@@ -93,7 +100,7 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
 
 
 start_index = -1
-start_value = train_inputs[start_index]
+start_value = train_timeseries[start_index]
 start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
 number_of_predictions = 80
 prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
