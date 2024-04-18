@@ -6,6 +6,46 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 
+def main():
+    beijingData = BeijingDataSet()
+    beijingData.encode_labels()
+    train: pd.DataFrame = beijingData.get_train()
+    test: pd.DataFrame = beijingData.get_test()
+
+    scaler = MinMaxScaler((0, 1))
+    scaled_train: np.array = scaler.fit_transform(train)
+    scaled_test: np.array = scaler.fit_transform(test)
+
+    lookback: int = 30
+    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
+    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
+
+    feed_forward_model = create_FF_model(train_timeseries, train_targets)
+
+    start_index: int = -1
+    start_value: np.array = train_timeseries[start_index]
+    start_value_reshaped: np.array = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
+    number_of_predictions: int = 80
+    prediction_results: np.array = Forecaster(feed_forward_model, start_value_reshaped,
+                                              number_of_predictions).one_step_ahead_forecast()
+
+    prediction_rescaled: np.array = scaler.inverse_transform(prediction_results)
+
+    prediction = pd.DataFrame(prediction_rescaled)
+    prediction.columns = beijingData.dataset.columns
+
+    prediction.index = create_dates_for_forecast(train.index[-1], number_of_predictions)
+
+    plt.plot(beijingData.dataset["pollution"], color="red", label="dataset")
+    plt.plot(beijingData.get_train()["pollution"], color="green", label="training")
+    plt.plot(prediction["pollution"], color="orange", label="one_step_prediction")
+    plt.title("beijing pollution prediction FF")
+    plt.xlabel("Time[Month]")
+    plt.ylabel("Passengers[x1000]")
+    plt.legend(loc="upper left")
+    plt.savefig("./beijing_keras_ff.png")
+    plt.show()
+
 class BeijingDataSet:
     def __init__(self):
         self.dataset: pd.DataFrame = pd.read_csv(
@@ -38,17 +78,6 @@ class BeijingDataSet:
         return pd.DataFrame(data)
 
 
-beijingData = BeijingDataSet()
-beijingData.encode_labels()
-train: pd.DataFrame = beijingData.get_train()
-test: pd.DataFrame = beijingData.get_test()
-
-
-scaler = MinMaxScaler((0, 1))
-scaled_train: np.array = scaler.fit_transform(train)
-scaled_test: np.array = scaler.fit_transform(test)
-
-
 class TimeSeriesGenerator:
     def __init__(self, data: np.array, lookback: int):
         self.data = data
@@ -66,11 +95,6 @@ class TimeSeriesGenerator:
 
     def __get_timeseries(self, element):
         return self.data[element-self.lookback: element]
-
-
-lookback: int = 30
-train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
-test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
 
 
 def create_FF_model(inputs: np.array, targets: np.array) -> tf.keras.Sequential:
@@ -92,9 +116,6 @@ def create_FF_model(inputs: np.array, targets: np.array) -> tf.keras.Sequential:
     model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
     model.fit(inputs, targets, epochs=2, batch_size=16)
     return model
-
-
-feed_forward_model = create_FF_model(train_timeseries, train_targets)
 
 
 class Forecaster:
@@ -121,18 +142,6 @@ class Forecaster:
         return prediction[0][0]
 
 
-start_index: int = -1
-start_value: np.array = train_timeseries[start_index]
-start_value_reshaped: np.array = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
-number_of_predictions: int = 80
-prediction_results: np.array = Forecaster(feed_forward_model, start_value_reshaped, number_of_predictions).one_step_ahead_forecast()
-
-prediction_rescaled: np.array = scaler.inverse_transform(prediction_results)
-
-prediction = pd.DataFrame(prediction_rescaled)
-prediction.columns = beijingData.dataset.columns
-
-
 def create_dates_for_forecast(start: pd.Timestamp, number: int):
     indices = list()
     indices.append(start)
@@ -141,17 +150,7 @@ def create_dates_for_forecast(start: pd.Timestamp, number: int):
     return indices
 
 
-prediction.index = create_dates_for_forecast(train.index[-1], number_of_predictions)
-
-plt.plot(beijingData.dataset["pollution"], color="red", label="dataset")
-plt.plot(beijingData.get_train()["pollution"], color="green", label="training")
-plt.plot(prediction["pollution"], color="orange", label="one_step_prediction")
-plt.title("beijing pollution prediction FF")
-plt.xlabel("Time[Month]")
-plt.ylabel("Passengers[x1000]")
-plt.legend(loc="upper left")
-plt.savefig("./beijing_keras_ff.png")
-plt.show()
-
+if __name__ == "__main__":
+    main()
 # https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/
 # https://scikit-learn.org/stable/modules/preprocessing.html#preprocessing-scaler

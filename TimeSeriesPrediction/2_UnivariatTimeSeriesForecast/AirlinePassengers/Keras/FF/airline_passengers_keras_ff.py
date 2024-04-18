@@ -4,6 +4,47 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 
+def main():
+    airline_passengers = AirlinePassengersDataSet()
+    train = airline_passengers.get_train_data()
+    test = airline_passengers.get_test_data()
+
+    lookback = 30
+    train_inputs, train_targets = TimeSeriesGenerator(train, lookback).create_timeseries()
+    test_inputs, test_targets = TimeSeriesGenerator(test, lookback).create_timeseries()
+
+    model = create_FF_model(train_inputs, train_targets)
+
+    validation_results = validation_forecast(model, test_inputs)
+
+    validation = pd.DataFrame()
+    validation["validation"] = validation_results
+    validation.index += airline_passengers.threshold + lookback
+
+    start_index = -1
+    start_value = train_inputs[start_index]
+    start_value_reshaped = start_value.reshape(1, start_value.shape[0])
+    number_of_predictions = 80
+    prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
+
+    prediction = pd.DataFrame()
+    prediction["one_step_prediction"] = prediction_results
+    prediction.index += airline_passengers.threshold + start_index
+
+    plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
+    plt.plot(airline_passengers.get_train_data(), color="green", label="training")
+    plt.plot(validation["validation"], color="blue", label="validation")
+    plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
+    plt.title("airline passengers prediction FF")
+    plt.xlabel("Time[Month]")
+    plt.ylabel("Passengers[x1000]")
+    plt.xticks(range(0, 200, 20))
+    plt.yticks(range(0, 1000, 100))
+    plt.legend(loc="upper left")
+    plt.savefig("./airlinePassengers_keras_ff.png")
+    plt.show()
+
+
 class AirlinePassengersDataSet:
     def __init__(self):
         self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
@@ -16,11 +57,6 @@ class AirlinePassengersDataSet:
     def get_test_data(self):
         data = self.data.loc[self.threshold:142, "Passengers"].reset_index(drop=True)
         return pd.Series(data)
-
-
-airlinePassengers = AirlinePassengersDataSet()
-train = airlinePassengers.get_train_data()
-test = airlinePassengers.get_test_data()
 
 
 class TimeSeriesGenerator:
@@ -41,10 +77,6 @@ class TimeSeriesGenerator:
     def __get_timeseries(self, element):
         return self.data.loc[element-self.lookback: element-1].to_list()
 
-
-lookback = 30
-train_inputs, train_targets = TimeSeriesGenerator(train, lookback).create_timeseries()
-test_inputs, test_targets = TimeSeriesGenerator(test, lookback).create_timeseries()
 
 def create_FF_model(inputs, targets):
     model = tf.keras.Sequential()
@@ -67,19 +99,9 @@ def create_FF_model(inputs, targets):
     return model
 
 
-model = create_FF_model(train_inputs, train_targets)
-
-
 def validation_forecast(model, inputs):
     predictions = model.predict(inputs)
     return predictions.flatten()
-
-
-validation_results = validation_forecast(model, test_inputs)
-
-validation = pd.DataFrame()
-validation["validation"] = validation_results
-validation.index += airlinePassengers.threshold+lookback
 
 
 def one_step_ahead_forecast(model, current_value, number_of_predictions):
@@ -92,25 +114,6 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
         current_value = current_value.reshape(1, current_value.shape[0])
     return one_step_ahead_forecast
 
-start_index = -1
-start_value = train_inputs[start_index]
-start_value_reshaped = start_value.reshape(1, start_value.shape[0])
-number_of_predictions = 80
-prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
 
-prediction = pd.DataFrame()
-prediction["one_step_prediction"] = prediction_results
-prediction.index += airlinePassengers.threshold+start_index
-
-plt.plot(airlinePassengers.data["Passengers"], color="red", label="dataset")
-plt.plot(airlinePassengers.get_train_data(), color="green", label="training")
-plt.plot(validation["validation"], color="blue", label="validation")
-plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
-plt.title("airline passengers prediction FF")
-plt.xlabel("Time[Month]")
-plt.ylabel("Passengers[x1000]")
-plt.xticks(range(0, 200, 20))
-plt.yticks(range(0, 1000, 100))
-plt.legend(loc="upper left")
-plt.savefig("./airlinePassengers_keras_ff.png")
-plt.show()
+if __name__ == "__main__":
+    main()

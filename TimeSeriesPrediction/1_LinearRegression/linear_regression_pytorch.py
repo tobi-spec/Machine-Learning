@@ -5,8 +5,40 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, Dataset, random_split
 
+def main():
+    start = timeit.default_timer()
 
-start = timeit.default_timer()
+    iceCreamData = IceCreamData()
+    x_values = iceCreamData.get_temperature()
+    y_values = iceCreamData.get_revenue()
+
+    dataset = RegressionDataset(x_values, y_values)
+    train_dataset, test_dataset = random_split(dataset, lengths=[0.75, 0.25])
+    train_loader = DataLoader(dataset=train_dataset, batch_size=1, shuffle=True)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=True)
+
+    model = LinearRegressionModel()
+    num_epochs = 25
+    for epoch in range(num_epochs):
+        model.backward(train_loader, epoch, num_epochs)
+        model.validate(test_loader)
+
+    x_calculate = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45]
+    y_prediction = []
+    for temperatur in x_calculate:
+        prediction = model.linear(torch.Tensor([temperatur]))
+        y_prediction.append(prediction.tolist()[0])
+    stop = timeit.default_timer()
+
+    plt.scatter(x_values, y_values, color="grey")
+    plt.plot(x_calculate, y_prediction, color="red")
+    plt.xlabel("revenue [dolars]")
+    plt.ylabel("temperature [degC]")
+    plt.title('Linear regression with Pytorch')
+    plt.figtext(0.2, 0.8, f"run time[s]: {stop - start}")
+    plt.savefig("./img/linear_regression_pytorch")
+    plt.show()
+
 
 class IceCreamData:
     def __init__(self):
@@ -69,33 +101,5 @@ class LinearRegressionModel(nn.Module):
         print(f'Validation Loss: {loss / len(val_loader):.4f}')
 
 
-iceCreamData = IceCreamData()
-x_values = iceCreamData.get_temperature()
-y_values = iceCreamData.get_revenue()
-
-dataset = RegressionDataset(x_values, y_values)
-train_dataset, test_dataset = random_split(dataset, lengths=[0.75, 0.25])
-train_loader = DataLoader(dataset=train_dataset, batch_size=1, shuffle=True)
-test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=True)
-
-model = LinearRegressionModel()
-num_epochs = 25
-for epoch in range(num_epochs):
-    model.backward(train_loader, epoch, num_epochs)
-    model.validate(test_loader)
-
-x_calculate = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45]
-y_prediction = []
-for temperatur in x_calculate:
-    prediction = model.linear(torch.Tensor([temperatur]))
-    y_prediction.append(prediction.tolist()[0])
-stop = timeit.default_timer()
-
-plt.scatter(x_values, y_values, color="grey")
-plt.plot(x_calculate, y_prediction, color="red")
-plt.xlabel("revenue [dolars]")
-plt.ylabel("temperature [degC]")
-plt.title('Linear regression with Pytorch')
-plt.figtext(0.2, 0.8, f"run time[s]: {stop-start}")
-plt.savefig("./img/linear_regression_pytorch")
-plt.show()
+if __name__ == "__main__":
+    main()

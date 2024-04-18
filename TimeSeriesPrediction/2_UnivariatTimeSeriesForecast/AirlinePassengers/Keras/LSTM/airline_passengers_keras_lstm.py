@@ -5,6 +5,50 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
 
+def main():
+    airline_passengers = AirlinePassengersDataSet()
+    train_scaler = MinMaxScaler(feature_range=(0, 1))
+    scaled_train = train_scaler.fit_transform(airline_passengers.get_train_data())
+
+    test_scaler = MinMaxScaler(feature_range=(0, 1))
+    scaled_test = test_scaler.fit_transform(airline_passengers.get_test_data())
+
+    lookback: int = 30
+    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
+    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
+
+    model = create_LSTM_model(train_timeseries, train_targets, lookback)
+
+    validation_results = validation_forecast(model, test_timeseries)
+
+    validation = pd.DataFrame()
+    validation["validation"] = test_scaler.inverse_transform([validation_results]).flatten()
+    validation.index += airline_passengers.threshold + lookback
+
+    start_index = -1
+    start_value = train_timeseries[start_index]
+    start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
+    number_of_predictions = 80
+    prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
+
+    prediction = pd.DataFrame()
+    prediction["one_step_prediction"] = train_scaler.inverse_transform([prediction_results]).flatten()
+    prediction.index += airline_passengers.threshold + start_index
+
+    plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
+    plt.plot(airline_passengers.get_train_data(), color="green", label="training")
+    plt.plot(validation["validation"], color="blue", label="validation")
+    plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
+    plt.title("airline passengers prediction LSTM")
+    plt.xlabel("Time[Month]")
+    plt.ylabel("Passengers[x1000]")
+    plt.xticks(range(0, 200, 20))
+    plt.yticks(range(0, 1000, 100))
+    plt.legend(loc="upper left")
+    plt.savefig("./airlinePassengers_keras_lstm.png")
+    plt.show()
+
+
 class AirlinePassengersDataSet:
     def __init__(self):
         self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
@@ -17,14 +61,6 @@ class AirlinePassengersDataSet:
     def get_test_data(self):
         data = self.data.loc[self.threshold:142, "Passengers"].reset_index(drop=True)
         return pd.DataFrame(data)
-
-
-airlinePassengers = AirlinePassengersDataSet()
-train_scaler = MinMaxScaler(feature_range=(0, 1))
-scaled_train = train_scaler.fit_transform(airlinePassengers.get_train_data())
-
-test_scaler = MinMaxScaler(feature_range=(0, 1))
-scaled_test = test_scaler.fit_transform(airlinePassengers.get_test_data())
 
 
 class TimeSeriesGenerator:
@@ -44,11 +80,6 @@ class TimeSeriesGenerator:
 
     def __get_timeseries(self, element):
         return self.data[element-self.lookback: element]
-
-
-lookback: int = 30
-train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
-test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
 
 
 # training scedular learning rate wird angepasst nach x epochs
@@ -73,19 +104,9 @@ def create_LSTM_model(inputs, targets, lookback):
     return model
 
 
-model = create_LSTM_model(train_timeseries, train_targets, lookback)
-
-
 def validation_forecast(model, inputs):
     predictions = model.predict(inputs)
     return predictions.flatten()
-
-
-validation_results = validation_forecast(model, test_timeseries)
-
-validation = pd.DataFrame()
-validation["validation"] = test_scaler.inverse_transform([validation_results]).flatten()
-validation.index += airlinePassengers.threshold+lookback
 
 
 def one_step_ahead_forecast(model, current_value, number_of_predictions):
@@ -99,25 +120,5 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
     return one_step_ahead_forecast
 
 
-start_index = -1
-start_value = train_timeseries[start_index]
-start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
-number_of_predictions = 80
-prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
-
-prediction = pd.DataFrame()
-prediction["one_step_prediction"] = train_scaler.inverse_transform([prediction_results]).flatten()
-prediction.index += airlinePassengers.threshold+start_index
-
-plt.plot(airlinePassengers.data["Passengers"], color="red", label="dataset")
-plt.plot(airlinePassengers.get_train_data(), color="green", label="training")
-plt.plot(validation["validation"], color="blue", label="validation")
-plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
-plt.title("airline passengers prediction LSTM")
-plt.xlabel("Time[Month]")
-plt.ylabel("Passengers[x1000]")
-plt.xticks(range(0, 200, 20))
-plt.yticks(range(0, 1000, 100))
-plt.legend(loc="upper left")
-plt.savefig("./airlinePassengers_keras_lstm.png")
-plt.show()
+if __name__ == "__main__":
+    main()

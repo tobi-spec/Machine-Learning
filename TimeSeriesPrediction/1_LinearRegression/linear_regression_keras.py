@@ -4,7 +4,30 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import timeit
 
-start = timeit.default_timer()
+
+def main():
+    start = timeit.default_timer()
+
+    ice_cream_data = IceCreamData()
+    x_values = ice_cream_data.get_temperature()
+    y_values = ice_cream_data.get_revenue()
+    x_train, x_test, y_train, y_test = train_test_split(x_values, y_values, test_size=0.25)
+
+    linear_model = create_linear_model()
+    linear_model.fit(x_train, y_train, epochs=20, batch_size=1)
+
+    validation_results = validation_prediction(linear_model, x_test)
+
+    stop = timeit.default_timer()
+
+    plt.scatter(x_train, y_train, color="grey")
+    plt.scatter(x_test, validation_results, color="red")
+    plt.xlabel("temperature [degC]")
+    plt.ylabel("revenue [dollars]")
+    plt.title('Linear regression with Keras')
+    plt.figtext(0.2, 0.8, f"run time[s]: {stop - start}")
+    plt.savefig("./img/linear_regression_keras")
+    plt.show()
 
 
 class IceCreamData:
@@ -18,12 +41,6 @@ class IceCreamData:
         return self.data.loc[:, "Revenue"]
 
 
-iceCreamData = IceCreamData()
-x_values = iceCreamData.get_temperature()
-y_values = iceCreamData.get_revenue()
-x_train, x_test, y_train, y_test = train_test_split(x_values, y_values, test_size=0.25)
-
-
 def create_linear_model():
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Dense(units=1,
@@ -34,23 +51,9 @@ def create_linear_model():
     return model
 
 
-linear_model = create_linear_model()
-linear_model.fit(x_train, y_train, epochs=20, batch_size=1)
+def validation_prediction(model, inputs):
+    return model.predict([inputs])
 
 
-def validation_prediction():
-    return linear_model.predict([x_test])
-
-
-validation_results = validation_prediction()
-
-stop = timeit.default_timer()
-
-plt.scatter(x_train, y_train, color="grey")
-plt.scatter(x_test, validation_results, color="red")
-plt.xlabel("temperature [degC]")
-plt.ylabel("revenue [dollars]")
-plt.title('Linear regression with Keras')
-plt.figtext(0.2, 0.8, f"run time[s]: {stop-start}")
-plt.savefig("./img/linear_regression_keras")
-plt.show()
+if __name__ == "__main__":
+    main()
