@@ -52,11 +52,11 @@ class AirlinePassengersDataSet:
 
     def get_train_data(self):
         data = self.data.loc[0:self.threshold, "Passengers"].reset_index(drop=True)
-        return pd.Series(data)
+        return data.to_numpy()
 
     def get_test_data(self):
         data = self.data.loc[self.threshold:142, "Passengers"].reset_index(drop=True)
-        return pd.Series(data)
+        return data.to_numpy()
 
 
 class TimeSeriesGenerator:
@@ -72,10 +72,10 @@ class TimeSeriesGenerator:
         return np.array(inputs), np.array(targets)
 
     def __get_targets(self, element):
-        return self.data.loc[element]
+        return self.data[element]
 
     def __get_timeseries(self, element):
-        return self.data.loc[element-self.lookback: element-1].to_list()
+        return self.data[element-self.lookback: element-1]
 
 
 def create_FF_model(inputs, targets):

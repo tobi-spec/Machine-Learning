@@ -8,10 +8,10 @@ from sklearn.preprocessing import MinMaxScaler
 def main():
     airline_passengers = AirlinePassengersDataSet()
     train_scaler = MinMaxScaler(feature_range=(0, 1))
-    scaled_train = train_scaler.fit_transform(airline_passengers.get_train_data())
+    scaled_train = train_scaler.fit_transform(airline_passengers.get_train_data().reshape(-1, 1))
 
     test_scaler = MinMaxScaler(feature_range=(0, 1))
-    scaled_test = test_scaler.fit_transform(airline_passengers.get_test_data())
+    scaled_test = test_scaler.fit_transform(airline_passengers.get_test_data().reshape(-1, 1))
 
     lookback: int = 30
     train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
@@ -56,11 +56,11 @@ class AirlinePassengersDataSet:
 
     def get_train_data(self):
         data = self.data.loc[0:self.threshold, "Passengers"].reset_index(drop=True)
-        return pd.DataFrame(data)
+        return data.to_numpy()
 
     def get_test_data(self):
         data = self.data.loc[self.threshold:142, "Passengers"].reset_index(drop=True)
-        return pd.DataFrame(data)
+        return data.to_numpy()
 
 
 class TimeSeriesGenerator:
