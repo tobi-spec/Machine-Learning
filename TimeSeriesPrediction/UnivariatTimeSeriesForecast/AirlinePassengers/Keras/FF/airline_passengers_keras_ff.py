@@ -12,7 +12,9 @@ def main():
     train_inputs, train_targets = TimeSeriesGenerator(train, lookback).create_timeseries()
     test_inputs, test_targets = TimeSeriesGenerator(test, lookback).create_timeseries()
 
-    model = create_FF_model(train_inputs, train_targets)
+    model = FeedForwardModel()
+    model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
+    model.fit(train_inputs, train_targets, epochs=1000, batch_size=1)
 
     validation_results = validation_forecast(model, test_inputs)
 
@@ -44,31 +46,37 @@ def main():
     plt.show()
 
 
-def create_FF_model(inputs, targets):
-    model = tf.keras.Sequential()
-    model.add(tf.keras.layers.Dense(units=50,
-                                    activation="relu",
-                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                    bias_initializer=tf.keras.initializers.Zeros())
-    )
-    model.add(tf.keras.layers.Dense(units=50,
-                                    activation="relu",
-                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                    bias_initializer=tf.keras.initializers.Zeros())
-    )
-    model.add(tf.keras.layers.Dense(units=1,
-                                    activation="relu",
-                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                    bias_initializer=tf.keras.initializers.Zeros()))
-    model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
-    model.fit(inputs, targets, epochs=1000, batch_size=1)
-    return model
+class FeedForwardModel(tf.keras.Model):
+    def __init__(self):
+        super().__init__()
+        self.dense1 = tf.keras.layers.Dense(units=50,
+                                            activation="relu",
+                                            kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                            bias_initializer=tf.keras.initializers.Zeros()
+                                            )
+        self.dense2 = tf.keras.layers.Dense(units=50,
+                                            activation="relu",
+                                            kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                            bias_initializer=tf.keras.initializers.Zeros())
+
+        self.dense3 = tf.keras.layers.Dense(units=1,
+                                            activation="relu",
+                                            kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
+                                            bias_initializer=tf.keras.initializers.Zeros())
+
+    def call(self, inputs):
+        x = self.dense1(inputs)
+        x = self.dense2(x)
+        x = self.dense3(x)
+        return x
+
+
 
 
 def one_step_ahead_forecast(model, current_value, number_of_predictions):
     one_step_ahead_forecast = list()
     for element in range(0, number_of_predictions):
-        prediction = model.predict([current_value])
+        prediction = model.predict(current_value)
         one_step_ahead_forecast.append(prediction[0][0])
         current_value = np.delete(current_value, 0)
         current_value = np.append(current_value, prediction)
