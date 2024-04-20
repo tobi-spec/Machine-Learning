@@ -75,7 +75,7 @@ class TimeSeriesGenerator:
         return self.data[element]
 
     def __get_timeseries(self, element):
-        return self.data[element-self.lookback: element-1]
+        return self.data[element-self.lookback: element]
 
 
 def create_FF_model(inputs, targets):
