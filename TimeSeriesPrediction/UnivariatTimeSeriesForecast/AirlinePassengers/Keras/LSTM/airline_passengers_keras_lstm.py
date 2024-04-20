@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
 
 def main():
@@ -49,39 +50,6 @@ def main():
     plt.show()
 
 
-class AirlinePassengersDataSet:
-    def __init__(self):
-        self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
-        self.threshold = 107
-
-    def get_train_data(self):
-        data = self.data.loc[0:self.threshold, "Passengers"].reset_index(drop=True)
-        return data.to_numpy()
-
-    def get_test_data(self):
-        data = self.data.loc[self.threshold:142, "Passengers"].reset_index(drop=True)
-        return data.to_numpy()
-
-
-class TimeSeriesGenerator:
-    def __init__(self, data: np.array, lookback: int):
-        self.data = data
-        self.lookback = lookback
-
-    def create_timeseries(self):
-        inputs, targets = list(), list()
-        for element in range(self.lookback, len(self.data)-1):
-            inputs.append(self.__get_timeseries(element))
-            targets.append([self.__get_targets(element)])
-        return np.array(inputs), np.array(targets)
-
-    def __get_targets(self, element):
-        return self.data[element]
-
-    def __get_timeseries(self, element):
-        return self.data[element-self.lookback: element]
-
-
 # training scedular learning rate wird angepasst nach x epochs
 # Bidirectionales lernen - Zeitreihe umkehren - https://keras.io/examples/nlp/bidirectional_lstm_imdb/
 # Kompletten daten fürs Training nehmen
@@ -102,11 +70,6 @@ def create_LSTM_model(inputs, targets, lookback):
     model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss='mean_squared_error')
     model.fit(inputs, targets, epochs=1000, batch_size=1)
     return model
-
-
-def validation_forecast(model, inputs):
-    predictions = model.predict(inputs)
-    return predictions.flatten()
 
 
 def one_step_ahead_forecast(model, current_value, number_of_predictions):
