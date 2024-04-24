@@ -48,7 +48,7 @@ def main():
     plt.xticks(range(0, 200, 20))
     plt.yticks(range(0, 1000, 100))
     plt.legend(loc="upper left")
-    plt.savefig("./img/airlinePassengers_keras_lstm.png")
+    plt.savefig("./img/airlinePassengers_keras_bidirectional_lstm.png")
     plt.show()
 
 
@@ -59,14 +59,16 @@ def main():
 class LSTMModel(tf.keras.Model):
     def __init__(self, lookback):
         super().__init__()
-        self.lstm = tf.keras.layers.LSTM(units=50,
-                                   activation="tanh",
-                                   recurrent_activation="sigmoid",
-                                   input_shape=(lookback, 1),
-                                   kernel_initializer="glorot_uniform",
-                                   recurrent_initializer="orthogonal",
-                                   bias_initializer="zeros",
-                                   )
+        self.lstm = tf.keras.layers.Bidirectional(
+            tf.keras.layers.LSTM(units=50,
+                                 activation="tanh",
+                                 recurrent_activation="sigmoid",
+                                 input_shape=(lookback, 1),
+                                 kernel_initializer="glorot_uniform",
+                                 recurrent_initializer="orthogonal",
+                                 bias_initializer="zeros",
+                                 ),
+            input_shape=(lookback, 1))
         self.dense1 = tf.keras.layers.Dense(units=1,
                                             activation="relu",
                                             kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
