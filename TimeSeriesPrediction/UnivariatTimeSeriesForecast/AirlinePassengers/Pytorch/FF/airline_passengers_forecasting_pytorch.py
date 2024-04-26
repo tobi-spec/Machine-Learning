@@ -54,7 +54,7 @@ def main():
 
 class AirlinePassengersPreparer:
     def __init__(self):
-        self.data = pd.read_csv("../AirlinePassengers.csv", sep=";")
+        self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
         self.threshold = 107
 
     def get_train_data(self):
