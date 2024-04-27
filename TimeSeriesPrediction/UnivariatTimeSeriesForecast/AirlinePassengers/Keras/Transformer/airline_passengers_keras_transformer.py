@@ -35,7 +35,7 @@ def main():
     prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
 
     prediction = pd.DataFrame()
-    test = train_scaler.inverse_transform(prediction_results).flatten()
+    test = train_scaler.inverse_transform([prediction_results]).flatten()
     prediction["one_step_prediction"] = test
     prediction.index += airline_passengers.threshold + start_index
 
@@ -76,18 +76,18 @@ class EncoderModel(tf.keras.Model):
     def call(self, inputs):
         #x1 = self.normalize(inputs)
         x1 = self.attention(inputs, inputs)
-        #x1 = self.dropout(x1)
+        x1 = self.dropout(x1)
 
-        #res = x1 + inputs
+        res = x1 + inputs
 
         #x2 = self.normalize(res)
-        #x2 = self.convolution1(x2)
-        #x2 = self.dropout(x2)
-        #x2 = self.convolution2(x2)
+        x2 = self.convolution1(res)
+        x2 = self.dropout(x2)
+        x2 = self.convolution2(x2)
 
-        #x2 = self.global_pooling(x2)
+        x2 = self.global_pooling(x2)
 
-        x2 = self.dense1(x1)
+        x2 = self.dense1(x2)
         x2 = self.dense2(x2)
         return x2
 
