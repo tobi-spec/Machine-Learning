@@ -1,10 +1,7 @@
 import torch
 import torch.nn as nn
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
-from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
 
@@ -62,7 +59,6 @@ def main():
 class FeedForwardModel(nn.Module):
     def __init__(self):
         super().__init__()
-        #self.lstm = nn.LSTM(input_size=1, hidden_size=50, num_layers=1)
         self.linear1 = nn.Linear(30, 50)
         self.linear2 = nn.Linear(50, 1)
         self.loss_function = nn.MSELoss()
