@@ -19,8 +19,8 @@ def main():
     test_timeseries_tensor = torch.tensor(test_timeseries, dtype=torch.float)
     test_targets_tensor = torch.tensor(test_targets, dtype=torch.float)
 
-    train_loader = DataLoader(dataset=TensorDataset(train_timeseries_tensor, train_targets_tensor), batch_size=1, shuffle=False)
-    test_loader = DataLoader(dataset=TensorDataset(test_timeseries_tensor, test_targets_tensor), batch_size=1, shuffle=False)
+    train_loader = DataLoader(dataset=TensorDataset(train_timeseries_tensor, train_targets_tensor), batch_size=1, shuffle=True)
+    test_loader = DataLoader(dataset=TensorDataset(test_timeseries_tensor, test_targets_tensor), batch_size=1, shuffle=True)
 
     airline_passenger_model = FeedForwardModel()
     num_epochs = 1000
@@ -62,7 +62,7 @@ class FeedForwardModel(nn.Module):
         self.linear1 = nn.Linear(30, 50)
         self.linear2 = nn.Linear(50, 1)
         self.loss_function = nn.MSELoss()
-        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.0001)
+        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.001)
 
     def forward(self, inputs):
         inputs = self.linear1(inputs)
@@ -99,7 +99,7 @@ class FeedForwardModel(nn.Module):
 def validation_forecast(model, inputs):
     predictions = []
     for element in inputs:
-        prediction = model(torch.Tensor(element))
+        prediction = model(element)
         predictions.append(prediction.item())
     return predictions
 
