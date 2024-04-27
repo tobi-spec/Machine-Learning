@@ -5,77 +5,61 @@ import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.preprocessing import MinMaxScaler
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
 
 def main():
-    airline_passengers = AirlinePassengersPreparer()
-    scaler = MinMaxScaler(feature_range=(0, 1))
-    train = scaler.fit_transform(airline_passengers.get_train_data())
-    test = scaler.fit_transform(airline_passengers.get_test_data())
+    airline_passengers = AirlinePassengersDataSet()
+    train = airline_passengers.get_train_data()
+    test = airline_passengers.get_test_data()
 
-    lookback = 30
-    train_inputs, train_targets = create_timeseries(train, lookback)
-    test_inputs, test_targets = create_timeseries(test, lookback)
+    lookback: int = 30
+    train_timeseries, train_targets = TimeSeriesGenerator(train, lookback).create_timeseries()
+    test_timeseries, test_targets = TimeSeriesGenerator(test, lookback).create_timeseries()
 
-    train_loader = DataLoader(dataset=TensorDataset(train_inputs, train_targets), batch_size=1, shuffle=False)
-    test_loader = DataLoader(dataset=TensorDataset(test_inputs, test_targets), batch_size=1, shuffle=False)
+    train_timeseries_tensor = torch.tensor(train_timeseries, dtype=torch.float)
+    train_targets_tensor = torch.tensor(train_targets, dtype=torch.float)
+    test_timeseries_tensor = torch.tensor(test_timeseries, dtype=torch.float)
+    test_targets_tensor = torch.tensor(test_targets, dtype=torch.float)
 
-    airline_passenger_model = AirlinePassengersModel()
+    train_loader = DataLoader(dataset=TensorDataset(train_timeseries_tensor, train_targets_tensor), batch_size=1, shuffle=False)
+    test_loader = DataLoader(dataset=TensorDataset(test_timeseries_tensor, test_targets_tensor), batch_size=1, shuffle=False)
+
+    airline_passenger_model = FeedForwardModel()
     num_epochs = 1000
     for epoch in range(num_epochs):
         airline_passenger_model.backward(train_loader, epoch, num_epochs)
         airline_passenger_model.validate(test_loader)
 
-    validation_predictions = validation_forecast(airline_passenger_model, test_inputs)
+    validation_results = validation_forecast(airline_passenger_model, test_timeseries_tensor)
     validation = pd.DataFrame()
-    validation["true"] = scaler.inverse_transform(test_targets).flatten()
-    validation["Predictions"] = scaler.inverse_transform([validation_predictions]).flatten()
-    validation.index += airline_passengers.threshold
+    validation["validation"] = validation_results
+    validation.index += airline_passengers.threshold + lookback
 
-    start_value = torch.Tensor(test_inputs[0])
-    number_of_predictions = 40
+    start_index = -1
+    start_value = torch.Tensor(train_timeseries_tensor[start_index])
+    number_of_predictions = 80
     prediction_results = one_step_ahead_forecast(airline_passenger_model, start_value, number_of_predictions)
 
     prediction = pd.DataFrame()
-    prediction["one_step_prediction"] = scaler.inverse_transform([prediction_results]).flatten()
-    prediction.index += airline_passengers.threshold
+    prediction["one_step_prediction"] = prediction_results
+    prediction.index += airline_passengers.threshold + start_index
 
+    plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
     plt.plot(airline_passengers.get_train_data(), color="green", label="training")
-    plt.plot(validation["true"], color="red", label="prediction")
-    plt.plot(validation["Predictions"], color="blue", label="test")
+    plt.plot(validation["validation"], color="blue", label="validation")
     plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
     plt.title("airline passengers prediction")
     plt.xlabel("Time[Month]")
     plt.ylabel("Passengers[x1000]")
+    plt.xticks(range(0, 200, 20))
+    plt.yticks(range(0, 1000, 100))
     plt.legend(loc="upper left")
-    plt.savefig("./airlinePassengers_pytorch.png")
+    plt.savefig("./airlinePassengers_pytorch_ff.png")
     plt.show()
 
 
-class AirlinePassengersPreparer:
-    def __init__(self):
-        self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
-        self.threshold = 107
-
-    def get_train_data(self):
-        data = self.data.loc[0:self.threshold, "Passengers"].reset_index(drop=True)
-        return pd.DataFrame(data)
-
-    def get_test_data(self):
-        data = self.data.loc[self.threshold:142, "Passengers"].reset_index(drop=True)
-        return pd.DataFrame(data)
-
-
-def create_timeseries(data, previous=1):
-    inputs, targets = list(), list()
-    for i in range(len(data)-previous-1):
-        a = data[i: (i+previous), 0]
-        inputs.append(a)
-        targets.append([data[i + previous, 0]])
-    return torch.tensor(inputs, dtype=torch.float), torch.tensor(targets, dtype=torch.float)
-
-
-class AirlinePassengersModel(nn.Module):
+class FeedForwardModel(nn.Module):
     def __init__(self):
         super().__init__()
         #self.lstm = nn.LSTM(input_size=1, hidden_size=50, num_layers=1)
