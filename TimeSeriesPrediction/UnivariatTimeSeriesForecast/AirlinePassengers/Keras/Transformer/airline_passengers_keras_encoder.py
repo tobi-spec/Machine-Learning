@@ -49,7 +49,7 @@ def main():
     plt.xticks(range(0, 200, 20))
     plt.yticks(range(0, 1000, 100))
     plt.legend(loc="upper left")
-    plt.savefig("./airlinePassengers_keras_transformer.png")
+    plt.savefig("./airlinePassengers_keras_encoder.png")
     plt.show()
 
 
