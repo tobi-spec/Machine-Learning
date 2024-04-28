@@ -1,6 +1,4 @@
-import pandas as pd
-import numpy as np
-import tensorflow as tf
+from keras import Model, layers, optimizers, initializers
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
@@ -19,7 +17,7 @@ def main():
     test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
 
     model = LSTMModel(lookback)
-    model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss='mean_squared_error')
+    model.compile(optimizer=optimizers.Adam(0.001), loss='mean_squared_error')
     model.fit(train_timeseries, train_targets, epochs=1000, batch_size=1)
 
     validation_results = validation_forecast(model, test_timeseries)
@@ -56,11 +54,11 @@ def main():
 # Bidirectionales lernen - Zeitreihe umkehren - https://keras.io/examples/nlp/bidirectional_lstm_imdb/
 # Kompletten daten fürs Training nehmen
 # Masked traning - Lücken in Traningsdaten schließen
-class LSTMModel(tf.keras.Model):
+class LSTMModel(Model):
     def __init__(self, lookback):
         super().__init__()
-        self.lstm = tf.keras.layers.Bidirectional(
-            tf.keras.layers.LSTM(units=50,
+        self.lstm = layers.Bidirectional(
+            layers.LSTM(units=50,
                                  activation="tanh",
                                  recurrent_activation="sigmoid",
                                  input_shape=(lookback, 1),
@@ -69,10 +67,10 @@ class LSTMModel(tf.keras.Model):
                                  bias_initializer="zeros",
                                  ),
             input_shape=(lookback, 1))
-        self.dense1 = tf.keras.layers.Dense(units=1,
+        self.dense1 = layers.Dense(units=1,
                                             activation="relu",
-                                            kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                            bias_initializer=tf.keras.initializers.Zeros())
+                                            kernel_initializer=initializers.RandomNormal(stddev=0.01),
+                                            bias_initializer=initializers.Zeros())
 
     def call(self, inputs):
         x = self.lstm(inputs)

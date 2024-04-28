@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
-import tensorflow as tf
+from keras import layers, optimizers, initializers, Sequential
 import matplotlib.pyplot as plt
 
 
@@ -97,29 +97,29 @@ class TimeSeriesGenerator:
         return self.data[element-self.lookback: element]
 
 
-def create_FF_model(inputs: np.array, targets: np.array) -> tf.keras.Sequential:
-    model = tf.keras.Sequential()
-    model.add(tf.keras.layers.Dense(units=50,
+def create_FF_model(inputs: np.array, targets: np.array) -> Sequential:
+    model = Sequential()
+    model.add(layers.Dense(units=50,
                                     activation="relu",
-                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                    bias_initializer=tf.keras.initializers.Zeros())
+                                    kernel_initializer=initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=initializers.Zeros())
     )
-    model.add(tf.keras.layers.Dense(units=50,
+    model.add(layers.Dense(units=50,
                                     activation="relu",
-                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                    bias_initializer=tf.keras.initializers.Zeros())
+                                    kernel_initializer=initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=initializers.Zeros())
     )
-    model.add(tf.keras.layers.Dense(units=8,
+    model.add(layers.Dense(units=8,
                                     activation="relu",
-                                    kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                    bias_initializer=tf.keras.initializers.Zeros()))
-    model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
+                                    kernel_initializer=initializers.RandomNormal(stddev=0.01),
+                                    bias_initializer=initializers.Zeros()))
+    model.compile(optimizer=optimizers.Adam(0.0001), loss='mean_squared_error')
     model.fit(inputs, targets, epochs=2, batch_size=16)
     return model
 
 
 class Forecaster:
-    def __init__(self, model: tf.keras.Sequential, start_value: np.array, number_of_forecasts: int):
+    def __init__(self, model: Sequential, start_value: np.array, number_of_forecasts: int):
         self.model = model
         self.current_value = start_value
         self.forecasts = number_of_forecasts

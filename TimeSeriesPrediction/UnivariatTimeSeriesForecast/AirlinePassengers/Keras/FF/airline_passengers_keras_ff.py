@@ -1,4 +1,4 @@
-import tensorflow as tf
+from keras import Model, layers, optimizers, initializers
 import matplotlib.pyplot as plt
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
@@ -13,7 +13,7 @@ def main():
     test_inputs, test_targets = TimeSeriesGenerator(test, lookback).create_timeseries()
 
     model = FeedForwardModel()
-    model.compile(optimizer=tf.keras.optimizers.Adam(0.0001), loss='mean_squared_error')
+    model.compile(optimizer=optimizers.Adam(0.0001), loss='mean_squared_error')
     model.fit(train_inputs, train_targets, epochs=1000, batch_size=1)
 
     validation_results = validation_forecast(model, test_inputs)
@@ -46,23 +46,23 @@ def main():
     plt.show()
 
 
-class FeedForwardModel(tf.keras.Model):
+class FeedForwardModel(Model):
     def __init__(self):
         super().__init__()
-        self.dense1 = tf.keras.layers.Dense(units=50,
+        self.dense1 = layers.Dense(units=50,
                                             activation="relu",
-                                            kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                            bias_initializer=tf.keras.initializers.Zeros()
+                                            kernel_initializer=initializers.RandomNormal(stddev=0.01),
+                                            bias_initializer=initializers.Zeros()
                                             )
-        self.dense2 = tf.keras.layers.Dense(units=50,
+        self.dense2 = layers.Dense(units=50,
                                             activation="relu",
-                                            kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                            bias_initializer=tf.keras.initializers.Zeros())
+                                            kernel_initializer=initializers.RandomNormal(stddev=0.01),
+                                            bias_initializer=initializers.Zeros())
 
-        self.dense3 = tf.keras.layers.Dense(units=1,
+        self.dense3 = layers.Dense(units=1,
                                             activation="relu",
-                                            kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                            bias_initializer=tf.keras.initializers.Zeros())
+                                            kernel_initializer=initializers.RandomNormal(stddev=0.01),
+                                            bias_initializer=initializers.Zeros())
 
     def call(self, inputs):
         x = self.dense1(inputs)

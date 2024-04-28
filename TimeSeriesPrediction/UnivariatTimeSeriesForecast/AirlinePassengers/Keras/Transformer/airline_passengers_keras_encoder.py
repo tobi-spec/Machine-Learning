@@ -1,6 +1,4 @@
-import pandas as pd
-import numpy as np
-import tensorflow as tf
+from keras import Model, layers, optimizers, initializers
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
@@ -19,7 +17,7 @@ def main():
     test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
 
     model = EncoderModel()
-    model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss='mean_squared_error')
+    model.compile(optimizer=optimizers.Adam(0.001), loss='mean_squared_error')
     model.fit(train_timeseries, train_targets, epochs=1000, batch_size=1)
 
     validation_results = validation_forecast(model, test_timeseries)
@@ -53,25 +51,25 @@ def main():
     plt.show()
 
 
-class EncoderModel(tf.keras.Model):
+class EncoderModel(Model):
     def __init__(self):
         super().__init__()
-        self.normalize = tf.keras.layers.LayerNormalization(epsilon=1e-6)
-        self.attention = tf.keras.layers.MultiHeadAttention(key_dim=256, num_heads=4, dropout=0.25)
-        self.dropout = tf.keras.layers.Dropout(0.25)
-        self.convolution1 = tf.keras.layers.Convolution1D(filters=4, kernel_size=1, activation="relu")
-        self.convolution2 = tf.keras.layers.Convolution1D(filters=1, kernel_size=1)
+        self.normalize = layers.LayerNormalization(epsilon=1e-6)
+        self.attention = layers.MultiHeadAttention(key_dim=256, num_heads=4, dropout=0.25)
+        self.dropout = layers.Dropout(0.25)
+        self.convolution1 = layers.Convolution1D(filters=4, kernel_size=1, activation="relu")
+        self.convolution2 = layers.Convolution1D(filters=1, kernel_size=1)
 
-        self.global_pooling = tf.keras.layers.GlobalAvgPool1D(data_format="channels_first")
+        self.global_pooling = layers.GlobalAvgPool1D(data_format="channels_first")
 
-        self.dense1 = tf.keras.layers.Dense(units=128,
+        self.dense1 = layers.Dense(units=128,
                                             activation="relu",
-                                            kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                            bias_initializer=tf.keras.initializers.Zeros())
-        self.dense2 = tf.keras.layers.Dense(units=1,
+                                            kernel_initializer=initializers.RandomNormal(stddev=0.01),
+                                            bias_initializer=initializers.Zeros())
+        self.dense2 = layers.Dense(units=1,
                                             activation="relu",
-                                            kernel_initializer=tf.keras.initializers.RandomNormal(stddev=0.01),
-                                            bias_initializer=tf.keras.initializers.Zeros())
+                                            kernel_initializer=initializers.RandomNormal(stddev=0.01),
+                                            bias_initializer=initializers.Zeros())
 
     def call(self, inputs):
         #x1 = self.normalize(inputs)
