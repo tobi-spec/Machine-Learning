@@ -2,30 +2,36 @@ from keras import Model, layers, optimizers, initializers
 import matplotlib.pyplot as plt
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
+EPOCHS = 1000
+LEARNING_RATE = 0.0001
+BATCH_SIZE = 1
+LOOK_BACK = 30
+PREDICTION_START = -1
+NUMBER_OF_PREDICTIONS = 80
+
 
 def main():
     airline_passengers = AirlinePassengersDataSet()
     train = airline_passengers.get_train_data()
     test = airline_passengers.get_test_data()
 
-    lookback = 30
-    train_inputs, train_targets = TimeSeriesGenerator(train, lookback).create_timeseries()
-    test_inputs, test_targets = TimeSeriesGenerator(test, lookback).create_timeseries()
+    train_inputs, train_targets = TimeSeriesGenerator(train, LOOK_BACK).create_timeseries()
+    test_inputs, test_targets = TimeSeriesGenerator(test, LOOK_BACK).create_timeseries()
 
     model = FeedForwardModel()
-    model.compile(optimizer=optimizers.Adam(0.0001), loss='mean_squared_error')
-    model.fit(train_inputs, train_targets, epochs=1000, batch_size=1)
+    model.compile(optimizer=optimizers.Adam(LEARNING_RATE), loss='mean_squared_error')
+    model.fit(train_inputs, train_targets, epochs=EPOCHS, batch_size=BATCH_SIZE)
 
     validation_results = validation_forecast(model, test_inputs)
 
     validation = pd.DataFrame()
     validation["validation"] = validation_results
-    validation.index += airline_passengers.threshold + lookback
+    validation.index += airline_passengers.threshold + LOOK_BACK
 
-    start_index = -1
+    start_index = PREDICTION_START
     start_value = train_inputs[start_index]
     start_value_reshaped = start_value.reshape(1, start_value.shape[0])
-    number_of_predictions = 80
+    number_of_predictions = NUMBER_OF_PREDICTIONS
     prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
 
     prediction = pd.DataFrame()

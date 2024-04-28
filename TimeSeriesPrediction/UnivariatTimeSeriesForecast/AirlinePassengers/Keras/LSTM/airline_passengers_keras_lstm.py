@@ -3,6 +3,13 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
+EPOCHS = 1000
+LEARNING_RATE = 0.0001
+BATCH_SIZE = 1
+LOOK_BACK = 30
+PREDICTION_START = -1
+NUMBER_OF_PREDICTIONS = 80
+
 
 def main():
     airline_passengers = AirlinePassengersDataSet()
@@ -12,24 +19,23 @@ def main():
     test_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_test = test_scaler.fit_transform(airline_passengers.get_test_data().reshape(-1, 1))
 
-    lookback: int = 30
-    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
-    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
+    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK).create_timeseries()
+    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK).create_timeseries()
 
-    model = LSTMModel(lookback)
-    model.compile(optimizer=optimizers.Adam(0.001), loss='mean_squared_error')
-    model.fit(train_timeseries, train_targets, epochs=1000, batch_size=1)
+    model = LSTMModel(LOOK_BACK)
+    model.compile(optimizer=optimizers.Adam(LEARNING_RATE), loss='mean_squared_error')
+    model.fit(train_timeseries, train_targets, epochs=EPOCHS, batch_size=BATCH_SIZE)
 
     validation_results = validation_forecast(model, test_timeseries)
 
     validation = pd.DataFrame()
     validation["validation"] = test_scaler.inverse_transform([validation_results]).flatten()
-    validation.index += airline_passengers.threshold + lookback
+    validation.index += airline_passengers.threshold + LOOK_BACK
 
-    start_index = -1
+    start_index = PREDICTION_START
     start_value = train_timeseries[start_index]
     start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
-    number_of_predictions = 80
+    number_of_predictions = NUMBER_OF_PREDICTIONS
     prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
 
     prediction = pd.DataFrame()

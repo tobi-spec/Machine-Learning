@@ -4,26 +4,32 @@ import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
+EPOCHS = 1000
+LEARNING_RATE = 0.0001
+BATCH_SIZE = 1
+LOOK_BACK = 30
+PREDICTION_START = -1
+NUMBER_OF_PREDICTIONS = 80
+
 
 def main():
     airline_passengers = AirlinePassengersDataSet()
     train = airline_passengers.get_train_data()
     test = airline_passengers.get_test_data()
 
-    lookback: int = 30
-    train_timeseries, train_targets = TimeSeriesGenerator(train, lookback).create_timeseries()
-    test_timeseries, test_targets = TimeSeriesGenerator(test, lookback).create_timeseries()
+    train_timeseries, train_targets = TimeSeriesGenerator(train, LOOK_BACK).create_timeseries()
+    test_timeseries, test_targets = TimeSeriesGenerator(test, LOOK_BACK).create_timeseries()
 
     train_timeseries_tensor = torch.tensor(train_timeseries, dtype=torch.float)
     train_targets_tensor = torch.tensor(train_targets, dtype=torch.float)
     test_timeseries_tensor = torch.tensor(test_timeseries, dtype=torch.float)
     test_targets_tensor = torch.tensor(test_targets, dtype=torch.float)
 
-    train_loader = DataLoader(dataset=TensorDataset(train_timeseries_tensor, train_targets_tensor), batch_size=1, shuffle=True)
-    test_loader = DataLoader(dataset=TensorDataset(test_timeseries_tensor, test_targets_tensor), batch_size=1, shuffle=True)
+    train_loader = DataLoader(dataset=TensorDataset(train_timeseries_tensor, train_targets_tensor), batch_size=BATCH_SIZE, shuffle=True)
+    test_loader = DataLoader(dataset=TensorDataset(test_timeseries_tensor, test_targets_tensor), batch_size=BATCH_SIZE, shuffle=True)
 
     airline_passenger_model = FeedForwardModel()
-    num_epochs = 1000
+    num_epochs = EPOCHS
     for epoch in range(num_epochs):
         airline_passenger_model.backward(train_loader, epoch, num_epochs)
         airline_passenger_model.validate(test_loader)
@@ -31,11 +37,11 @@ def main():
     validation_results = validation_forecast(airline_passenger_model, test_timeseries_tensor)
     validation = pd.DataFrame()
     validation["validation"] = validation_results
-    validation.index += airline_passengers.threshold + lookback
+    validation.index += airline_passengers.threshold + LOOK_BACK
 
-    start_index = -1
+    start_index = PREDICTION_START
     start_value = torch.Tensor(train_timeseries_tensor[start_index])
-    number_of_predictions = 80
+    number_of_predictions = NUMBER_OF_PREDICTIONS
     prediction_results = one_step_ahead_forecast(airline_passenger_model, start_value, number_of_predictions)
 
     prediction = pd.DataFrame()
@@ -62,7 +68,7 @@ class FeedForwardModel(nn.Module):
         self.linear1 = nn.Linear(30, 50)
         self.linear2 = nn.Linear(50, 1)
         self.loss_function = nn.MSELoss()
-        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.001)
+        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=LEARNING_RATE)
 
     def forward(self, inputs):
         inputs = self.linear1(inputs)

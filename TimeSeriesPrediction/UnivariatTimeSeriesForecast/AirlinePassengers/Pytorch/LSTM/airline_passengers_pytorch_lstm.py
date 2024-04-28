@@ -5,6 +5,13 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
+EPOCHS = 1000
+LEARNING_RATE = 0.0001
+BATCH_SIZE = 1
+LOOK_BACK = 30
+PREDICTION_START = -1
+NUMBER_OF_PREDICTIONS = 80
+
 
 def main():
     airline_passengers = AirlinePassengersDataSet()
@@ -14,20 +21,19 @@ def main():
     test_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_test = test_scaler.fit_transform(airline_passengers.get_test_data().reshape(-1, 1))
 
-    lookback: int = 30
-    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, lookback).create_timeseries()
-    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, lookback).create_timeseries()
+    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK).create_timeseries()
+    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK).create_timeseries()
 
     train_timeseries_tensor = torch.tensor(train_timeseries, dtype=torch.float)
     train_targets_tensor = torch.tensor(train_targets, dtype=torch.float)
     test_timeseries_tensor = torch.tensor(test_timeseries, dtype=torch.float)
     test_targets_tensor = torch.tensor(test_targets, dtype=torch.float)
 
-    train_loader = DataLoader(dataset=TensorDataset(train_timeseries_tensor, train_targets_tensor), batch_size=8, shuffle=False)
-    test_loader = DataLoader(dataset=TensorDataset(test_timeseries_tensor, test_targets_tensor), batch_size=8, shuffle=False)
+    train_loader = DataLoader(dataset=TensorDataset(train_timeseries_tensor, train_targets_tensor), batch_size=BATCH_SIZE, shuffle=False)
+    test_loader = DataLoader(dataset=TensorDataset(test_timeseries_tensor, test_targets_tensor), batch_size=BATCH_SIZE, shuffle=False)
 
     model = LSTMModel()
-    num_epochs = 1000
+    num_epochs = EPOCHS
     for epoch in range(num_epochs):
         model.backward(train_loader, epoch, num_epochs)
         model.validate(test_loader)
@@ -36,12 +42,12 @@ def main():
 
     validation = pd.DataFrame()
     validation["validation"] = test_scaler.inverse_transform([validation_results]).flatten()
-    validation.index += airline_passengers.threshold + lookback
+    validation.index += airline_passengers.threshold + LOOK_BACK
 
-    start_index = -1
+    start_index = PREDICTION_START
     start_value = train_timeseries_tensor[start_index]
     start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
-    number_of_predictions = 80
+    number_of_predictions = NUMBER_OF_PREDICTIONS
     prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
 
     prediction = pd.DataFrame()
@@ -68,7 +74,7 @@ class LSTMModel(nn.Module):
         self.lstm = nn.LSTM(input_size=30, hidden_size=50, num_layers=1, batch_first=True)
         self.linear1 = nn.Linear(50, 1)
         self.loss_function = nn.MSELoss()
-        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.0001)
+        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=LEARNING_RATE)
 
     def forward(self, inputs):
         x, _ = self.lstm(inputs)
