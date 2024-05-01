@@ -8,7 +8,7 @@ LEARNING_RATE = 0.0001
 BATCH_SIZE = 1
 LOOK_BACK = 30
 PREDICTION_START = 1
-NUMBER_OF_PREDICTIONS = 80
+NUMBER_OF_PREDICTIONS = 140
 
 
 def main():
@@ -38,10 +38,10 @@ def main():
     start_value_reshaped = start_value.reshape(1, start_value.shape[0])
     number_of_predictions = NUMBER_OF_PREDICTIONS
     prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
-
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = prediction_results
     prediction.index += LOOK_BACK
+
 
     plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
     plt.plot(airline_passengers.get_train_data(), color="green", label="training")
@@ -55,10 +55,10 @@ def main():
     plt.yticks(range(0, 1000, 100))
     plt.legend(loc="upper left")
 
-    plt.figtext(0.8, 0.8, f"Epochs: {EPOCHS}", fontize="small")
-    plt.figtext(0.8, 0.75, f"learning rate: {LEARNING_RATE}", fontize="small")
-    plt.figtext(0.8, 0.70, f"batch size: {BATCH_SIZE}", fontize="small")
-    plt.figtext(0.8, 0.65, f"look back: {LOOK_BACK}", fontize="small")
+    plt.figtext(0.75, 0.8, f"epochs: {EPOCHS}", fontsize="small")
+    plt.figtext(0.75, 0.75, f"learning rate: {LEARNING_RATE}", fontsize="small")
+    plt.figtext(0.75, 0.70, f"batch size: {BATCH_SIZE}", fontsize="small")
+    plt.figtext(0.75, 0.65, f"look back: {LOOK_BACK}", fontsize="small")
 
 
     plt.savefig("./airlinePassengers_keras_ff.png")
