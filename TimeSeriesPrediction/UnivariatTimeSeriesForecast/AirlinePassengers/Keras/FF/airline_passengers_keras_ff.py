@@ -55,10 +55,10 @@ def main():
     plt.yticks(range(0, 1000, 100))
     plt.legend(loc="upper left")
 
-    plt.figtext(0.8, 0.8, f"Epochs: {EPOCHS}")
-    plt.figtext(0.8, 0.75, f"learning rate: {LEARNING_RATE}")
-    plt.figtext(0.8, 0.70, f"batch size: {BATCH_SIZE}")
-    plt.figtext(0.8, 0.65, f"look back: {LOOK_BACK}")
+    plt.figtext(0.8, 0.8, f"Epochs: {EPOCHS}", fontize="small")
+    plt.figtext(0.8, 0.75, f"learning rate: {LEARNING_RATE}", fontize="small")
+    plt.figtext(0.8, 0.70, f"batch size: {BATCH_SIZE}", fontize="small")
+    plt.figtext(0.8, 0.65, f"look back: {LOOK_BACK}", fontize="small")
 
 
     plt.savefig("./airlinePassengers_keras_ff.png")
