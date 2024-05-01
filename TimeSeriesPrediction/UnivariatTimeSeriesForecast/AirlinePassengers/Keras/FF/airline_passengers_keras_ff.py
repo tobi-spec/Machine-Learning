@@ -24,14 +24,14 @@ def main():
     model.fit(train_inputs, train_targets, epochs=EPOCHS, batch_size=BATCH_SIZE)
 
     validation_results = validation_forecast(model, test_inputs)
-    validation = pd.DataFrame()
-    validation["validation"] = validation_results
-    validation.index += airline_passengers.threshold + LOOK_BACK
+    test_validation = pd.DataFrame()
+    test_validation["validation"] = validation_results
+    test_validation.index += airline_passengers.threshold + LOOK_BACK
 
     training_results = validation_forecast(model, train_inputs)
-    training = pd.DataFrame()
-    training["training"] = training_results
-    training.index += LOOK_BACK
+    training_validation = pd.DataFrame()
+    training_validation["training"] = training_results
+    training_validation.index += LOOK_BACK
 
     start_index = PREDICTION_START
     start_value = train_inputs[start_index]
@@ -45,8 +45,8 @@ def main():
 
     plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
     plt.plot(airline_passengers.get_train_data(), color="green", label="training")
-    plt.plot(validation["validation"], color="blue", label="validation")
-    plt.plot(training["training"], color="black", label="training")
+    plt.plot(test_validation["validation"], color="blue", label="validation")
+    plt.plot(training_validation["training"], color="black", label="training")
     plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
     plt.title("airline passengers prediction FF")
     plt.xlabel("Time[Month]")
