@@ -43,11 +43,12 @@ def main():
     prediction.index += LOOK_BACK
 
 
+
     plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
     plt.plot(airline_passengers.get_train_data(), color="green", label="training")
     plt.plot(test_validation["validation"], color="blue", label="validation")
     plt.plot(training_validation["training"], color="black", label="training")
-    plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
+    plt.plot(prediction["one_step_prediction"].shift(1), color="orange", label="one_step_prediction")
     plt.title("airline passengers prediction FF")
     plt.xlabel("Time[Month]")
     plt.ylabel("Passengers[x1000]")
