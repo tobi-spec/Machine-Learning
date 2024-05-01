@@ -31,6 +31,7 @@ def main():
     training_results = validation_forecast(model, train_inputs)
     training = pd.DataFrame()
     training["training"] = training_results
+    training.index += LOOK_BACK
 
     start_index = PREDICTION_START
     start_value = train_inputs[start_index]
@@ -40,7 +41,7 @@ def main():
 
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = prediction_results
-    prediction.index += start_index
+    prediction.index += LOOK_BACK
 
     plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
     plt.plot(airline_passengers.get_train_data(), color="green", label="training")
@@ -53,6 +54,13 @@ def main():
     plt.xticks(range(0, 200, 20))
     plt.yticks(range(0, 1000, 100))
     plt.legend(loc="upper left")
+
+    plt.figtext(0.8, 0.8, f"Epochs: {EPOCHS}")
+    plt.figtext(0.8, 0.75, f"learning rate: {LEARNING_RATE}")
+    plt.figtext(0.8, 0.70, f"batch size: {BATCH_SIZE}")
+    plt.figtext(0.8, 0.65, f"look back: {LOOK_BACK}")
+
+
     plt.savefig("./airlinePassengers_keras_ff.png")
     plt.show()
 
