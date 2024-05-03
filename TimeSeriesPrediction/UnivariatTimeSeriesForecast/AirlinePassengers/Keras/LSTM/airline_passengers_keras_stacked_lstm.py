@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
-EPOCHS = 1000
+EPOCHS = 600
 LEARNING_RATE = 0.001
 BATCH_SIZE = 1
 LOOK_BACK = 30
@@ -21,6 +21,9 @@ def main():
 
     train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK).create_timeseries()
     test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK).create_timeseries()
+
+    train_timeseries = train_timeseries.reshape(train_timeseries.shape[0],train_timeseries.shape[2], train_timeseries.shape[1])
+    test_timeseries = test_timeseries.reshape(test_timeseries.shape[0], test_timeseries.shape[2], test_timeseries.shape[1])
 
     model = LSTMModel(LOOK_BACK)
     model.compile(optimizer=optimizers.Adam(LEARNING_RATE), loss='mean_squared_error')
@@ -98,7 +101,7 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
         one_step_ahead_forecast.append(prediction[0][0])
         current_value = np.delete(current_value, 0)
         current_value = np.append(current_value, prediction)
-        current_value = current_value.reshape(1, current_value.shape[0], 1)
+        current_value = current_value.reshape(1, 1, current_value.shape[0])
     return one_step_ahead_forecast
 
 
