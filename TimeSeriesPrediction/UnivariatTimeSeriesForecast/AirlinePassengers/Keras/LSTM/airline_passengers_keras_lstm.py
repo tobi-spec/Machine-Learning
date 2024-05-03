@@ -23,8 +23,6 @@ def main():
     test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK).create_timeseries()
 
     train_timeseries = train_timeseries.reshape(train_timeseries.shape[0],train_timeseries.shape[2], train_timeseries.shape[1])
-    print(train_timeseries.shape)
-
     test_timeseries = test_timeseries.reshape(test_timeseries.shape[0], test_timeseries.shape[2], test_timeseries.shape[1])
 
     model = LSTMModel(LOOK_BACK)
