@@ -89,10 +89,24 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
     for element in range(0, number_of_predictions):
         prediction = model.predict(current_value)
         one_step_ahead_forecast.append(prediction[0][0])
-        current_value = np.delete(current_value, 0)
-        current_value = np.append(current_value, prediction)
-        current_value = current_value.reshape(1, 1, current_value.shape[0])
+        current_value = move_numpy_queue(current_value, prediction)
     return one_step_ahead_forecast
+
+
+def move_numpy_queue(current_value, prediction):
+    current_value = np.delete(current_value, 0)
+    current_value = np.append(current_value, prediction)
+    current_value = format_dimension(current_value, 3)
+    return current_value
+
+
+def format_dimension(current_value, size_of_dimension):
+    if size_of_dimension == 3:
+        return current_value.reshape(1, 1, current_value.shape[0])
+    elif size_of_dimension == 2:
+        return current_value.reshape(1, current_value.shape[0])
+    else:
+        return current_value
 
 
 if __name__ == "__main__":
