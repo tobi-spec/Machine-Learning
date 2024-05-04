@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from neuronal_network_types import NeuronalNetworkTypes
 
 
 class AirlinePassengersDataSet:
@@ -62,9 +63,9 @@ class Forecaster:
 
     def __format_dimension(self):
         match self.output_dimension_type:
-            case 3:
+            case NeuronalNetworkTypes.LSTM:
                 return self.current_value.reshape(1, 1, self.current_value.shape[0])
-            case 2:
+            case NeuronalNetworkTypes.FEED_FORWARD:
                 return self.current_value.reshape(1, self.current_value.shape[0])
             case _:
                 return self.current_value
