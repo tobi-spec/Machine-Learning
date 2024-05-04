@@ -41,11 +41,11 @@ def validation_forecast(model, inputs):
 
 
 class Forecaster:
-    def __init__(self, model, start_value, number_of_predictions, size_of_dimension):
+    def __init__(self, model, start_value, number_of_predictions, output_dimension_type):
         self.model = model
         self.current_value = start_value
         self.number_of_predictions = number_of_predictions
-        self.size_of_dimension = size_of_dimension
+        self.output_dimension_type = output_dimension_type
 
     def one_step_ahead(self):
         one_step_ahead_forecast = list()
@@ -61,7 +61,7 @@ class Forecaster:
         return self.__format_dimension()
 
     def __format_dimension(self):
-        match self.size_of_dimension:
+        match self.output_dimension_type:
             case 3:
                 return self.current_value.reshape(1, 1, self.current_value.shape[0])
             case 2:
