@@ -8,6 +8,7 @@ BATCH_SIZE = 1
 LOOK_BACK = 30
 PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
+OUTPUT_DIMENSIONS = 2
 
 
 def main():
@@ -31,8 +32,7 @@ def main():
     start_index = PREDICTION_START
     start_value = train_inputs[start_index]
     start_value_reshaped = start_value.reshape(1, start_value.shape[0])
-    number_of_predictions = NUMBER_OF_PREDICTIONS
-    prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
+    prediction_results = Forecaster(model, start_value_reshaped, NUMBER_OF_PREDICTIONS, OUTPUT_DIMENSIONS).one_step_ahead()
 
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = prediction_results
@@ -75,19 +75,6 @@ class FeedForwardModel(Model):
         x = self.dense2(x)
         x = self.dense3(x)
         return x
-
-
-
-
-def one_step_ahead_forecast(model, current_value, number_of_predictions):
-    one_step_ahead_forecast = list()
-    for element in range(0, number_of_predictions):
-        prediction = model.predict(current_value)
-        one_step_ahead_forecast.append(prediction[0][0])
-        current_value = np.delete(current_value, 0)
-        current_value = np.append(current_value, prediction)
-        current_value = current_value.reshape(1, current_value.shape[0])
-    return one_step_ahead_forecast
 
 
 if __name__ == "__main__":
