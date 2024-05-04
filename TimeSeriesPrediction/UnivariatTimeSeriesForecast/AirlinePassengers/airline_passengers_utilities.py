@@ -65,6 +65,8 @@ class Forecaster:
         match self.output_dimension_type:
             case NeuronalNetworkTypes.LSTM:
                 return self.current_value.reshape(1, 1, self.current_value.shape[0])
+            case NeuronalNetworkTypes.ATTENTION:
+                return self.current_value.reshape(1, self.current_value.shape[0], 1)
             case NeuronalNetworkTypes.FEED_FORWARD:
                 return self.current_value.reshape(1, self.current_value.shape[0])
             case _:
