@@ -59,10 +59,6 @@ def main():
     plt.show()
 
 
-# training scedular learning rate wird angepasst nach x epochs
-# Bidirectionales lernen - Zeitreihe umkehren - https://keras.io/examples/nlp/bidirectional_lstm_imdb/
-# Kompletten daten fürs Training nehmen
-# Masked traning - Lücken in Traningsdaten schließen
 class LSTMModel(Model):
     def __init__(self, lookback):
         super().__init__()
