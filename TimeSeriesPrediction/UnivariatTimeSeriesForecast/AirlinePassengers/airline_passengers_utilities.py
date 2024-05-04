@@ -37,3 +37,32 @@ class TimeSeriesGenerator:
 def validation_forecast(model, inputs):
     predictions = model.predict(inputs)
     return predictions.flatten()
+
+
+class Forecaster:
+    def __init__(self, model, start_value, number_of_predictions, size_of_dimension):
+        self.model = model
+        self.current_value = start_value
+        self.number_of_predictions = number_of_predictions
+        self.size_of_dimension = size_of_dimension
+
+    def one_step_ahead(self):
+        one_step_ahead_forecast = list()
+        for element in range(0, self.number_of_predictions):
+            prediction = self.model.predict(self.current_value)
+            one_step_ahead_forecast.append(prediction[0][0])
+            self.current_value = self.__move_numpy_queue(prediction)
+        return one_step_ahead_forecast
+
+    def __move_numpy_queue(self, prediction):
+        self.current_value = np.delete(self.current_value, 0)
+        self.current_value = np.append(self.current_value, prediction)
+        return self.__format_dimension()
+
+    def __format_dimension(self):
+        if self.size_of_dimension == 3:
+            return self.current_value.reshape(1, 1, self.current_value.shape[0])
+        elif self.size_of_dimension == 2:
+            return self.current_value.reshape(1, self.current_value.shape[0])
+        else:
+            return self.current_value
