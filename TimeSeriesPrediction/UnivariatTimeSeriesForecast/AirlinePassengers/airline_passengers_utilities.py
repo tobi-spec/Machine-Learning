@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 class AirlinePassengersDataSet:
     def __init__(self):
         self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
@@ -60,9 +61,10 @@ class Forecaster:
         return self.__format_dimension()
 
     def __format_dimension(self):
-        if self.size_of_dimension == 3:
-            return self.current_value.reshape(1, 1, self.current_value.shape[0])
-        elif self.size_of_dimension == 2:
-            return self.current_value.reshape(1, self.current_value.shape[0])
-        else:
-            return self.current_value
+        match self.size_of_dimension:
+            case 3:
+                return self.current_value.reshape(1, 1, self.current_value.shape[0])
+            case 2:
+                return self.current_value.reshape(1, self.current_value.shape[0])
+            case _:
+                return self.current_value
