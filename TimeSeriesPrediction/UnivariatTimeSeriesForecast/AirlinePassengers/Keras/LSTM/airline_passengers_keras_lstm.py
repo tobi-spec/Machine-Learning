@@ -9,6 +9,7 @@ BATCH_SIZE = 1
 LOOK_BACK = 30
 PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
+OUTPUT_DIMENSIONS = 3
 
 
 def main():
@@ -38,8 +39,7 @@ def main():
     start_index = PREDICTION_START
     start_value = train_timeseries[start_index]
     start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
-    number_of_predictions = NUMBER_OF_PREDICTIONS
-    prediction_results = one_step_ahead_forecast(model, start_value_reshaped, number_of_predictions)
+    prediction_results = Forecaster(model, start_value_reshaped, NUMBER_OF_PREDICTIONS, OUTPUT_DIMENSIONS).one_step_ahead()
 
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = train_scaler.inverse_transform([prediction_results]).flatten()
@@ -84,29 +84,33 @@ class LSTMModel(Model):
         return x
 
 
-def one_step_ahead_forecast(model, current_value, number_of_predictions):
-    one_step_ahead_forecast = list()
-    for element in range(0, number_of_predictions):
-        prediction = model.predict(current_value)
-        one_step_ahead_forecast.append(prediction[0][0])
-        current_value = move_numpy_queue(current_value, prediction)
-    return one_step_ahead_forecast
+class Forecaster:
+    def __init__(self, model, start_value, number_of_predictions, size_of_dimension):
+        self.model = model
+        self.current_value = start_value
+        self.number_of_predictions = number_of_predictions
+        self.size_of_dimension = size_of_dimension
 
+    def one_step_ahead(self):
+        one_step_ahead_forecast = list()
+        for element in range(0, self.number_of_predictions):
+            prediction = self.model.predict(self.current_value)
+            one_step_ahead_forecast.append(prediction[0][0])
+            self.current_value = self.__move_numpy_queue(prediction)
+        return one_step_ahead_forecast
 
-def move_numpy_queue(current_value, prediction):
-    current_value = np.delete(current_value, 0)
-    current_value = np.append(current_value, prediction)
-    current_value = format_dimension(current_value, 3)
-    return current_value
+    def __move_numpy_queue(self, prediction):
+        self.current_value = np.delete(self.current_value, 0)
+        self.current_value = np.append(self.current_value, prediction)
+        return self.__format_dimension()
 
-
-def format_dimension(current_value, size_of_dimension):
-    if size_of_dimension == 3:
-        return current_value.reshape(1, 1, current_value.shape[0])
-    elif size_of_dimension == 2:
-        return current_value.reshape(1, current_value.shape[0])
-    else:
-        return current_value
+    def __format_dimension(self):
+        if self.size_of_dimension == 3:
+            return self.current_value.reshape(1, 1, self.current_value.shape[0])
+        elif self.size_of_dimension == 2:
+            return self.current_value.reshape(1, self.current_value.shape[0])
+        else:
+            return self.current_value
 
 
 if __name__ == "__main__":
