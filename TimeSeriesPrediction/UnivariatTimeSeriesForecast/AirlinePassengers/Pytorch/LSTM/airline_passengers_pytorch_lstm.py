@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
 EPOCHS = 1000
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.001
 BATCH_SIZE = 1
 LOOK_BACK = 30
 PREDICTION_START = -1
