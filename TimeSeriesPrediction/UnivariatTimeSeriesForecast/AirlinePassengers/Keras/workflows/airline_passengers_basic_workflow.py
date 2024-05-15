@@ -11,15 +11,13 @@ PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
 
 
-def workflow(model):
+def workflow(model, name):
     airline_passengers = AirlinePassengersDataSet()
     train = airline_passengers.get_train_data()
     test = airline_passengers.get_test_data()
 
     train_inputs, train_targets = TimeSeriesGenerator(train, LOOK_BACK, LOOK_OUT).create_timeseries()
     test_inputs, test_targets = TimeSeriesGenerator(test, LOOK_BACK, LOOK_OUT).create_timeseries()
-
-    print(train_targets)
 
     model.compile(optimizer=optimizers.Adam(LEARNING_RATE), loss='mean_squared_error')
     model.fit(train_inputs, train_targets, epochs=EPOCHS, batch_size=BATCH_SIZE)
@@ -46,11 +44,11 @@ def workflow(model):
     plt.plot(airline_passengers.get_train_data(), color="green", label="training")
     plt.plot(validation["validation"], color="blue", label="validation")
     plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
-    plt.title("airline passengers prediction FF")
+    plt.title(f"airline passengers {name}")
     plt.xlabel("Time[Month]")
     plt.ylabel("Passengers[x1000]")
     plt.xticks(range(0, 200, 20))
     plt.yticks(range(0, 1000, 100))
     plt.legend(loc="upper left")
-    plt.savefig("./airlinePassengers_keras_ff.png")
+    plt.savefig(f"../results/airlinePassengers_keras_{name}.png")
     plt.show()

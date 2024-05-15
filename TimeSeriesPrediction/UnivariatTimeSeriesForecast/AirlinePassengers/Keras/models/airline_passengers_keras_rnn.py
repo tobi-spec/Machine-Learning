@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_rnn_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_rnn_workflow import workflow
 
 
 class RNNModel(Model):
@@ -19,4 +19,4 @@ class RNNModel(Model):
 
 if __name__ == "__main__":
     rnn_model = RNNModel()
-    workflow(rnn_model)
+    workflow(rnn_model, "rnn")

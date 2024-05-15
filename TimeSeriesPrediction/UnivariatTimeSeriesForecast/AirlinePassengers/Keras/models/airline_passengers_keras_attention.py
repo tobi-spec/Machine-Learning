@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_keras_attention_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_keras_attention_workflow import workflow
 
 
 class EncoderModel(Model):
@@ -43,4 +43,4 @@ class EncoderModel(Model):
 
 if __name__ == "__main__":
     encoder_model = EncoderModel()
-    workflow(encoder_model)
+    workflow(encoder_model, "attention")

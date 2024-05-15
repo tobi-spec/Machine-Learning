@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_lstm_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_lstm_workflow import workflow
 
 
 class LSTMModel(Model):
@@ -26,4 +26,4 @@ class LSTMModel(Model):
 
 if __name__ == "__main__":
     bidirectional_lstm_model = LSTMModel()
-    workflow(bidirectional_lstm_model)
+    workflow(bidirectional_lstm_model, "LSTM bidirectional")

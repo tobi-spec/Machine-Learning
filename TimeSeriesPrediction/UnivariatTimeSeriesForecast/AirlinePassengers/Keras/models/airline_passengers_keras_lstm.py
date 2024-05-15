@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_lstm_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_lstm_workflow import workflow
 
 
 class LSTMModel(Model):
@@ -25,4 +25,4 @@ class LSTMModel(Model):
 
 if __name__ == "__main__":
     lstm_model = LSTMModel()
-    workflow(lstm_model)
+    workflow(lstm_model, "LSTM")

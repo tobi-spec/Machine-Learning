@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_basic_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_basic_workflow import workflow
 
 
 class FeedForwardModel(Model):
@@ -29,4 +29,4 @@ class FeedForwardModel(Model):
 
 if __name__ == "__main__":
     model = FeedForwardModel()
-    workflow(model)
+    workflow(model, "ff")

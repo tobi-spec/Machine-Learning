@@ -12,7 +12,7 @@ PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
 
 
-def workflow(model):
+def workflow(model, name):
     airline_passengers = AirlinePassengersDataSet()
     train_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_train = train_scaler.fit_transform(airline_passengers.get_train_data().reshape(-1, 1))
@@ -52,11 +52,11 @@ def workflow(model):
     plt.plot(airline_passengers.get_train_data(), color="green", label="training")
     plt.plot(validation["validation"], color="blue", label="validation")
     plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
-    plt.title("airline passengers prediction LSTM")
+    plt.title(f"airline passengers {name}")
     plt.xlabel("Time[Month]")
     plt.ylabel("Passengers[x1000]")
     plt.xticks(range(0, 200, 20))
     plt.yticks(range(0, 1000, 100))
     plt.legend(loc="upper left")
-    plt.savefig("./airlinePassengers_keras_cnn.png")
+    plt.savefig(f"../results/airlinePassengers_keras_{name}.png")
     plt.show()

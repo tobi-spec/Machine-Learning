@@ -1,5 +1,5 @@
 from keras import Model, layers
-from airline_passengers_cnn_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_cnn_workflow import workflow
 
 
 class CNNModel(Model):
@@ -24,4 +24,4 @@ class CNNModel(Model):
 
 if __name__ == "__main__":
     cnn_model = CNNModel()
-    workflow(cnn_model)
+    workflow(cnn_model, "cnn")
