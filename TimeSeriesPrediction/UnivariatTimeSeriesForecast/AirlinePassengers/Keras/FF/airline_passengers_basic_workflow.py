@@ -6,6 +6,7 @@ EPOCHS = 1000
 LEARNING_RATE = 0.0001
 BATCH_SIZE = 1
 LOOK_BACK = 30
+LOOK_OUT = 1
 PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
 
@@ -15,8 +16,10 @@ def workflow(model):
     train = airline_passengers.get_train_data()
     test = airline_passengers.get_test_data()
 
-    train_inputs, train_targets = TimeSeriesGenerator(train, LOOK_BACK).create_timeseries()
-    test_inputs, test_targets = TimeSeriesGenerator(test, LOOK_BACK).create_timeseries()
+    train_inputs, train_targets = TimeSeriesGenerator(train, LOOK_BACK, LOOK_OUT).create_timeseries()
+    test_inputs, test_targets = TimeSeriesGenerator(test, LOOK_BACK, LOOK_OUT).create_timeseries()
+
+    print(train_targets)
 
     model.compile(optimizer=optimizers.Adam(LEARNING_RATE), loss='mean_squared_error')
     model.fit(train_inputs, train_targets, epochs=EPOCHS, batch_size=BATCH_SIZE)

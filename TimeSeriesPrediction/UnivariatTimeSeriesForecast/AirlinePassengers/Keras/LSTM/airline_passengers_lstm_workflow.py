@@ -7,6 +7,7 @@ EPOCHS = 600
 LEARNING_RATE = 0.001
 BATCH_SIZE = 1
 LOOK_BACK = 30
+LOOK_OUT = 1
 PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
 
@@ -19,8 +20,8 @@ def workflow(model):
     test_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_test = test_scaler.fit_transform(airline_passengers.get_test_data().reshape(-1, 1))
 
-    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK).create_timeseries()
-    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK).create_timeseries()
+    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK, LOOK_OUT).create_timeseries()
+    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK, LOOK_OUT).create_timeseries()
 
     train_timeseries = train_timeseries.reshape(train_timeseries.shape[0],train_timeseries.shape[2], train_timeseries.shape[1])
     test_timeseries = test_timeseries.reshape(test_timeseries.shape[0], test_timeseries.shape[2], test_timeseries.shape[1])

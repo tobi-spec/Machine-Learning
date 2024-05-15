@@ -7,6 +7,7 @@ EPOCHS = 1000
 LEARNING_RATE = 0.0001
 BATCH_SIZE = 1
 LOOK_BACK = 30
+LOOK_OUT = 1
 PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
 
@@ -19,8 +20,8 @@ def main():
     test_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_test = test_scaler.fit_transform(airline_passengers.get_test_data().reshape(-1, 1))
 
-    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK).create_timeseries()
-    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK).create_timeseries()
+    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK, LOOK_OUT).create_timeseries()
+    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK, LOOK_OUT).create_timeseries()
 
     model = EncoderModel()
     model.compile(optimizer=optimizers.Adam(LEARNING_RATE), loss='mean_squared_error')

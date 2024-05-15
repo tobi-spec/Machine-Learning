@@ -18,9 +18,10 @@ class AirlinePassengersDataSet:
 
 
 class TimeSeriesGenerator:
-    def __init__(self, data, lookback):
+    def __init__(self, data, lookback, lookout):
         self.data = data
         self.lookback = lookback
+        self.lookout = lookout
 
     def create_timeseries(self):
         inputs, targets = list(), list()
@@ -30,7 +31,7 @@ class TimeSeriesGenerator:
         return np.array(inputs), np.array(targets)
 
     def __get_targets(self, element):
-        return self.data[element]
+        return self.data[element: element+self.lookout]
 
     def __get_timeseries(self, element):
         return self.data[element-self.lookback: element]
