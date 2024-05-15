@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_keras_encoder_workflow import workflow
+from airline_passengers_keras_attention_workflow import workflow
 
 
 class EncoderModel(Model):
