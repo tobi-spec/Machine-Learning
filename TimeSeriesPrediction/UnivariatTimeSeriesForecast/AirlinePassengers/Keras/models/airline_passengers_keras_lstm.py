@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_lstm_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_recurrent_networks_workflow import workflow
 
 
 class LSTMModel(Model):
