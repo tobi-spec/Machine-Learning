@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
-EPOCHS = 1000
+EPOCHS = 600
 LEARNING_RATE = 0.001
 BATCH_SIZE = 1
 LOOK_BACK = 30
+LOOK_OUT = 1
 PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
 
@@ -21,8 +22,11 @@ def main():
     test_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_test = test_scaler.fit_transform(airline_passengers.get_test_data().reshape(-1, 1))
 
-    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK).create_timeseries()
-    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK).create_timeseries()
+    train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK, LOOK_OUT).create_timeseries()
+    test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK, LOOK_OUT).create_timeseries()
+
+    train_timeseries = train_timeseries.reshape(train_timeseries.shape[0],train_timeseries.shape[2], train_timeseries.shape[1])
+    test_timeseries = test_timeseries.reshape(test_timeseries.shape[0], test_timeseries.shape[2], test_timeseries.shape[1])
 
     train_timeseries_tensor = torch.tensor(train_timeseries, dtype=torch.float)
     train_targets_tensor = torch.tensor(train_targets, dtype=torch.float)
@@ -123,7 +127,7 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
         one_step_ahead_forecast.append(prediction.item())
         current_value = np.delete(current_value, 0)
         current_value = np.append(current_value, prediction.detach().numpy())
-        current_value = current_value.reshape(1, current_value.shape[0], 1)
+        current_value = current_value.reshape(1, 1, current_value.shape[0])
     return one_step_ahead_forecast
 
 
