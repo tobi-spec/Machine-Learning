@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_basic_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_keras_basic_workflow import workflow
 
 
 class FeedForwardModel(Model):

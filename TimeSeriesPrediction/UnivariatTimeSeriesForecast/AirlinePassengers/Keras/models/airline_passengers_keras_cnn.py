@@ -1,5 +1,5 @@
 from keras import Model, layers
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_advanced_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_keras_advanced_workflow import workflow
 
 
 class CNNModel(Model):
