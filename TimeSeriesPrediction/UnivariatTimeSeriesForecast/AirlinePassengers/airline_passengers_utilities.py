@@ -1,39 +1,41 @@
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from neuronal_network_types import NeuronalNetworkTypes
 
 
 class AirlinePassengersDataSet:
     def __init__(self):
-        self.data = pd.read_csv("../../AirlinePassengers.csv", sep=";")
+        path = Path(__file__) / "../AirlinePassengers.csv"
+        self.data = pd.read_csv(path, sep=";")
         self.threshold = 107
 
-    def get_train_data(self):
+    def get_train_data(self) -> np.ndarray:
         data = self.data.loc[0:self.threshold, "Passengers"].reset_index(drop=True)
         return data.to_numpy()
 
-    def get_test_data(self):
+    def get_test_data(self) -> np.ndarray:
         data = self.data.loc[self.threshold:142, "Passengers"].reset_index(drop=True)
         return data.to_numpy()
 
 
 class TimeSeriesGenerator:
-    def __init__(self, data, lookback, lookout):
+    def __init__(self, data: np.ndarray, lookback: int, lookout: int):
         self.data = data
         self.lookback = lookback
         self.lookout = lookout
 
-    def create_timeseries(self):
+    def create_timeseries(self) -> np.ndarray:
         inputs, targets = list(), list()
-        for element in range(self.lookback, len(self.data)-1):
-            inputs.append(self.__get_timeseries(element))
-            targets.append(self.__get_targets(element))
+        for element in range(self.lookback, len(self.data)-self.lookout-1):
+            inputs.append(self._get_timeseries(element))
+            targets.append(self._get_targets(element))
         return np.array(inputs), np.array(targets)
 
-    def __get_targets(self, element):
+    def _get_targets(self, element) -> np.ndarray:
         return self.data[element: element+self.lookout]
 
-    def __get_timeseries(self, element):
+    def _get_timeseries(self, element) -> np.ndarray:
         return self.data[element-self.lookback: element]
 
 
