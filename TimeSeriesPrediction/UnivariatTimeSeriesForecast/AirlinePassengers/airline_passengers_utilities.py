@@ -55,9 +55,12 @@ class Forecaster:
         one_step_ahead_forecast = list()
         for element in range(0, self.number_of_predictions):
             prediction = self.model.predict(self.current_value)
-            one_step_ahead_forecast.append(prediction[0][0])
+            one_step_ahead_forecast.append(self._getFeature(prediction))
             self.current_value = self.__move_numpy_queue(prediction)
         return one_step_ahead_forecast
+
+    def _getFeature(self, prediction):
+        return prediction[0][0]
 
     def __move_numpy_queue(self, prediction):
         self.current_value = np.delete(self.current_value, 0)
