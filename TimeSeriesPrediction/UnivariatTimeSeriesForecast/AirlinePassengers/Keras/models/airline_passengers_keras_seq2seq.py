@@ -1,6 +1,6 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import LSTM, Dense, Input
-from airline_passengers_seq2seq_workflow import workflow
+from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_keras_seq2seq_workflow import workflow
 
 
 def seq2seq_model():
