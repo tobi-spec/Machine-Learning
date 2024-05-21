@@ -45,11 +45,12 @@ def validation_forecast(model, inputs):
 
 
 class Forecaster:
-    def __init__(self, model, start_value, number_of_predictions, output_dimension_type):
+    def __init__(self, model, start_value, number_of_predictions, output_dimension_type, current_input=None):
         self.model = model
         self.current_value = start_value
         self.number_of_predictions = number_of_predictions
         self.output_dimension_type = output_dimension_type
+        self.current_input = current_input
 
     def one_step_ahead(self):
         one_step_ahead_forecast = list()
@@ -59,8 +60,17 @@ class Forecaster:
             self.current_value = self.__move_numpy_queue(prediction)
         return one_step_ahead_forecast
 
+    def seq2seq_one_step_ahead(self):
+        forecast = list()
+        for element in range(0, self.number_of_predictions):
+            prediction = self.model.predict([self.current_value, self.current_input])
+            forecast.append(prediction[0][0][0])
+            self.current_value = self.__move_numpy_queue(prediction)
+        return forecast
+
     def _getFeature(self, prediction):
         return prediction[0][0]
+
 
     def __move_numpy_queue(self, prediction):
         self.current_value = np.delete(self.current_value, 0)
