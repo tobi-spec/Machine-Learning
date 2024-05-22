@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
+from keras.callbacks import EarlyStopping
 from keras import optimizers
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
@@ -9,7 +10,7 @@ BATCH_SIZE = 1
 LOOK_BACK = 30
 LOOK_OUT = 1
 PREDICTION_START = -1
-NUMBER_OF_PREDICTIONS = 80
+NUMBER_OF_PREDICTIONS = 60
 
 
 def workflow(model, name):
@@ -23,8 +24,10 @@ def workflow(model, name):
     train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, LOOK_BACK, LOOK_OUT).create_timeseries()
     test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, LOOK_BACK, LOOK_OUT).create_timeseries()
 
+    early_stopping = EarlyStopping(monitor='loss', patience=50, verbose=1, restore_best_weights=True)
+
     model.compile(optimizer=optimizers.Adam(LEARNING_RATE), loss='mean_squared_error')
-    model.fit(train_timeseries, train_targets, epochs=EPOCHS, batch_size=BATCH_SIZE)
+    model.fit(train_timeseries, train_targets, epochs=EPOCHS, batch_size=BATCH_SIZE, callbacks=[early_stopping])
 
     validation_results = validation_forecast(model, test_timeseries)
 
@@ -44,7 +47,7 @@ def workflow(model, name):
     prediction = pd.DataFrame()
     test = train_scaler.inverse_transform([prediction_results]).flatten()
     prediction["one_step_prediction"] = test
-    prediction.index += airline_passengers.threshold + start_index
+    prediction.index += airline_passengers.threshold + start_index - 1
 
     plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
     plt.plot(airline_passengers.get_train_data(), color="green", label="training")

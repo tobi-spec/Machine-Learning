@@ -23,15 +23,11 @@ class EncoderModel(Model):
                                             bias_initializer=initializers.Zeros())
 
     def call(self, inputs):
-        #x1 = self.normalize(inputs)
         x1 = self.attention(inputs, inputs)
-        x1 = self.dropout(x1)
 
         res = x1 + inputs
 
-        #x2 = self.normalize(res)
         x2 = self.convolution1(res)
-        x2 = self.dropout(x2)
         x2 = self.convolution2(x2)
 
         x2 = self.global_pooling(x2)
