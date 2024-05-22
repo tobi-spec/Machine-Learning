@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 from keras import optimizers
@@ -7,7 +8,7 @@ EPOCHS = 600
 LEARNING_RATE = 0.001
 BATCH_SIZE = 32
 LOOK_BACK = 30
-LOOK_OUT = 1
+LOOK_OUT = 3
 PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
 
@@ -29,7 +30,7 @@ def workflow(model, name):
     test_targets_series = test_targets.reshape(test_targets.shape[0], test_targets.shape[2], test_targets.shape[1])
 
     model.compile(optimizer=optimizers.Adam(LEARNING_RATE), loss='mean_squared_error')
-    model.fit([train_timeseries, train_targets_series], train_targets_series, epochs=EPOCHS, batch_size=BATCH_SIZE)
+    model.fit([train_timeseries, np.zeros_like(train_targets_series)], train_targets_series, epochs=EPOCHS, batch_size=BATCH_SIZE)
 
     validation_results = validation_forecast(model, [test_timeseries, test_targets_series])
     validation = pd.DataFrame()
@@ -47,7 +48,7 @@ def workflow(model, name):
                                     start_value_reshaped,
                                     NUMBER_OF_PREDICTIONS,
                                     NeuronalNetworkTypes.LSTM,
-                                    start_target_reshaped).seq2seq_one_step_ahead()
+                                    np.zeros_like(start_target_reshaped)).seq2seq_one_step_ahead()
 
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = train_scaler.inverse_transform([prediction_results]).flatten()
