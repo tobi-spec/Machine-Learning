@@ -3,14 +3,15 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 from keras import optimizers
+from keras.callbacks import EarlyStopping
 
-EPOCHS = 600
+EPOCHS = 1000
 LEARNING_RATE = 0.001
-BATCH_SIZE = 32
+BATCH_SIZE = 1
 LOOK_BACK = 30
 LOOK_OUT = 3
 PREDICTION_START = -1
-NUMBER_OF_PREDICTIONS = 80
+NUMBER_OF_PREDICTIONS = 60
 
 
 def workflow(model, name):
@@ -29,8 +30,10 @@ def workflow(model, name):
     test_timeseries = test_timeseries.reshape(test_timeseries.shape[0], test_timeseries.shape[2], test_timeseries.shape[1])
     test_targets_series = test_targets.reshape(test_targets.shape[0], test_targets.shape[2], test_targets.shape[1])
 
+    early_stopping = EarlyStopping(monitor='loss', patience=75, verbose=1, restore_best_weights=True)
+
     model.compile(optimizer=optimizers.Adam(LEARNING_RATE), loss='mean_squared_error')
-    model.fit([train_timeseries, np.zeros_like(train_targets_series)], train_targets_series, epochs=EPOCHS, batch_size=BATCH_SIZE)
+    model.fit([train_timeseries, np.zeros_like(train_targets_series)], train_targets_series, epochs=EPOCHS, batch_size=BATCH_SIZE, callbacks=[early_stopping])
 
     validation_results = validation_forecast(model, [test_timeseries, test_targets_series])
     validation = pd.DataFrame()
