@@ -7,7 +7,7 @@ EPOCHS = 600
 LEARNING_RATE = 0.001
 BATCH_SIZE = 32
 LOOK_BACK = 30
-LOOK_OUT = 3
+LOOK_OUT = 1
 PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
 
@@ -51,7 +51,7 @@ def workflow(model, name):
 
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = train_scaler.inverse_transform([prediction_results]).flatten()
-    prediction.index += airline_passengers.threshold + start_index
+    prediction.index += airline_passengers.threshold + start_index - 1
 
     plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
     plt.plot(airline_passengers.get_train_data(), color="green", label="training")
