@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_keras_advanced_workflow import workflow
+from airline_passengers_keras_attention_workflow import workflow
 
 
 class EncoderModel(Model):

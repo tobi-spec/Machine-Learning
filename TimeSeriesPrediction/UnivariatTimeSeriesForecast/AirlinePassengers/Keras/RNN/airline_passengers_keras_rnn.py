@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.Keras.workflows.airline_passengers_keras_recurrent_networks_workflow import workflow
+from airline_passengers_keras_lstm_workflow import workflow
 
 
 class RNNModel(Model):
