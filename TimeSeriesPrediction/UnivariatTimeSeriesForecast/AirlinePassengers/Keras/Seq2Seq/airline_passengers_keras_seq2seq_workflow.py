@@ -57,15 +57,4 @@ def workflow(model, name):
     prediction["one_step_prediction"] = train_scaler.inverse_transform([prediction_results]).flatten()
     prediction.index += airline_passengers.threshold + start_index - 1
 
-    plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
-    plt.plot(airline_passengers.get_train_data(), color="green", label="training")
-    plt.plot(validation["validation"], color="blue", label="validation")
-    plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
-    plt.title(f"airline passengers prediction {name}")
-    plt.xlabel("Time[Month]")
-    plt.ylabel("Passengers[x1000]")
-    plt.xticks(range(0, 200, 20))
-    plt.yticks(range(0, 1000, 100))
-    plt.legend(loc="upper left")
-    plt.savefig(f"../results/airlinePassengers_keras_{name}.png")
-    plt.show()
+    plot_results(prediction["one_step_prediction"], validation["validation"], "seq2seq")

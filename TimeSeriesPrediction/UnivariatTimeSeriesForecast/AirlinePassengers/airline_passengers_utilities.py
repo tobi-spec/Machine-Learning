@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from neuronal_network_types import NeuronalNetworkTypes
+import matplotlib.pyplot as plt
 
 
 class AirlinePassengersDataSet:
@@ -86,3 +87,19 @@ class Forecaster:
                 return self.current_value.reshape(1, self.current_value.shape[0])
             case _:
                 return self.current_value
+
+
+def plot_results(prediction: pd.Series, validation: pd.Series, name):
+    airline_passengers = AirlinePassengersDataSet()
+    plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
+    plt.plot(airline_passengers.get_train_data(), color="green", label="training")
+    plt.plot(validation, color="blue", label="validation")
+    plt.plot(prediction, color="orange", label="one_step_prediction")
+    plt.title(f"airline passengers {name}")
+    plt.xlabel("Time[Month]")
+    plt.ylabel("Passengers[x1000]")
+    plt.xticks(range(0, 200, 20))
+    plt.yticks(range(0, 1000, 100))
+    plt.legend(loc="upper left")
+    plt.savefig(f"./airline_passengers_keras_{name}.png")
+    plt.show()

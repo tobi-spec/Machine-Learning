@@ -1,4 +1,4 @@
-from airline_passengers_keras_lstm_workflow import workflow
+from airline_passengers_keras_rnn_workflow import workflow
 from airline_passengers_keras_rnn_model import RNNModel
 
 if __name__ == "__main__":
