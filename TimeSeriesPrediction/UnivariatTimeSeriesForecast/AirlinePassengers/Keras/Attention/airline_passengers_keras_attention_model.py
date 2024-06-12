@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_keras_attention_workflow import workflow
+
 
 
 class EncoderModel(Model):
@@ -36,7 +36,3 @@ class EncoderModel(Model):
         x2 = self.dense2(x2)
         return x2
 
-
-if __name__ == "__main__":
-    encoder_model = EncoderModel()
-    workflow(encoder_model, "attention")

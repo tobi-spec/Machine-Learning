@@ -1,6 +1,6 @@
 from keras.models import Model
 from keras.layers import LSTM, Dense, Input
-from airline_passengers_keras_seq2seq_workflow import workflow
+
 
 
 def seq2seq_model():
@@ -16,6 +16,3 @@ def seq2seq_model():
     return Model(inputs=[encoder_input, decoder_input], outputs=decoder_output)
 
 
-if __name__ == "__main__":
-    model = seq2seq_model()
-    workflow(model, "seq2seq")

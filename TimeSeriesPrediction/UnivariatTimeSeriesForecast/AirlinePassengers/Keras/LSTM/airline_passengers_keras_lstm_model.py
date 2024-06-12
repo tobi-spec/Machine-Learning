@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_keras_lstm_workflow import workflow
+
 
 
 class LSTMModel(Model):
@@ -23,6 +23,4 @@ class LSTMModel(Model):
         return x
 
 
-if __name__ == "__main__":
-    lstm_model = LSTMModel()
-    workflow(lstm_model, "LSTM")
+

@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_keras_lstm_workflow import workflow
+
 
 
 class RNNModel(Model):
@@ -17,6 +17,4 @@ class RNNModel(Model):
         return x
 
 
-if __name__ == "__main__":
-    rnn_model = RNNModel()
-    workflow(rnn_model, "rnn")
+

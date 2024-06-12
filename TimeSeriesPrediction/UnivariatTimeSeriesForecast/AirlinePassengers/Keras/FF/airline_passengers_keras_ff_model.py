@@ -1,5 +1,5 @@
 from keras import Model, layers, initializers
-from airline_passengers_keras_feedforward_workflow import workflow
+
 
 
 class FeedForwardModel(Model):
@@ -27,6 +27,4 @@ class FeedForwardModel(Model):
         return x
 
 
-if __name__ == "__main__":
-    model = FeedForwardModel()
-    workflow(model, "ff")
+

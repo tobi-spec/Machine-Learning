@@ -1,5 +1,5 @@
 from keras import Model, layers
-from airline_passengers_keras_cnn_workflow import workflow
+
 
 
 class CNNModel(Model):
@@ -22,6 +22,3 @@ class CNNModel(Model):
         return x
 
 
-if __name__ == "__main__":
-    cnn_model = CNNModel()
-    workflow(cnn_model, "cnn")
