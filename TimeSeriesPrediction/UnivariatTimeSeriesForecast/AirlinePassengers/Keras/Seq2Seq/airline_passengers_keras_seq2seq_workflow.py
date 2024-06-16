@@ -39,12 +39,12 @@ def workflow(model):
 
     start_target = train_targets_series[start_index]
     start_target_reshaped = start_target.reshape(1, start_target.shape[0], start_target.shape[1])
-    prediction_results = Forecaster(
+    prediction_results = Seq2SeqForecaster(
                                     model,
                                     start_value_reshaped,
                                     hyperparameters["number_of_predictions"],
                                     NeuronalNetworkTypes.LSTM,
-                                    np.zeros_like(start_target_reshaped)).seq2seq_one_step_ahead()
+                                    np.zeros_like(start_target_reshaped)).one_step_ahead()
 
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = train_scaler.inverse_transform([prediction_results]).flatten()

@@ -26,7 +26,7 @@ class TimeSeriesGenerator:
         self.lookback = lookback
         self.lookout = lookout
 
-    def create_timeseries(self) -> np.ndarray:
+    def create_timeseries(self) -> (np.ndarray, np.ndarray):
         inputs, targets = list(), list()
         for element in range(self.lookback, len(self.data)-self.lookout-1):
             inputs.append(self._get_timeseries(element))
@@ -58,21 +58,13 @@ class Forecaster:
         for element in range(0, self.number_of_predictions):
             prediction = self.model.predict(self.current_value)
             one_step_ahead_forecast.append(self._getFeature(prediction))
-            self.current_value = self.__move_numpy_queue(prediction)
+            self.current_value = self._move_numpy_queue(prediction)
         return one_step_ahead_forecast
-
-    def seq2seq_one_step_ahead(self):
-        forecast = list()
-        for element in range(0, self.number_of_predictions):
-            prediction = self.model.predict([self.current_value, self.current_target])
-            forecast.append(prediction[0][0][0])
-            self.current_value = self.__move_numpy_queue(prediction)
-        return forecast
 
     def _getFeature(self, prediction):
         return prediction[0][0]
 
-    def __move_numpy_queue(self, prediction):
+    def _move_numpy_queue(self, prediction):
         self.current_value = np.delete(self.current_value, 0)
         self.current_value = np.append(self.current_value, prediction)
         return self.__format_dimension()
@@ -87,6 +79,22 @@ class Forecaster:
                 return self.current_value.reshape(1, self.current_value.shape[0])
             case _:
                 return self.current_value
+
+
+class Seq2SeqForecaster(Forecaster):
+    def __init__(self, model, start_value, number_of_predictions, output_dimension_type, current_target=None):
+        Forecaster.__init__(self, model, start_value, number_of_predictions, output_dimension_type, current_target)
+
+    def one_step_ahead(self):
+        forecast = list()
+        for element in range(0, self.number_of_predictions):
+            prediction = self.model.predict([self.current_value, self.current_target])
+            forecast.append(self.__getFeature(prediction))
+            self.current_value = Forecaster._move_numpy_queue(self, prediction)
+        return forecast
+
+    def __getFeature(self, prediction):
+        return prediction[0][0][0]
 
 
 def plot_results(prediction: pd.Series, validation: pd.Series, name):
