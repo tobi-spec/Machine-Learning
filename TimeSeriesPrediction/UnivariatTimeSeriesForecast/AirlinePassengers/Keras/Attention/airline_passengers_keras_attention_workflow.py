@@ -5,7 +5,7 @@ from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_
 from yaml_parser import get_hyperparameters
 
 
-def workflow(model, name):
+def workflow(model):
     airline_passengers = AirlinePassengersDataSet()
     train_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_train = train_scaler.fit_transform(airline_passengers.get_train_data().reshape(-1, 1))
