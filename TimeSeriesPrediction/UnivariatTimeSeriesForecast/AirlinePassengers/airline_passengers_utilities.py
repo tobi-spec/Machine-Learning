@@ -73,7 +73,7 @@ class Forecaster:
         match self.output_dimension_type:
             case NeuronalNetworkTypes.ATTENTION | NeuronalNetworkTypes.CNN:
                 return shape_batch_timestamp_feature(self.current_value)
-            case NeuronalNetworkTypes.LSTM:
+            case NeuronalNetworkTypes.LSTM | NeuronalNetworkTypes.RNN:
                 # recurrent networks seems to work better with switch timestamp/feature
                 return shape_batch_feature_timestamp(self.current_value)
             case NeuronalNetworkTypes.FEED_FORWARD:

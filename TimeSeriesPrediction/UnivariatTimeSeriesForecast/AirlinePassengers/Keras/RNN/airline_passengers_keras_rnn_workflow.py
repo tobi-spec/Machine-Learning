@@ -39,7 +39,7 @@ def workflow(model):
                                     model,
                                     start_value_reshaped,
                                     hyperparameters["number_of_predictions"],
-                                    NeuronalNetworkTypes.LSTM).one_step_ahead()
+                                    NeuronalNetworkTypes.RNN).one_step_ahead()
 
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = train_scaler.inverse_transform([prediction_results]).flatten()

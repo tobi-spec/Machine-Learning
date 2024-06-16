@@ -6,3 +6,4 @@ class NeuronalNetworkTypes(Enum):
     LSTM = "lstm"
     ATTENTION = "attention"
     CNN = "cnn"
+    RNN = "rnn"
