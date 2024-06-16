@@ -71,12 +71,13 @@ class Forecaster:
 
     def __format_dimension(self):
         match self.output_dimension_type:
-            case NeuronalNetworkTypes.LSTM:
-                return self.current_value.reshape(1, 1, self.current_value.shape[0])
             case NeuronalNetworkTypes.ATTENTION | NeuronalNetworkTypes.CNN:
-                return self.current_value.reshape(1, self.current_value.shape[0], 1)
+                return shape_batch_timestamp_feature(self.current_value)
+            case NeuronalNetworkTypes.LSTM:
+                # recurrent networks seems to work better with switch timestamp/feature
+                return shape_batch_feature_timestamp(self.current_value)
             case NeuronalNetworkTypes.FEED_FORWARD:
-                return self.current_value.reshape(1, self.current_value.shape[0])
+                return shape_batch_timestamp(self.current_value)
             case _:
                 return self.current_value
 
@@ -95,6 +96,18 @@ class Seq2SeqForecaster(Forecaster):
 
     def __getFeature(self, prediction):
         return prediction[0][0][0]
+
+
+def shape_batch_feature_timestamp(value):
+    return value.reshape(1, 1, value.shape[0])
+
+
+def shape_batch_timestamp_feature(value):
+    return value.reshape(1, value.shape[0], 1)
+
+
+def shape_batch_timestamp(value):
+    return value.reshape(1, value.shape[0])
 
 
 def plot_results(prediction: pd.Series, validation: pd.Series, name):
