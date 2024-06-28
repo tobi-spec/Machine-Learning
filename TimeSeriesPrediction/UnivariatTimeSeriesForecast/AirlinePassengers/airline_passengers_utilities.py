@@ -46,12 +46,11 @@ def validation_forecast(model, inputs):
 
 
 class Forecaster:
-    def __init__(self, model, start_value, number_of_predictions, output_dimension_type, current_target=None):
+    def __init__(self, model, start_value, number_of_predictions, output_dimension_type):
         self.model = model
         self.current_value = start_value
         self.number_of_predictions = number_of_predictions
         self.output_dimension_type = output_dimension_type
-        self.current_target = current_target
 
     def one_step_ahead(self):
         one_step_ahead_forecast = list()
@@ -83,8 +82,9 @@ class Forecaster:
 
 
 class Seq2SeqForecaster(Forecaster):
-    def __init__(self, model, start_value, number_of_predictions, output_dimension_type, current_target=None):
-        Forecaster.__init__(self, model, start_value, number_of_predictions, output_dimension_type, current_target)
+    def __init__(self, model, start_value, number_of_predictions, output_dimension_type, current_target):
+        Forecaster.__init__(self, model, start_value, number_of_predictions, output_dimension_type)
+        self.current_target = current_target
 
     def one_step_ahead(self):
         forecast = list()
