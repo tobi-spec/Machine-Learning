@@ -1,10 +1,11 @@
 import pandas as pd
 import re
+from collections import OrderedDict
 
 
 class LogParser:
-    def __init__(self):
-        self.logs = self._load_logs("./log_example.txt")
+    def __init__(self, path: str):
+        self.logs = self._load_logs(path)
 
     def _load_logs(self, file_path):
         with open(file_path, 'r') as file:
@@ -33,8 +34,24 @@ class LogParser:
     def get_messages(self):
         return self.logs['Message']
 
+    def get_numbers(self):
+        return self.logs["Number"]
 
-if __name__ == "__main__":
-    log_parser = LogParser()
-    print(log_parser.get_all_data())
 
+class DataBuilder(LogParser):
+    def __init__(self, path: str, translation_table: dict):
+        super().__init__(path)
+        self.translation_table = translation_table
+        self.data = None
+
+    def add_number_representation(self):
+        numbers = list()
+        for message in self.logs['Message']:
+            numbers.append(self.translation_table[message])
+        self.logs["Number"] = numbers
+        return self
+
+
+
+def transform_messages_to_numbers(logs):
+    return dict({entry: index for index, entry in enumerate(logs)})
