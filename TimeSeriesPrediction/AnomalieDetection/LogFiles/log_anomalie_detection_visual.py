@@ -1,7 +1,8 @@
 
 import matplotlib.pyplot as plt
-from TimeSeriesPrediction.AnomalieDetection.LogAnalysis.log_anomalie_detection_keras_utils import LogParser, \
-    transform_messages_to_numbers, DataBuilder
+
+from TimeSeriesPrediction.AnomalieDetection.LogFiles.log_anomalie_detection_keras_utils import DataBuilder, LogParser, \
+    transform_messages_to_numbers
 
 
 def main():
