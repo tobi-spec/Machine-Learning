@@ -1,9 +1,7 @@
-from NaturalLanguageProcessing.LogAnomalieDetection.log_anomalie_detection_utils import LogParser, DataBuilder, \
-    transform_messages_to_numbers
+
 import matplotlib.pyplot as plt
-
-
-
+from TimeSeriesPrediction.AnomalieDetection.LogAnalysis.log_anomalie_detection_keras_utils import LogParser, \
+    transform_messages_to_numbers, DataBuilder
 
 
 def main():
