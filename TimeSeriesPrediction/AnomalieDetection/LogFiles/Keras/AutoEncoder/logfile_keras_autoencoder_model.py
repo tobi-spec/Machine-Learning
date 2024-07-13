@@ -1,9 +1,9 @@
 from keras import Model, layers, Sequential
 
 
-class AnomalyDetector(Model):
+class AutoEncoder(Model):
     def __init__(self):
-        super(AnomalyDetector, self).__init__()
+        super(AutoEncoder, self).__init__()
         self.encoder = Sequential([
             layers.Dense(32, activation="relu"),
             layers.Dense(16, activation="relu"),
@@ -12,7 +12,7 @@ class AnomalyDetector(Model):
         self.decoder = Sequential([
             layers.Dense(16, activation="relu"),
             layers.Dense(32, activation="relu"),
-            layers.Dense(140, activation="sigmoid")])
+            layers.Dense(50, activation="sigmoid")])
 
     def call(self, x):
         encoded = self.encoder(x)

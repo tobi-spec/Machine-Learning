@@ -35,6 +35,7 @@ class LogParser:
         return self.logs['Message']
 
     def get_numbers(self):
+        # try/catch block
         return self.logs["Number"]
 
 
