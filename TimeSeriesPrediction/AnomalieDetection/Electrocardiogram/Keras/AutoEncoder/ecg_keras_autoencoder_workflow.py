@@ -4,14 +4,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+class ECGDataSet:
+    def __init__(self):
+        self.data = pd.read_csv('../../electrocardiogram.csv', header=None).to_numpy()
+
+    def get_targets(self):
+        return self.data[:, -1]
+
+    def get_inputs(self):
+        return self.data[:, 0:-1]
+
 def workflow(model):
-    dataframe = pd.read_csv('../../electrocardiogram.csv', header=None)
-    raw_data = dataframe.values
-    labels = raw_data[:, -1]
-    data = raw_data[:, 0:-1]
+    ecg = ECGDataSet()
 
     train_data, test_data, train_labels, test_labels = train_test_split(
-        data, labels, test_size=0.2, random_state=21
+        ecg.get_inputs(), ecg.get_targets(), test_size=0.2, random_state=21
     )
 
     model.compile(optimizer='adam', loss='mae')
