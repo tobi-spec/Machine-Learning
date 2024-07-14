@@ -1,6 +1,7 @@
+import numpy as np
 import pandas as pd
 import re
-from collections import OrderedDict
+import os
 
 
 class LogParser:
@@ -53,6 +54,15 @@ class DataBuilder(LogParser):
         return self
 
 
-
 def transform_messages_to_numbers(logs):
     return dict({entry: index for index, entry in enumerate(logs)})
+
+
+def create_train_data(translation_table):
+    log_files = os.listdir("../../data/correct")
+    list_of_timeseries = list()
+    for log in log_files:
+        timeseries = DataBuilder(f"../../data/correct/{log}",
+                                 translation_table).add_number_representation().get_numbers()
+        list_of_timeseries.append(timeseries)
+    return np.array(list_of_timeseries)
