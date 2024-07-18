@@ -12,7 +12,7 @@ class LogParser:
         with open(file_path, 'r') as file:
             log_lines = file.readlines()
 
-        log_pattern = re.compile(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (Component\d+) (\w+) (.*)')
+        log_pattern = re.compile(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),(Component\d+),(\w+),(.*)')
         log_data = []
         for line in log_lines:
             match = log_pattern.match(line.strip())
