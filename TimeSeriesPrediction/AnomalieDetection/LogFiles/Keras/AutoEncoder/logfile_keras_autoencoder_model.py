@@ -5,10 +5,12 @@ class AutoEncoder(Model):
     def __init__(self):
         super(AutoEncoder, self).__init__()
         self.encoder = Sequential([
-            layers.Dense(50, activation="relu")])
+            layers.Dense(50, activation="linear"),
+            layers.Dense(50, activation="linear")])
 
         self.decoder = Sequential([
-            layers.Dense(50, activation="relu")])
+            layers.Dense(50, activation="linear"),
+            layers.Dense(50, activation="linear")])
 
     def call(self, x):
         encoded = self.encoder(x)
