@@ -26,5 +26,5 @@ def workflow(model):
 
     plt.plot(error_1, "black")
     plt.plot(result[0], "red")
-    # plt.fill_between(np.arange(50), result, test_inputs, color='lightcoral')
+    plt.fill_between(np.arange(50), result[0], test_inputs[0], color='lightcoral')
     plt.show()
