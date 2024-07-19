@@ -27,5 +27,6 @@ def workflow(model):
     name = hyperparameters["name"]
     plt.plot(error_1, "black", label="Input")
     plt.plot(result[0], "red", label="reconstruction")
+    plt.legend(loc="upper left")
     plt.fill_between(np.arange(50), result[0], test_inputs[0], color='lightcoral', label="error")
     plt.savefig(f"./log_anomalie_detection_keras_{name}.png")
