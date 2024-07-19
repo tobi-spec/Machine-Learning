@@ -11,7 +11,7 @@ def workflow(model):
 
     train_inputs = create_train_data(translation_table)
 
-    error_1 = DataBuilder("../../data/error/error_log1.txt",
+    error_1 = DataBuilder("../../data/error/error_log2.txt",
                           translation_table).add_number_representation().get_numbers()
     test_inputs = np.array([error_1])
 
@@ -24,7 +24,8 @@ def workflow(model):
               shuffle=True)
     result = model.predict(test_inputs)
 
-    plt.plot(error_1, "black")
-    plt.plot(result[0], "red")
-    plt.fill_between(np.arange(50), result[0], test_inputs[0], color='lightcoral')
-    plt.show()
+    name = hyperparameters["name"]
+    plt.plot(error_1, "black", label="Input")
+    plt.plot(result[0], "red", label="reconstruction")
+    plt.fill_between(np.arange(50), result[0], test_inputs[0], color='lightcoral', label="error")
+    plt.savefig(f"./log_anomalie_detection_keras_{name}.png")
