@@ -1,3 +1,5 @@
+import pandas as pd
+
 from TimeSeriesPrediction.AnomalieDetection.LogFiles.log_anomalie_detection_keras_utils import LogParser, \
     transform_messages_to_numbers, DataBuilder, create_train_data
 import numpy as np
@@ -25,8 +27,15 @@ def workflow(model):
     result = model.predict(test_inputs)
 
     name = hyperparameters["name"]
-    plt.plot(error_1, "black", label="Input")
+    plt.plot(test_inputs[0], "black", label="Input")
     plt.plot(result[0], "red", label="reconstruction")
     plt.legend(loc="upper left")
     plt.fill_between(np.arange(50), result[0], test_inputs[0], color='lightcoral', label="error")
     plt.savefig(f"./log_anomalie_detection_keras_{name}.png")
+
+    differences = result[0] - test_inputs[0]
+    df = pd.DataFrame({
+        "Input": test_inputs[0],
+        "reconstruction": result[0],
+        "difference": differences})
+    print(df)
