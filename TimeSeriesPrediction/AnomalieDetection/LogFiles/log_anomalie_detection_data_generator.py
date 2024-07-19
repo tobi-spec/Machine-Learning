@@ -24,7 +24,7 @@ def create_logfile():
     logs.to_csv(f'./data/correct/log{number_of_file}.txt', index=False, header=False)
 
 
-for i in range(0, 20):
+for i in range(0, 100):
     create_logfile()
 
 

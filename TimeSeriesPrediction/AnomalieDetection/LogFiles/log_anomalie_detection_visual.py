@@ -8,10 +8,10 @@ def main():
     translation_table = transform_messages_to_numbers(logs_1.get_messages())
 
     dataset_1 = DataBuilder("data/correct/log1.txt", translation_table).add_number_representation()
-    dataset_2 = DataBuilder("data/correct/log2.txt", translation_table).add_number_representation()
-    dataset_3 = DataBuilder("data/correct/log3.txt", translation_table).add_number_representation()
-    dataset_4 = DataBuilder("data/correct/log4.txt", translation_table).add_number_representation()
-    dataset_5 = DataBuilder("data/error/log_error.txt", translation_table).add_number_representation()
+    dataset_2 = DataBuilder("data/correct/log95.txt", translation_table).add_number_representation()
+    dataset_3 = DataBuilder("data/correct/log90.txt", translation_table).add_number_representation()
+    dataset_4 = DataBuilder("data/correct/log100.txt", translation_table).add_number_representation()
+    dataset_5 = DataBuilder("data/error/error_log2.txt", translation_table).add_number_representation()
 
     fig, ax = plt.subplots(3, 2)
     ax[0, 0].plot(dataset_1.get_numbers())

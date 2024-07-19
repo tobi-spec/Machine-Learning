@@ -11,7 +11,7 @@ def workflow(model):
 
     train_inputs = create_train_data(translation_table)
 
-    error_1 = DataBuilder("../../data/error/log_error.txt",
+    error_1 = DataBuilder("../../data/error/error_log1.txt",
                           translation_table).add_number_representation().get_numbers()
     test_inputs = np.array([error_1])
 
