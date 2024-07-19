@@ -8,14 +8,18 @@ import matplotlib.pyplot as plt
 
 
 def workflow(model):
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_colwidth', None)
+
     logs_1 = LogParser("../../data/correct/log1.txt")
     translation_table = transform_messages_to_numbers(logs_1.get_messages())
 
     train_inputs = create_train_data(translation_table)
 
     error_1 = DataBuilder("../../data/error/error_log2.txt",
-                          translation_table).add_number_representation().get_numbers()
-    test_inputs = np.array([error_1])
+                          translation_table).add_number_representation()
+    test_inputs = np.array([error_1.get_numbers()])
 
     hyperparameters: dict = get_hyperparameters("logfile_keras_autoencoder_hyperparameter.yaml")
 
@@ -37,5 +41,9 @@ def workflow(model):
     df = pd.DataFrame({
         "Input": test_inputs[0],
         "reconstruction": result[0],
-        "difference": differences})
-    print(df)
+        "difference": differences,
+        "messages": error_1.get_messages().values})
+    df.to_csv(f"./log_anomalie_detection_keras_{name}.csv")
+
+    print(df.nlargest(5, "difference"))
+    print(df.nsmallest(5, "difference"))
