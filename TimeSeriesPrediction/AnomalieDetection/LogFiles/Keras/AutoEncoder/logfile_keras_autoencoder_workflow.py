@@ -45,4 +45,4 @@ def workflow(model):
         "messages": error_1.get_messages().values})
     df.to_csv(f"./log_anomalie_detection_keras_{name}.csv")
 
-    print(df.sort_values("difference", ascending=False, key=abs))
+    print(df.sort_values("difference", ascending=False, key=abs).head(5))
