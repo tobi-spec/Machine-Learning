@@ -18,13 +18,29 @@ def main():
 
     fig, ax = plt.subplots(3, 3)
     ax[0, 0].plot(dataset_1)
+    ax[0, 0].set_title('original')
+
     ax[0, 1].plot(dataset_2)
+    ax[0, 1].set_title('correct')
+
     ax[0, 2].plot(dataset_3)
+    ax[0, 2].set_title('correct')
+
     ax[1, 0].plot(dataset_4)
+    ax[1, 0].set_title('correct')
+
     ax[1, 1].plot(dataset_5)
+    ax[1, 1].set_title('correct')
+
     ax[1, 2].plot(dataset_6)
+    ax[1, 2].set_title('correct')
+
     ax[2, 0].plot(dataset_8)
+    ax[2, 0].set_title('error')
+
     ax[2, 1].plot(dataset_9)
+    ax[2, 1].set_title('error')
+
     plt.show()
 
 
