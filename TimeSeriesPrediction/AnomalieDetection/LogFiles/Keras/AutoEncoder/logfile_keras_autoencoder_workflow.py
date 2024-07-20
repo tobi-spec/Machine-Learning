@@ -34,8 +34,6 @@ def workflow(model):
 
     differences = result[0] - test_inputs[0]
     df = pd.DataFrame({
-        "Input": test_inputs[0],
-        "reconstruction": result[0],
         "difference": differences,
         "messages": error_1.get_messages().values})
     df.to_csv(f"./log_anomalie_detection_keras_{name}.csv")
