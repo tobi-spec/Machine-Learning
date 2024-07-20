@@ -31,11 +31,6 @@ def workflow(model):
     result = model.predict(test_inputs)
 
     name = hyperparameters["name"]
-    plt.plot(test_inputs[0], "black", label="Input")
-    plt.plot(result[0], "red", label="reconstruction")
-    plt.legend(loc="upper left")
-    plt.fill_between(np.arange(50), result[0], test_inputs[0], color='lightcoral', label="error")
-    plt.savefig(f"./log_anomalie_detection_keras_{name}.png")
 
     differences = result[0] - test_inputs[0]
     df = pd.DataFrame({
@@ -46,3 +41,10 @@ def workflow(model):
     df.to_csv(f"./log_anomalie_detection_keras_{name}.csv")
 
     print(df.sort_values("difference", ascending=False, key=abs).head(5))
+
+    plt.plot(test_inputs[0], "black", label="Input")
+    plt.plot(result[0], "red", label="reconstruction")
+    plt.legend(loc="upper left")
+    plt.fill_between(np.arange(50), result[0], test_inputs[0], color='lightcoral', label="error")
+    plt.savefig(f"./log_anomalie_detection_keras_{name}.png")
+    plt.show()
