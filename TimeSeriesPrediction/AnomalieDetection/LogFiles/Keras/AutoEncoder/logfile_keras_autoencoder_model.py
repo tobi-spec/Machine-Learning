@@ -1,24 +1,44 @@
-from keras import Model, layers, Sequential, initializers
+from keras import Model, layers, Sequential, initializers, regularizers
 
 
 class AutoEncoder(Model):
     def __init__(self):
         super(AutoEncoder, self).__init__()
         self.encoder = Sequential([
-            layers.Dense(50, activation="linear",
+            layers.Dense(units=50,
+                         activation="linear",
                          kernel_initializer=initializers.GlorotNormal(),
-                         bias_initializer="zeros"),
-            layers.Dense(50, activation="linear",
+                         bias_initializer="zeros",
+                         kernel_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
+                         bias_regularizer=regularizers.L2(1e-4),
+                         activity_regularizer=regularizers.L2(1e-5)
+                         ),
+            layers.Dense(units=50,
+                         activation="linear",
                          kernel_initializer=initializers.GlorotNormal(),
-                         bias_initializer="zeros")])
+                         bias_initializer="zeros",
+                         kernel_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
+                         bias_regularizer=regularizers.L2(1e-4),
+                         activity_regularizer=regularizers.L2(1e-5)
+                         )])
 
         self.decoder = Sequential([
-            layers.Dense(50, activation="linear",
+            layers.Dense(units=50,
+                         activation="linear",
                          kernel_initializer=initializers.GlorotNormal(),
-                         bias_initializer="zeros"),
-            layers.Dense(50, activation="linear",
+                         bias_initializer="zeros",
+                         kernel_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
+                         bias_regularizer=regularizers.L2(1e-4),
+                         activity_regularizer=regularizers.L2(1e-5)
+                         ),
+            layers.Dense(units=50,
+                         activation="linear",
                          kernel_initializer=initializers.GlorotNormal(),
-                         bias_initializer="zeros")])
+                         bias_initializer="zeros",
+                         kernel_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
+                         bias_regularizer=regularizers.L2(1e-4),
+                         activity_regularizer=regularizers.L2(1e-5)
+                         )])
 
     def call(self, x):
         encoded = self.encoder(x)
