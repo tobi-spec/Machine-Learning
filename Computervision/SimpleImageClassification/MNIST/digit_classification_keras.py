@@ -8,10 +8,10 @@ start = timeit.default_timer()
 
 class MNISTDataLoader:
     def __init__(self):
-        self.train_images = idx2numpy.convert_from_file("./MNIST/train-images.idx3-ubyte")
-        self.train_labels = idx2numpy.convert_from_file("./MNIST/train-labels.idx1-ubyte")
-        self.test_images = idx2numpy.convert_from_file("./MNIST/t10k-images.idx3-ubyte")
-        self.test_labels = idx2numpy.convert_from_file("./MNIST/t10k-labels.idx1-ubyte")
+        self.train_images = idx2numpy.convert_from_file("./data/train-images.idx3-ubyte")
+        self.train_labels = idx2numpy.convert_from_file("./data/train-labels.idx1-ubyte")
+        self.test_images = idx2numpy.convert_from_file("./data/t10k-images.idx3-ubyte")
+        self.test_labels = idx2numpy.convert_from_file("./data/t10k-labels.idx1-ubyte")
 
     def info(self):
         print("Number of images for training: ", len(self.train_images), self.train_images.shape)
