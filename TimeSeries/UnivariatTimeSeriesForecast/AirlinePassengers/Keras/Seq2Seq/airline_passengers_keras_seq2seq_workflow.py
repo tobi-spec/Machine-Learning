@@ -1,5 +1,5 @@
 from sklearn.preprocessing import MinMaxScaler
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
+from TimeSeries.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 from keras import optimizers
 from keras.callbacks import EarlyStopping
 from yaml_parser import get_hyperparameters

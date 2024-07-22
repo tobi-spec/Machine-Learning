@@ -1,6 +1,6 @@
 from keras import optimizers
 from keras.callbacks import EarlyStopping
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
+from TimeSeries.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 from yaml_parser import get_hyperparameters
 
 
