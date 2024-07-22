@@ -1,11 +1,15 @@
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
 
-EPOCHS = 600
+from TimeSeries.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import \
+    AirlinePassengersDataSet, TimeSeriesGenerator
+
+EPOCHS = 100
 LEARNING_RATE = 0.001
 BATCH_SIZE = 1
 LOOK_BACK = 30
@@ -119,6 +123,7 @@ def validation_forecast(model, inputs):
         prediction = model.forward(element[None, :, :])
         predictions.append(prediction.item())
     return predictions
+
 
 def one_step_ahead_forecast(model, current_value, number_of_predictions):
     one_step_ahead_forecast = list()
