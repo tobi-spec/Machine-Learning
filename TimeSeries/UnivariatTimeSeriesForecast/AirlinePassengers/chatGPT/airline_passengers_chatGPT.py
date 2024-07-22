@@ -1,4 +1,4 @@
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import \
+from TimeSeries.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import \
     AirlinePassengersDataSet
 from yaml_parser import get_api_key
 from openai import OpenAI

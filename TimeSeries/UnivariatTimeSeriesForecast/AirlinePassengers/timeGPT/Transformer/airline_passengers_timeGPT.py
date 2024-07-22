@@ -1,6 +1,6 @@
 import os
 from nixtla import NixtlaClient
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import \
+from TimeSeries.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import \
     AirlinePassengersDataSet
 from yaml_parser import get_api_key
 import matplotlib.pyplot as plt
