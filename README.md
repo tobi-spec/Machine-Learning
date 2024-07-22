@@ -1,60 +1,37 @@
 # README
 
-This repo is a summary for deep learning / neuronal network practice. 
-The different examples are implemented in pytorch, tensorflow keras 
-and also a "from scratch" implementation according to the "neuronal networks from scratch" series.
+This repository is a summary for deep learning / neuronal network examples. 
+The different examples are implemented in pytorch and tensorflow keras. It exists also a basic "from scratch" implementation 
+according to the "neuronal networks from scratch" series.
 
-This README contains all general information and links for machine learning. 
-For explanition and information of each subtopic (e.g. Time Series, Computer version etc.) look in the READMEs of the respective folders 
+The examples are divided into the 3 main topics of neuronal networks: time series, natural language processing, and computer vision 
 
 
-## Glossar
+## Time Series
 
-**Epoch**: One forward pass and one backward pass of all the training examples. <br>
+### Linear Regression
+Most basic implementation of a neuronal network - a linear equation. 
+This is used for a simple regression to predict revenue of a ice cream truck for a certain temperature
 
-**Batch**: Since one epoch is too big to feed to the computer at once, we divide it in serveral smaller batches. 
-After every batch backward pass and After one epoch the weights decent is calculated<br>
+### Univariat Time Series Forecast
+Forecasting of a time series model with one attribute. The data comes from the airline passengers dataset. Aim is to predict 
+the progression of passenger numbers. The forecast is made by a one-step-ahead prediction. To get in touch with different 
+models and layers the forecast is implement with following variations:
 
-**Batch Size**: Total number of traninf examples in a single batch <br>
+- feed forward
+- lstm
+- rnn
+- cnn
+- seq2seq
+- attention
 
-**Iteration**: Number of batches needed to complete one Epoch
+Also two pretrained transformer models are used: timeGPT and Darts. As well as a funky approach by using the chatGPT API 
+to ask for a forecast via prompt. 
 
-### Layer weight initializers
-pytorch: https://pytorch.org/docs/stable/nn.init.html <br>
-keras: https://keras.io/api/layers/initializers/ <br>
+### Multivariat Time Series Forecast
+Forecast of a time series model with multiple attributes. The data are the beijing pm2.5 dataset (pm stands for particular matter). 
+Aim is to predict the air pollution by multiple factors. The forecast is made by a one-step-ahead prediction. Currently there is only one
+implementation with a keras feed forward model for a basic approach. 
 
-### Loss Functions
-pytorch: https://pytorch.org/docs/stable/nn.html#loss-functions <br>
-keras: https://keras.io/api/losses/ <br>
- 
-loss functions are divided in regression losses like Mean Error functions and classification losses like cross entropy functions
-
-#### Good to know
- - (Keras) Binary Cross Entropy - two Labels 
- - (Keras) Categorical Cross Entropy - one-hot encoded labels
- - (Keras) Sparse Categorical Cross Entropy - labels with logits/ pure numbers
- - (Pytorch) CrossEntropyLoss - equivalent to applying LogSoftmax on an input, followed by NLLLoss -> no softmax in output layer!
-
-### Optimizer Functions
-pytorch: https://pytorch.org/docs/stable/optim.html <br>
-keras: https://keras.io/api/optimizers/ <br>
-
-- Momentum: Running Average of the last x gradients to overcome local minima
-- Learning rate decay: Makes learning steps small and small to not overstep global minimum
-
-## Link list:
-List of useful videos and articles to learn deep learning
-
-### Basics:
-3Blue1Brown Playlist about Deep Learning: <br> https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi <br>
-Statequest Playlist about Deep Learning: <br> https://www.youtube.com/playlist?list=PLblh5JKOoLUIxGDQs4LFFD--41Vzf-ME1 <br>
-Neuronal Networks from Scratch Playlist: <br> https://www.youtube.com/playlist?list=PLQVvvaa0QuDcjD5BAw2DxE6OF2tius3V3 <br>
-
-### Convolutional Neuronal Networks 
-https://www.youtube.com/watch?v=YRhxdVk_sIs&t=345s <br>
-https://www.youtube.com/watch?v=ZjM_XQa5s6s&t=447s <br>
-https://www.youtube.com/watch?v=KuXjwB4LzSA <br>
-
-### Recurrent Neuronal Networks
-https://www.youtube.com/watch?v=LHXXI4-IEns
+### Anomaly Detection
 
