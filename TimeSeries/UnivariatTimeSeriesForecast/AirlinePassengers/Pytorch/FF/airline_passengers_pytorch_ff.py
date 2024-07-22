@@ -1,8 +1,12 @@
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
-from TimeSeriesPrediction.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *
+
+from TimeSeries.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import \
+    AirlinePassengersDataSet, TimeSeriesGenerator
 
 EPOCHS = 1000
 LEARNING_RATE = 0.0001
