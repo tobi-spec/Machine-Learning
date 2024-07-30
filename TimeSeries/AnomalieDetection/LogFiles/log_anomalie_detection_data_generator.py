@@ -1,7 +1,7 @@
 from os import listdir
-from TimeSeriesPrediction.AnomalieDetection.LogFiles.log_anomalie_detection_keras_utils import LogParser
 import pandas as pd
 import numpy as np
+from TimeSeries.AnomalieDetection.LogFiles.log_anomalie_detection_keras_utils import LogParser
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)

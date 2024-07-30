@@ -2,7 +2,6 @@ import numpy as np
 from keras import layers, Sequential, optimizers, losses
 import idx2numpy
 import matplotlib.pyplot as plt
-
 from yaml_parser import get_hyperparameters
 
 
@@ -36,6 +35,8 @@ model.add(layers.Dense(units=10, activation="softmax"))
 
 model.compile(optimizer=optimizers.Adam(hyperparameters["learning_rate"]), loss=losses.SparseCategoricalCrossentropy())
 model.fit(mnist.train_images, mnist.train_labels, epochs=hyperparameters["epochs"], batch_size=hyperparameters["batch_size"])
+
+
 
 prediction: list = model.predict(mnist.test_images[[6758]])
 print("predicted number: ", np.argmax(prediction))

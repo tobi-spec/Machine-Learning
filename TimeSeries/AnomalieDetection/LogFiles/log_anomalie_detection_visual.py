@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from TimeSeriesPrediction.AnomalieDetection.LogFiles.log_anomalie_detection_keras_utils import DataBuilder, LogParser, \
+from TimeSeries.AnomalieDetection.LogFiles.log_anomalie_detection_keras_utils import DataBuilder, LogParser, \
     transform_messages_to_numbers
 
 
