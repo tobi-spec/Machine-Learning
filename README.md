@@ -34,4 +34,15 @@ Aim is to predict the air pollution by multiple factors. The forecast is made by
 implementation with a keras feed forward model for a basic approach. 
 
 ### Anomaly Detection
+...
+
+## Computervision
+
+### Image Classification
+Classifier for detection of handwritten digits from 0 to 9. The MNIST dataset for handwritten digits is used as data source.
+Currently implemented are models based of feed forward layers and cnn layers, both in keras and in pytorch. 
+
+## Natural Language Processing
+...
+
 
