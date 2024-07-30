@@ -40,7 +40,9 @@ implementation with a keras feed forward model for a basic approach.
 
 ### Image Classification
 Classifier for detection of handwritten digits from 0 to 9. The MNIST dataset for handwritten digits is used as data source.
-Currently implemented are models based of feed forward layers and cnn layers, both in keras and in pytorch. 
+MNIST contains 60.000 images and labels for training and 10.000 images and labels for test, each image is 28x28 pixels and in b/w.
+Currently, implemented are models based of feed forward layers and cnn layers, both in keras and in pytorch. 
+
 
 ## Natural Language Processing
 ...
