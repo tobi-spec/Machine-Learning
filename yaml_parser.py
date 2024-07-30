@@ -2,7 +2,8 @@ import yaml
 import json
 import logging
 
-def get_hyperparameters(path: str):
+
+def get_hyperparameters(path: str) -> dict:
     try:
         with open(path, 'r') as file:
             return yaml.safe_load(file)
@@ -14,7 +15,7 @@ def get_hyperparameters(path: str):
         logging.error(f"An unexpected error occurred: {e}")
 
 
-def get_api_key():
+def get_api_key() -> dict:
     try:
         with open("./api-key.yaml", 'r') as file:
             return yaml.safe_load(file)
@@ -26,7 +27,7 @@ def get_api_key():
         logging.error(f"An unexpected error occurred: {e}")
 
 
-def write_to_txt(text: dict, path: str):
+def write_to_txt(text: dict, path: str) -> None:
     try:
         with open(path, 'w') as file:
             json.dump(text, file)
