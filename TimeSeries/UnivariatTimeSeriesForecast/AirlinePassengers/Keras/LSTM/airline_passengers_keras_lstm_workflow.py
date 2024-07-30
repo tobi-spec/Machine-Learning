@@ -1,5 +1,4 @@
 from keras import optimizers
-import matplotlib.pyplot as plt
 from keras.callbacks import EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
 from TimeSeries.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import *

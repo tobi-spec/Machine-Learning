@@ -1,8 +1,7 @@
 import pandas as pd
-
-from TimeSeriesPrediction.AnomalieDetection.LogFiles.log_anomalie_detection_keras_utils import LogParser, \
-    transform_messages_to_numbers, DataBuilder, create_train_data
 import numpy as np
+from TimeSeries.AnomalieDetection.LogFiles.log_anomalie_detection_keras_utils import LogParser, \
+    transform_messages_to_numbers, create_train_data, DataBuilder
 from yaml_parser import get_hyperparameters
 import matplotlib.pyplot as plt
 
