@@ -1,9 +1,9 @@
 from enum import Enum
 
 
-class NeuronalNetworkTypes(Enum):
-    FEED_FORWARD = "feedforward"
-    LSTM = "lstm"
-    ATTENTION = "attention"
-    CNN = "cnn"
-    RNN = "rnn"
+class NeuronalNetworkTypes(Enum(str)):
+    FEED_FORWARD: str = "feedforward"
+    LSTM: str = "lstm"
+    ATTENTION: str = "attention"
+    CNN: str = "cnn"
+    RNN: str = "rnn"
