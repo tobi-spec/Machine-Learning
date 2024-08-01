@@ -16,7 +16,7 @@ def main():
     linear_model = create_linear_model()
     linear_model.fit(x_train, y_train, epochs=20, batch_size=1)
 
-    validation_results = validation_prediction(linear_model, x_test)
+    validation_results = linear_model.predict([x_test])
 
     stop = timeit.default_timer()
 
@@ -50,9 +50,6 @@ def create_linear_model():
     model.compile(optimizer=tf.keras.optimizers.Adam(0.01), loss='mean_squared_error')
     return model
 
-
-def validation_prediction(model, inputs):
-    return model.predict([inputs])
 
 
 if __name__ == "__main__":
