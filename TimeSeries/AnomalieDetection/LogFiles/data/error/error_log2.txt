@@ -1,7 +1,7 @@
 2024-07-02 10:00:01,Component1,INFO,Starting process.
+2024-07-02 10:00:04,Component2,DEBUG,Fetching data from API.
 2024-07-02 10:00:02,Component3,WARN,Response time exceeds threshold.
 2024-07-02 10:00:03,Component4,ERROR,NullPointerException at line 45.
-2024-07-02 10:00:04,Component2,DEBUG,Fetching data from API.
 2024-07-02 10:00:05,Component6,DEBUG,Initializing cache.
 2024-07-02 10:00:06,Component5,INFO,User login successful.
 2024-07-02 10:00:07,Component7,ERROR,Unable to connect to database.
