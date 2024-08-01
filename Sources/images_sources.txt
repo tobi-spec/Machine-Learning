@@ -2,3 +2,4 @@ https://www.researchgate.net/figure/Schematic-structure-of-a-perceptron-neural-n
 https://mallahyari.github.io/ml_tutorial/neural_network/ [22-07-2024 18.40]
 https://cienciadedatos.net/documentos/py27-time-series-forecasting-python-scikitlearn.html [22-07-2024 18.40]
 https://harikrishnabhyravi.blogspot.com/2018/10/aimldl.html [22-07-2024 18.40]
+https://www.nomidl.com/deep-learning/what-is-perceptron/
