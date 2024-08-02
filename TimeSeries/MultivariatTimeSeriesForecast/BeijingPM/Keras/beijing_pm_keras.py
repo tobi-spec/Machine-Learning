@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    beijingData = BeijingDataSet()
-    beijingData.encode_labels()
-    train: pd.DataFrame = beijingData.get_train()
-    test: pd.DataFrame = beijingData.get_test()
+    beijing_data = BeijingDataSet()
+    beijing_data.encode_labels()
+    train: pd.DataFrame = beijing_data.train
+    test: pd.DataFrame = beijing_data.test
 
     scaler = MinMaxScaler((0, 1))
     scaled_train: np.array = scaler.fit_transform(train)
@@ -32,12 +32,12 @@ def main():
     prediction_rescaled: np.array = scaler.inverse_transform(prediction_results)
 
     prediction = pd.DataFrame(prediction_rescaled)
-    prediction.columns = beijingData.dataset.columns
+    prediction.columns = beijing_data.dataset.columns
 
     prediction.index = create_dates_for_forecast(train.index[-1], number_of_predictions)
 
-    plt.plot(beijingData.dataset["pollution"], color="red", label="dataset")
-    plt.plot(beijingData.get_train()["pollution"], color="green", label="training")
+    plt.plot(beijing_data.dataset["pollution"], color="red", label="dataset")
+    plt.plot(beijing_data.train["pollution"], color="green", label="training")
     plt.plot(prediction["pollution"], color="orange", label="one_step_prediction")
     plt.title("beijing pollution prediction FF")
     plt.xlabel("Time[Month]")
@@ -69,11 +69,13 @@ class BeijingDataSet:
     def save(self):
         self.dataset.to_csv("../beijing_pollution.csv")
 
-    def get_train(self):
+    @property
+    def train(self):
         data = self.dataset[:self.threshold]
         return pd.DataFrame(data)
 
-    def get_test(self):
+    @property
+    def test(self):
         data = self.dataset[self.threshold:]
         return pd.DataFrame(data)
 
