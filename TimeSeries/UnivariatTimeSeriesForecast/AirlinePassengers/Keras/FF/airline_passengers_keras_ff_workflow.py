@@ -6,8 +6,8 @@ from yaml_parser import get_hyperparameters
 
 def workflow(model):
     airline_passengers = AirlinePassengersDataSet()
-    train = airline_passengers.get_train_data()
-    test = airline_passengers.get_test_data()
+    train = airline_passengers.train_data
+    test = airline_passengers.test_data
 
     hyperparameters: dict = get_hyperparameters("airline_passengers_keras_ff_hyperparameter.yaml")
 

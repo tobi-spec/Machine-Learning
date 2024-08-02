@@ -14,13 +14,13 @@ class MyTestCase(unittest.TestCase):
 
     def test_AirlinePassengersDataSet_train_test_types(self):
         airline_passengers_data = AirlinePassengersDataSet()
-        self.assertTrue(isinstance(airline_passengers_data.get_test_data(), np.ndarray))
+        self.assertTrue(isinstance(airline_passengers_data.test_data, np.ndarray))
 
     def test_AirlinePassengersDataSet_train_test_size(self):
         airline_passengers_data = AirlinePassengersDataSet()
         test_data_size = len(airline_passengers_data.data) - airline_passengers_data.threshold
-        self.assertEqual(airline_passengers_data.threshold + 1, airline_passengers_data.get_train_data().size)
-        self.assertEqual(test_data_size - 1, airline_passengers_data.get_test_data().size)
+        self.assertEqual(airline_passengers_data.threshold + 1, airline_passengers_data.train_data.size)
+        self.assertEqual(test_data_size - 1, airline_passengers_data.test_data.size)
 
     def test_TimesSeriesGenerator_constructor(self):
         data = np.arange(10, 101, 10)

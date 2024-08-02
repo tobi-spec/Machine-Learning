@@ -8,10 +8,10 @@ from yaml_parser import get_hyperparameters
 def workflow(model):
     airline_passengers = AirlinePassengersDataSet()
     train_scaler = MinMaxScaler(feature_range=(0, 1))
-    scaled_train = train_scaler.fit_transform(airline_passengers.get_train_data().reshape(-1, 1))
+    scaled_train = train_scaler.fit_transform(airline_passengers.train_data.reshape(-1, 1))
 
     test_scaler = MinMaxScaler(feature_range=(0, 1))
-    scaled_test = test_scaler.fit_transform(airline_passengers.get_test_data().reshape(-1, 1))
+    scaled_test = test_scaler.fit_transform(airline_passengers.test_data.reshape(-1, 1))
 
     hyperparameters: dict = get_hyperparameters("airline_passengers_keras_rnn_hyperparameter.yaml")
 

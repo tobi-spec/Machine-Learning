@@ -11,11 +11,13 @@ class AirlinePassengersDataSet:
         self.data = pd.read_csv(path, sep=";")
         self.threshold = 107
 
-    def get_train_data(self) -> np.ndarray:
+    @property
+    def train_data(self) -> np.ndarray:
         data = self.data.loc[0:self.threshold, "Passengers"].reset_index(drop=True)
         return data.to_numpy()
 
-    def get_test_data(self) -> np.ndarray:
+    @property
+    def test_data(self) -> np.ndarray:
         data = self.data.loc[self.threshold:142, "Passengers"].reset_index(drop=True)
         return data.to_numpy()
 
@@ -113,7 +115,7 @@ def shape_batch_timestamp(value):
 def plot_results(prediction: pd.Series, validation: pd.Series, name):
     airline_passengers = AirlinePassengersDataSet()
     plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
-    plt.plot(airline_passengers.get_train_data(), color="green", label="training")
+    plt.plot(airline_passengers.train_data(), color="green", label="training")
     plt.plot(validation, color="blue", label="validation")
     plt.plot(prediction, color="orange", label="one_step_prediction")
     plt.title(f"airline passengers {name}")
