@@ -1,0 +1,7 @@
+name: ff
+epochs: 100
+learning_rate: 0.001
+batch_size: 1
+look_back: 30
+look_out: 1
+number_of_predictions: 60

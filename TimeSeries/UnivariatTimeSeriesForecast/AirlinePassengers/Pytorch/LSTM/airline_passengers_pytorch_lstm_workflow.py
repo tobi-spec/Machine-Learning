@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import torch
-import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
@@ -18,7 +17,7 @@ PREDICTION_START = -1
 NUMBER_OF_PREDICTIONS = 80
 
 
-def main():
+def workflow(model):
     airline_passengers = AirlinePassengersDataSet()
     train_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_train = train_scaler.fit_transform(airline_passengers.get_train_data().reshape(-1, 1))
@@ -40,7 +39,6 @@ def main():
     train_loader = DataLoader(dataset=TensorDataset(train_timeseries_tensor, train_targets_tensor), batch_size=BATCH_SIZE, shuffle=False)
     test_loader = DataLoader(dataset=TensorDataset(test_timeseries_tensor, test_targets_tensor), batch_size=BATCH_SIZE, shuffle=False)
 
-    model = LSTMModel()
     num_epochs = EPOCHS
     for epoch in range(num_epochs):
         model.backward(train_loader, epoch, num_epochs)
@@ -76,47 +74,6 @@ def main():
     plt.show()
 
 
-class LSTMModel(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.lstm = nn.LSTM(input_size=30, hidden_size=50, num_layers=1, batch_first=True)
-        self.linear1 = nn.Linear(50, 1)
-        self.loss_function = nn.MSELoss()
-        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=LEARNING_RATE)
-
-    def forward(self, inputs):
-        x, _ = self.lstm(inputs)
-        x = x[:, -1, :]
-        x = self.linear1(x)
-        return x
-
-    def backward(self, train_loader, epoch, num_epochs):
-        self.train()
-        cumulative_loss = 0
-
-        for x_values, y_values in train_loader:
-            prediction = self.forward(x_values)
-            loss = self.loss_function(prediction, y_values)
-            loss.backward()
-            self.optimizer_function.step()
-            self.optimizer_function.zero_grad()
-            cumulative_loss += loss.item()
-
-        print(f"Epoch [{epoch + 1}/{num_epochs}]")
-        print(f"Train Loss: {cumulative_loss / len(train_loader):.4f}")
-
-    def validate(self, val_loader):
-        self.eval()
-        loss = 0
-
-        with torch.no_grad():
-            for x_values, y_values in val_loader:
-                prediction = self.forward(x_values)
-                loss += self.loss_function(prediction, y_values).item()
-
-        print(f'Validation Loss: {loss / len(val_loader):.4f}')
-
-
 def validation_forecast(model, inputs):
     predictions = []
     for element in inputs:
@@ -134,7 +91,3 @@ def one_step_ahead_forecast(model, current_value, number_of_predictions):
         current_value = np.append(current_value, prediction.detach().numpy())
         current_value = current_value.reshape(1, 1, current_value.shape[0])
     return one_step_ahead_forecast
-
-
-if __name__ == "__main__":
-    main()
