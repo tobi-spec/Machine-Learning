@@ -4,7 +4,7 @@ import torch
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
 from TimeSeries.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import \
-    AirlinePassengersDataSet, TimeSeriesGenerator
+    AirlinePassengersDataSet, TimeSeriesGenerator, plot_results
 from yaml_parser import get_hyperparameters
 
 
@@ -47,18 +47,7 @@ def workflow(model):
     prediction["one_step_prediction"] = prediction_results
     prediction.index += airline_passengers.threshold + start_index
 
-    plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
-    plt.plot(airline_passengers.get_train_data(), color="green", label="training")
-    plt.plot(validation["validation"], color="blue", label="validation")
-    plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
-    plt.title("airline passengers prediction")
-    plt.xlabel("Time[Month]")
-    plt.ylabel("Passengers[x1000]")
-    plt.xticks(range(0, 200, 20))
-    plt.yticks(range(0, 1000, 100))
-    plt.legend(loc="upper left")
-    plt.savefig("./airlinePassengers_pytorch_ff.png")
-    plt.show()
+    plot_results(prediction["one_step_prediction"], validation["validation"], hyperparameters["name"])
 
 
 def validation_forecast(model, inputs):
