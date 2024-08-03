@@ -7,12 +7,12 @@ from yaml_parser import get_hyperparameters
 
 class MNISTDataLoader:
     def __init__(self):
-        self.train_images: np.ndaray = idx2numpy.convert_from_file("../../data/train-images.idx3-ubyte").astype(
+        self.train_images: np.ndarray = idx2numpy.convert_from_file("../../data/train-images.idx3-ubyte").astype(
             np.float32)
-        self.train_labels: np.ndaray = idx2numpy.convert_from_file("../../data/train-labels.idx1-ubyte")
-        self.test_images: np.ndaray = idx2numpy.convert_from_file("../../data/t10k-images.idx3-ubyte").astype(
+        self.train_labels: np.ndarray = idx2numpy.convert_from_file("../../data/train-labels.idx1-ubyte")
+        self.test_images: np.ndarray = idx2numpy.convert_from_file("../../data/t10k-images.idx3-ubyte").astype(
             np.float32)
-        self.test_labels: np.ndaray = idx2numpy.convert_from_file("../../data/t10k-labels.idx1-ubyte")
+        self.test_labels: np.ndarray = idx2numpy.convert_from_file("../../data/t10k-labels.idx1-ubyte")
 
     def display_train_image(self, position: int) -> None:
         plt.imshow(self.train_images[position], cmap=plt.cm.binary)
