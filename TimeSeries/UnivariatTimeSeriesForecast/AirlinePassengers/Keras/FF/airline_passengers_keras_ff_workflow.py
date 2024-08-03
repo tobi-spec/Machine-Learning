@@ -28,10 +28,10 @@ def workflow(model):
     start_index = -1
     start_value = train_inputs[start_index]
     start_value_reshaped = start_value.reshape(1, start_value.shape[0])
-    prediction_results = Forecaster(model,
-                                    start_value_reshaped,
-                                    hyperparameters["number_of_predictions"],
-                                    NeuronalNetworkTypes.FEED_FORWARD).one_step_ahead()
+    prediction_results = KerasForecaster(model,
+                                         start_value_reshaped,
+                                         hyperparameters["number_of_predictions"],
+                                         NeuronalNetworkTypes.FEED_FORWARD).one_step_ahead()
 
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = prediction_results

@@ -39,7 +39,7 @@ def workflow(model):
 
     start_target = train_targets_series[start_index]
     start_target_reshaped = start_target.reshape(1, start_target.shape[0], start_target.shape[1])
-    prediction_results = Seq2SeqForecaster(
+    prediction_results = Seq2SeqKerasForecaster(
                                     model,
                                     start_value_reshaped,
                                     hyperparameters["number_of_predictions"],

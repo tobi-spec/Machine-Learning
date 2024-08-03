@@ -47,7 +47,7 @@ def keras_forecast(model, inputs):
     return predictions.flatten()
 
 
-class Forecaster:
+class KerasForecaster:
     def __init__(self, model, start_value, number_of_predictions, output_dimension_type):
         self.model = model
         self.current_value = start_value
@@ -83,9 +83,9 @@ class Forecaster:
                 return self.current_value
 
 
-class Seq2SeqForecaster(Forecaster):
+class Seq2SeqKerasForecaster(KerasForecaster):
     def __init__(self, model, start_value, number_of_predictions, output_dimension_type, current_target):
-        Forecaster.__init__(self, model, start_value, number_of_predictions, output_dimension_type)
+        KerasForecaster.__init__(self, model, start_value, number_of_predictions, output_dimension_type)
         self.current_target = current_target
 
     def one_step_ahead(self):
@@ -93,7 +93,7 @@ class Seq2SeqForecaster(Forecaster):
         for element in range(0, self.number_of_predictions):
             prediction = self.model.predict([self.current_value, self.current_target])
             forecast.append(self.__getFeature(prediction))
-            self.current_value = Forecaster._move_numpy_queue(self, prediction)
+            self.current_value = KerasForecaster._move_numpy_queue(self, prediction)
         return forecast
 
     def __getFeature(self, prediction):

@@ -32,7 +32,7 @@ def workflow(model):
     start_index = -1
     start_value = train_timeseries[start_index]
     start_value_reshaped = start_value.reshape(1, start_value.shape[0], start_value.shape[1])
-    prediction_results = Forecaster(
+    prediction_results = KerasForecaster(
                                     model,
                                     start_value_reshaped,
                                     hyperparameters["number_of_predictions"],
