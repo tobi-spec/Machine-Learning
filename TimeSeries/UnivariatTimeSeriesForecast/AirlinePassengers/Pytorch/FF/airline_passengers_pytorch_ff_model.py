@@ -10,12 +10,13 @@ class FeedForwardModel(nn.Module):
         super().__init__()
         self.linear1 = nn.Linear(30, 50)
         self.linear2 = nn.Linear(50, 1)
+        self.activation_function = nn.ReLU()
         self.loss_function = nn.MSELoss()
         self.optimizer_function = torch.optim.Adam(self.parameters(), lr=hyperparameters["learning_rate"])
 
     def forward(self, inputs):
-        inputs = self.linear1(inputs)
-        inputs = self.linear2(inputs)
+        inputs = self.activation_function(self.linear1(inputs))
+        inputs = self.activation_function(self.linear2(inputs))
         return inputs
 
     def backward(self, train_loader, epoch, num_epochs):
