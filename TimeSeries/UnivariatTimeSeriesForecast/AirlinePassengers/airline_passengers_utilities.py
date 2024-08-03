@@ -106,9 +106,7 @@ class PytorchForecaster:
         for element in range(0, self.number_of_predictions):
             prediction = self.model(torch.Tensor(self.current_value))
             one_step_ahead_forecast.append(prediction.item())
-            self.current_value = np.delete(self.current_value, 0)
-            self.current_value = np.append(self.current_value, prediction.item())
-            self.current_value = self.current_value.reshape(1, 1, self.current_value.shape[0])
+            self.current_value = self._move_numpy_queue(prediction)
         return one_step_ahead_forecast
 
     def _move_numpy_queue(self, prediction):
