@@ -65,16 +65,11 @@ class KerasForecaster:
         for element in range(0, self.number_of_predictions):
             prediction = self.model.predict(self.current_value)
             one_step_ahead_forecast.append(self._getFeature(prediction))
-            self.current_value = self._move_numpy_queue(prediction)
+            self.current_value = move_numpy_queue(prediction, self.current_value, self.output_dimension_type)
         return one_step_ahead_forecast
 
     def _getFeature(self, prediction):
         return prediction[0][0]
-
-    def _move_numpy_queue(self, prediction):
-        self.current_value = np.delete(self.current_value, 0)
-        self.current_value = np.append(self.current_value, prediction)
-        return format_dimension(self.current_value, self.output_dimension_type)
 
 
 class Seq2SeqKerasForecaster(KerasForecaster):
@@ -87,7 +82,7 @@ class Seq2SeqKerasForecaster(KerasForecaster):
         for element in range(0, self.number_of_predictions):
             prediction = self.model.predict([self.current_value, self.current_target])
             forecast.append(self.__getFeature(prediction))
-            self.current_value = KerasForecaster._move_numpy_queue(self, prediction)
+            self.current_value = move_numpy_queue(prediction, self.current_value, self.output_dimension_type)
         return forecast
 
     def __getFeature(self, prediction):
@@ -106,13 +101,14 @@ class PytorchForecaster:
         for element in range(0, self.number_of_predictions):
             prediction = self.model(torch.Tensor(self.current_value))
             one_step_ahead_forecast.append(prediction.item())
-            self.current_value = self._move_numpy_queue(prediction)
+            self.current_value = move_numpy_queue(prediction.item(), self.current_value, self.output_dimension_type)
         return one_step_ahead_forecast
 
-    def _move_numpy_queue(self, prediction):
-        self.current_value = np.delete(self.current_value, 0)
-        self.current_value = np.append(self.current_value, prediction.item())
-        return format_dimension(self.current_value, self.output_dimension_type)
+
+def move_numpy_queue(prediction, value, output_dimension_type):
+    value = np.delete(value, 0)
+    value = np.append(value, prediction)
+    return format_dimension(value, output_dimension_type)
 
 
 def format_dimension(value, output_dimension_type):
