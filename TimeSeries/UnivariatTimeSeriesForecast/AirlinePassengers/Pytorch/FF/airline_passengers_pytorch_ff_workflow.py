@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
 from TimeSeries.UnivariatTimeSeriesForecast.AirlinePassengers.airline_passengers_utilities import \
     AirlinePassengersDataSet, TimeSeriesGenerator, plot_results
+from neuronal_network_types import NeuronalNetworkTypes
 from yaml_parser import get_hyperparameters
 
 
@@ -41,7 +42,10 @@ def workflow(model):
 
     start_index = -1
     start_value = torch.Tensor(train_timeseries_tensor[start_index])
-    prediction_results = one_step_ahead_forecast(model, start_value, hyperparameters["number_of_predictions"])
+    prediction_results = PytorchForecaster(model,
+                                           start_value,
+                                           hyperparameters["number_of_predictions"],
+                                           NeuronalNetworkTypes.FEED_FORWARD).number_of_predictions()
 
     prediction = pd.DataFrame()
     prediction["one_step_prediction"] = prediction_results
@@ -58,12 +62,19 @@ def validation_forecast(model, inputs):
     return predictions
 
 
-def one_step_ahead_forecast(model, current_value, number_of_predictions):
-    one_step_ahead_forecast = list()
-    for element in range(0, number_of_predictions):
-        prediction = model(torch.Tensor(current_value))
-        one_step_ahead_forecast.append(prediction.item())
-        current_value = np.delete(current_value, 0)
-        current_value = np.append(current_value, prediction.item())
-        current_value = current_value.reshape(1, 1, current_value.shape[0])
-    return one_step_ahead_forecast
+class PytorchForecaster:
+    def __init__(self, model, start_value, number_of_predictions, output_dimension_type):
+        self.model = model
+        self.current_value = start_value
+        self.number_of_predictions = number_of_predictions
+        self.output_dimension_type = output_dimension_type
+
+    def one_step_ahead_forecast(self):
+        one_step_ahead_forecast = list()
+        for element in range(0, self.number_of_predictions):
+            prediction = self.model(torch.Tensor(self.current_value))
+            one_step_ahead_forecast.append(prediction.item())
+            self.current_value = np.delete(self.current_value, 0)
+            self.current_value = np.append(self.current_value, prediction.item())
+            self.current_value = self.current_value.reshape(1, 1, self.current_value.shape[0])
+        return one_step_ahead_forecast
