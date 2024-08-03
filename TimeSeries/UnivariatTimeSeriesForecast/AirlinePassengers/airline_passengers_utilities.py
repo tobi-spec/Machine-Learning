@@ -74,19 +74,7 @@ class KerasForecaster:
     def _move_numpy_queue(self, prediction):
         self.current_value = np.delete(self.current_value, 0)
         self.current_value = np.append(self.current_value, prediction)
-        return self.__format_dimension()
-
-    def __format_dimension(self):
-        match self.output_dimension_type:
-            case NeuronalNetworkTypes.ATTENTION | NeuronalNetworkTypes.CNN:
-                return shape_batch_timestamp_feature(self.current_value)
-            case NeuronalNetworkTypes.LSTM | NeuronalNetworkTypes.RNN:
-                # recurrent networks seems to work better with switch timestamp/feature
-                return shape_batch_feature_timestamp(self.current_value)
-            case NeuronalNetworkTypes.FEED_FORWARD:
-                return shape_batch_timestamp(self.current_value)
-            case _:
-                return self.current_value
+        return format_dimension(self.current_value, self.output_dimension_type)
 
 
 class Seq2SeqKerasForecaster(KerasForecaster):
@@ -126,20 +114,20 @@ class PytorchForecaster:
     def _move_numpy_queue(self, prediction):
         self.current_value = np.delete(self.current_value, 0)
         self.current_value = np.append(self.current_value, prediction.item())
-        return self.__format_dimension()
+        return format_dimension(self.current_value, self.output_dimension_type)
 
-    def __format_dimension(self):
-        match self.output_dimension_type:
-            case NeuronalNetworkTypes.ATTENTION | NeuronalNetworkTypes.CNN:
-                return shape_batch_timestamp_feature(self.current_value)
-            case NeuronalNetworkTypes.LSTM | NeuronalNetworkTypes.RNN:
-                # recurrent networks seems to work better with switch timestamp/feature
-                return shape_batch_feature_timestamp(self.current_value)
-            case NeuronalNetworkTypes.FEED_FORWARD:
-                return shape_batch_timestamp(self.current_value)
-            case _:
-                return self.current_value
 
+def format_dimension(value, output_dimension_type):
+    match output_dimension_type:
+        case NeuronalNetworkTypes.ATTENTION | NeuronalNetworkTypes.CNN:
+            return shape_batch_timestamp_feature(value)
+        case NeuronalNetworkTypes.LSTM | NeuronalNetworkTypes.RNN:
+            # recurrent networks seems to work better with switch timestamp/feature
+            return shape_batch_feature_timestamp(value)
+        case NeuronalNetworkTypes.FEED_FORWARD:
+            return shape_batch_timestamp(value)
+        case _:
+            return value
 
 def shape_batch_feature_timestamp(value):
     return value.reshape(1, 1, value.shape[0])
