@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import torch
 from neuronal_network_types import NeuronalNetworkTypes
 import matplotlib.pyplot as plt
 
@@ -103,6 +104,41 @@ class Seq2SeqKerasForecaster(KerasForecaster):
 
     def __getFeature(self, prediction):
         return prediction[0][0][0]
+
+
+class PytorchForecaster:
+    def __init__(self, model, start_value, number_of_predictions, output_dimension_type):
+        self.model = model
+        self.current_value = start_value
+        self.number_of_predictions = number_of_predictions
+        self.output_dimension_type = output_dimension_type
+
+    def one_step_ahead_forecast(self):
+        one_step_ahead_forecast = list()
+        for element in range(0, self.number_of_predictions):
+            prediction = self.model(torch.Tensor(self.current_value))
+            one_step_ahead_forecast.append(prediction.item())
+            self.current_value = np.delete(self.current_value, 0)
+            self.current_value = np.append(self.current_value, prediction.item())
+            self.current_value = self.current_value.reshape(1, 1, self.current_value.shape[0])
+        return one_step_ahead_forecast
+
+    def _move_numpy_queue(self, prediction):
+        self.current_value = np.delete(self.current_value, 0)
+        self.current_value = np.append(self.current_value, prediction.item())
+        return self.__format_dimension()
+
+    def __format_dimension(self):
+        match self.output_dimension_type:
+            case NeuronalNetworkTypes.ATTENTION | NeuronalNetworkTypes.CNN:
+                return shape_batch_timestamp_feature(self.current_value)
+            case NeuronalNetworkTypes.LSTM | NeuronalNetworkTypes.RNN:
+                # recurrent networks seems to work better with switch timestamp/feature
+                return shape_batch_feature_timestamp(self.current_value)
+            case NeuronalNetworkTypes.FEED_FORWARD:
+                return shape_batch_timestamp(self.current_value)
+            case _:
+                return self.current_value
 
 
 def shape_batch_feature_timestamp(value):
