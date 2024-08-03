@@ -34,7 +34,7 @@ valid_json_response = json.loads(model_response)
 prediction = pd.DataFrame.from_records(valid_json_response)
 prediction.index += airline_passengers.threshold
 
-plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
+plt.plot(airline_passengers.passengers, color="red", label="dataset")
 plt.plot(airline_passengers.train_data, color="green", label="training")
 plt.plot(prediction["Forecast"], color="orange", label="one_step_prediction")
 plt.title(f"airline passengers {model}")

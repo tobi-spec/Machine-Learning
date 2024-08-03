@@ -23,7 +23,7 @@ prediction["one_step_prediction"] = prediction_results["TimeGPT"]
 prediction.index += airline_passengers.threshold
 
 name = "timeGPT"
-plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
+plt.plot(airline_passengers.passengers, color="red", label="dataset")
 plt.plot(airline_passengers.train_data, color="green", label="training")
 plt.plot(prediction["one_step_prediction"], color="orange", label="one_step_prediction")
 plt.title(f"airline passengers {name}")
