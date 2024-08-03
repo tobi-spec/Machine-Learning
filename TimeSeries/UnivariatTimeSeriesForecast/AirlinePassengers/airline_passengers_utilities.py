@@ -115,7 +115,7 @@ def shape_batch_timestamp(value):
 def plot_results(prediction: pd.Series, validation: pd.Series, name):
     airline_passengers = AirlinePassengersDataSet()
     plt.plot(airline_passengers.data["Passengers"], color="red", label="dataset")
-    plt.plot(airline_passengers.train_data(), color="green", label="training")
+    plt.plot(airline_passengers.train_data, color="green", label="training")
     plt.plot(validation, color="blue", label="validation")
     plt.plot(prediction, color="orange", label="one_step_prediction")
     plt.title(f"airline passengers {name}")
