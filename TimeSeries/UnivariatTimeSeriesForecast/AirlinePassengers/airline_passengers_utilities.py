@@ -2,15 +2,18 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import torch
+from keras import Model
+from torch import nn
+
 from neuronal_network_types import NeuronalNetworkTypes
 import matplotlib.pyplot as plt
 
 
 class AirlinePassengersDataSet:
     def __init__(self):
-        path = Path(__file__) / "../AirlinePassengers.csv"
-        self.data = pd.read_csv(path, sep=";")
-        self.threshold = 107
+        path: Path = Path(__file__) / "../AirlinePassengers.csv"
+        self.data: pd.DataFrame = pd.read_csv(path, sep=";")
+        self.threshold: int = 107
 
     @property
     def passengers(self) -> np.ndarray:
@@ -48,13 +51,13 @@ class TimeSeriesGenerator:
         return self.data[element-self.lookback: element]
 
 
-def keras_forecast(model, inputs):
+def keras_forecast(model: Model, inputs: np.ndarray):
     predictions = model.predict(inputs)
     return predictions.flatten()
 
 
 class KerasForecaster:
-    def __init__(self, model, start_value, number_of_predictions, output_dimension_type):
+    def __init__(self, model: Model, start_value: np.ndarray, number_of_predictions: int, output_dimension_type: NeuronalNetworkTypes):
         self.model = model
         self.current_value = start_value
         self.number_of_predictions = number_of_predictions
@@ -73,7 +76,11 @@ class KerasForecaster:
 
 
 class Seq2SeqKerasForecaster(KerasForecaster):
-    def __init__(self, model, start_value, number_of_predictions, output_dimension_type, current_target):
+    def __init__(self, model: Model,
+                 start_value: np.ndarray,
+                 number_of_predictions: int,
+                 output_dimension_type: NeuronalNetworkTypes,
+                 current_target: np.ndarray):
         KerasForecaster.__init__(self, model, start_value, number_of_predictions, output_dimension_type)
         self.current_target = current_target
 
@@ -90,7 +97,10 @@ class Seq2SeqKerasForecaster(KerasForecaster):
 
 
 class PytorchForecaster:
-    def __init__(self, model, start_value, number_of_predictions, output_dimension_type):
+    def __init__(self, model: nn.Module,
+                 start_value: np.ndarray,
+                 number_of_predictions: int,
+                 output_dimension_type: NeuronalNetworkTypes):
         self.model = model
         self.current_value = start_value
         self.number_of_predictions = number_of_predictions
@@ -105,13 +115,13 @@ class PytorchForecaster:
         return one_step_ahead_forecast
 
 
-def move_numpy_queue(prediction, value, output_dimension_type):
+def move_numpy_queue(prediction: int, value: np.ndarray, output_dimension_type: NeuronalNetworkTypes):
     value = np.delete(value, 0)
     value = np.append(value, prediction)
     return format_dimension(value, output_dimension_type)
 
 
-def format_dimension(value, output_dimension_type):
+def format_dimension(value: np.ndarray, output_dimension_type: NeuronalNetworkTypes):
     match output_dimension_type:
         case NeuronalNetworkTypes.ATTENTION | NeuronalNetworkTypes.CNN:
             return shape_batch_timestamp_feature(value)
@@ -123,15 +133,16 @@ def format_dimension(value, output_dimension_type):
         case _:
             return value
 
-def shape_batch_feature_timestamp(value):
+
+def shape_batch_feature_timestamp(value: np.ndarray):
     return value.reshape(1, 1, value.shape[0])
 
 
-def shape_batch_timestamp_feature(value):
+def shape_batch_timestamp_feature(value: np.ndarray):
     return value.reshape(1, value.shape[0], 1)
 
 
-def shape_batch_timestamp(value):
+def shape_batch_timestamp(value: np.ndarray):
     return value.reshape(1, value.shape[0])
 
 
