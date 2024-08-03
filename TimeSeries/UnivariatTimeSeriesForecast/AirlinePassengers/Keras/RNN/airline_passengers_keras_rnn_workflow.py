@@ -26,7 +26,7 @@ def workflow(model):
     model.compile(optimizer=optimizers.Adam(hyperparameters["learning_rate"]), loss='mean_squared_error')
     model.fit(train_timeseries, train_targets, epochs=hyperparameters["epochs"], batch_size=hyperparameters["batch_size"], callbacks=[early_stopping])
 
-    validation_results = validation_forecast(model, test_timeseries)
+    validation_results = keras_forecast(model, test_timeseries)
 
     validation = pd.DataFrame()
     validation["validation"] = test_scaler.inverse_transform([validation_results]).flatten()

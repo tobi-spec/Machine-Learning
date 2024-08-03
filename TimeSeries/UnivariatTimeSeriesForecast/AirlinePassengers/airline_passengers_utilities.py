@@ -42,7 +42,7 @@ class TimeSeriesGenerator:
         return self.data[element-self.lookback: element]
 
 
-def validation_forecast(model, inputs):
+def keras_forecast(model, inputs):
     predictions = model.predict(inputs)
     return predictions.flatten()
 

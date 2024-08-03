@@ -19,7 +19,7 @@ def workflow(model):
     model.compile(optimizer=optimizers.Adam(hyperparameters["learning_rate"]), loss='mean_squared_error')
     model.fit(train_inputs, train_targets, epochs=hyperparameters["epochs"], batch_size=hyperparameters["batch_size"], callbacks=[early_stopping])
 
-    validation_results = validation_forecast(model, test_inputs)
+    validation_results = keras_forecast(model, test_inputs)
 
     validation = pd.DataFrame()
     validation["validation"] = validation_results
