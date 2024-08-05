@@ -2,7 +2,6 @@ from keras.models import Model
 from keras.layers import LSTM, Dense, Input
 
 
-
 def seq2seq_model():
     encoder_input = Input(shape=(1, 30))
     encoder_lstm, state_h, state_c = LSTM(50, return_state=True)(encoder_input)
@@ -14,5 +13,3 @@ def seq2seq_model():
     decoder_output = Dense(1)(decoder_output)
 
     return Model(inputs=[encoder_input, decoder_input], outputs=decoder_output)
-
-

@@ -13,7 +13,7 @@ def workflow(model):
     test_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_test = test_scaler.fit_transform(airline_passengers.test_data.reshape(-1, 1))
 
-    hyperparameters: dict = get_hyperparameters("airline_passengers_keras_rnn_hyperparameter.yaml")
+    hyperparameters: dict = get_hyperparameters("airline_passengers_keras_seq2seq_hyperparameter.yaml")
 
     train_timeseries, train_targets = TimeSeriesGenerator(scaled_train, hyperparameters["look_back"], hyperparameters["look_out"]).create_timeseries()
     test_timeseries, test_targets = TimeSeriesGenerator(scaled_test, hyperparameters["look_back"], hyperparameters["look_out"]).create_timeseries()
