@@ -9,9 +9,11 @@ The examples are divided into the 3 main topics of neuronal networks: time serie
 
 ## Time Series
 
-### Linear Regression
+### Regression
+
+#### Ice cream revenue
+This is used for a simple regression to predict revenue of a ice cream truck for a certain temperature. 
 Most basic implementation of a neuronal network - a linear equation. 
-This is used for a simple regression to predict revenue of a ice cream truck for a certain temperature
 
 ### Univariat Time Series Forecast
 Forecasting of a time series model with one attribute. The data comes from the airline passengers dataset. Aim is to predict 
