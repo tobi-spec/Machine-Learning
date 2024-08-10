@@ -15,10 +15,12 @@ class FeedForwardModel(Model):
     def __init__(self):
         super().__init__()
         self.dense1 = layers.Dense(units=150, activation="sigmoid")
+        self.dense2 = layers.Dense(units=150, activation="softplus")
         self.dense3 = layers.Dense(units=1)
 
     def call(self, inputs):
         inputs = self.dense1(inputs)
+        inputs = self.dense2(inputs)
         inputs = self.dense3(inputs)
         return inputs
 
