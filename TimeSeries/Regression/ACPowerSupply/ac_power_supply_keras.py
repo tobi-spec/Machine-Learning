@@ -41,7 +41,7 @@ plt.scatter(x_test, prediction, color="red")
 plt.xlabel("population")
 plt.ylabel("time")
 plt.title('ac power supply regression with Keras')
-plt.savefig("exponential_regression_keras.png")
+plt.savefig("sinus_regression_keras.png")
 plt.show()
 
 
