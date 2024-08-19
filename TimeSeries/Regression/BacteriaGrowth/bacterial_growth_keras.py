@@ -14,8 +14,8 @@ class BacteriaGrowth:
 class FeedForwardModel(Model):
     def __init__(self):
         super().__init__()
-        self.dense1 = layers.Dense(units=15, activation="sigmoid")
-        self.dense2 = layers.Dense(units=15, activation="softplus")
+        self.dense1 = layers.Dense(units=15, activation="relu")
+        self.dense2 = layers.Dense(units=15, activation="relu")
         self.dense3 = layers.Dense(units=1)
 
     def call(self, inputs):
@@ -30,7 +30,7 @@ x_train, x_test, y_train, y_test = train_test_split(bacterial_growth.time, bacte
 
 model = FeedForwardModel()
 model.compile(optimizer=optimizers.Adam(0.001), loss='mean_squared_error')
-model.fit(x_train, y_train, epochs=150, batch_size=1)
+model.fit(x_train, y_train, epochs=500, batch_size=1)
 
 prediction = model.predict(x_test)
 
