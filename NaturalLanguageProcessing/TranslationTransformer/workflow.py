@@ -49,11 +49,6 @@ def make_batches(dataset):
 train_batches = make_batches(train_examples)
 val_batches = make_batches(val_examples)
 
-for (pt, en), en_labels in train_batches.take(1):
-    break
-
-
-
 transformer = Transformer(
     num_layers=hyperparameters["number_of_layers"],
     d_model=hyperparameters["d_model"],
@@ -62,8 +57,6 @@ transformer = Transformer(
     input_vocab_size=tokenizers.pt.get_vocab_size().numpy(),
     target_vocab_size=tokenizers.en.get_vocab_size().numpy(),
     dropout_rate=hyperparameters["dropout_rate"])
-
-output = transformer((pt, en))
 
 
 class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
