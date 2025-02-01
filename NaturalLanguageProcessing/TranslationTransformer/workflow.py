@@ -1,4 +1,3 @@
-import numpy as np
 import tensorflow_datasets as tfds
 import tensorflow as tf
 import tensorflow_text
@@ -59,8 +58,9 @@ transformer = Transformer(
     dropout_rate=hyperparameters["dropout_rate"])
 
 
-learning_rate = CustomSchedule(hyperparameters["d_model"])
-optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98,
+optimizer = tf.keras.optimizers.Adam(learning_rate=CustomSchedule(hyperparameters["d_model"]),
+                                     beta_1=0.9,
+                                     beta_2=0.98,
                                      epsilon=1e-9)
 
 transformer.compile(
