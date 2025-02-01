@@ -1,7 +1,4 @@
-import logging
-import time
 import numpy as np
-import matplotlib.pyplot as plt
 import tensorflow_datasets as tfds
 import tensorflow as tf
 import tensorflow_text
@@ -25,12 +22,9 @@ examples, metadata = tfds.load('ted_hrlr_translate/pt_to_en',
 train_examples, val_examples = examples['train'], examples['validation']
 
 for pt_examples, en_examples in train_examples.batch(3).take(1):
-    print('> Examples in Portuguese:')
     for pt in pt_examples.numpy():
-        print(pt.decode('utf-8'))  #
-    print()
+        print(pt.decode('utf-8'))
 
-    print('> Examples in English:')
     for en in en_examples.numpy():
         print(en.decode('utf-8'))
 
@@ -72,19 +66,11 @@ def make_batches(dataset):
     )
 
 
-# Create training and validation set batches.
 train_batches = make_batches(train_examples)
 val_batches = make_batches(val_examples)
 
 for (pt, en), en_labels in train_batches.take(1):
     break
-
-print(pt.shape)
-print(en.shape)
-print(en_labels.shape)
-
-print(en[0][:10])
-print(en_labels[0][:10])
 
 
 def positional_encoding(length, depth):
