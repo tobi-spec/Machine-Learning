@@ -42,27 +42,6 @@ tf.keras.utils.get_file(
 )
 tokenizers = tf.saved_model.load(model_name)
 
-ex_exmaples = [item for item in dir(tokenizers.en) if not item.startswith('_')]
-
-print('> This is a batch of strings:')
-for en in en_examples.numpy():
-    print(en.decode('utf-8'))
-print()
-
-encoded = tokenizers.en.tokenize(en_examples)
-print('> This is a padded-batch of token IDs:')
-for row in encoded.to_list():
-    print(row)
-print()
-round_trip = tokenizers.en.detokenize(encoded)
-print('> This is human-readable text:')
-for line in round_trip.numpy():
-    print(line.decode('utf-8'))
-
-print('> This is the text split into tokens:')
-tokens = tokenizers.en.lookup(encoded)
-print(tokens)
-
 MAX_TOKENS = 128
 
 
