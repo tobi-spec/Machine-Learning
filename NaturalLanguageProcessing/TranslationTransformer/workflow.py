@@ -71,3 +71,5 @@ transformer.compile(
 transformer.fit(train_batches,
                 epochs=20,
                 validation_data=val_batches)
+
+transformer.save("./", save_format='tf')
