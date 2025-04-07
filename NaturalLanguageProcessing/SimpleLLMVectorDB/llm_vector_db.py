@@ -1,6 +1,5 @@
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings, HuggingFacePipeline
 from langchain_community.vectorstores import FAISS
-from langchain_community.llms import HuggingFacePipeline
 from langchain.chains import RetrievalQA
 from langchain.schema import Document
 
