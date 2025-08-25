@@ -24,9 +24,12 @@ class MNISTDataLoader:
 
 
 mnist = MNISTDataLoader()
-hyperparameters: dict = get_hyperparameters("./digit_classification_keras_ff_hyperparameter.yaml")
+hyperparameters: dict = get_hyperparameters("digit_classification_keras_cnn_hyperparameter.yaml")
 
 model = Sequential()
+model.add(layers.Reshape(target_shape=(1, 28, 28)))
+model.add(layers.Conv2D(filters=32, kernel_size=(3, 3), strides=2, activation="relu", data_format="channels_first"))
+model.add(layers.MaxPool2D(pool_size=(2, 2)))
 model.add(layers.Flatten(input_shape=(28, 28)))
 model.add(layers.Dense(units=128, activation="relu"))
 model.add(layers.Dense(units=10, activation="softmax"))
@@ -41,3 +44,6 @@ for image_index in random_images:
     prediction: list = model.predict(mnist.test_images[[image_index]])  # add dimension for correct input shape
     print("correct number ", mnist.test_labels[image_index])
     print("predicted number: ", np.argmax(prediction))
+
+
+

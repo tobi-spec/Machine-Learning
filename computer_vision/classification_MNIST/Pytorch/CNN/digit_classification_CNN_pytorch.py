@@ -69,8 +69,8 @@ class MNISTClassificationModel(nn.Module):
         print(f'Validation Loss: {loss / len(val_loader):.4f}')
 
 
-mnist_training = MNISTDataset(images="./data/train-images.idx3-ubyte", labels="./MNIST/train-labels.idx1-ubyte")
-mnist_test = MNISTDataset(images="./MNIST/t10k-images.idx3-ubyte", labels="./MNIST/t10k-labels.idx1-ubyte")
+mnist_training = MNISTDataset(images="./data/train-images.idx3-ubyte", labels="./classification_MNIST/train-labels.idx1-ubyte")
+mnist_test = MNISTDataset(images="./classification_MNIST/t10k-images.idx3-ubyte", labels="./classification_MNIST/t10k-labels.idx1-ubyte")
 
 train_loader = DataLoader(
     dataset=mnist_training,
