@@ -1,0 +1,51 @@
+,difference,messages
+0,-0.024568574503064156,Starting process.
+1,-0.014048993587493896,Fetching data from API.
+2,-0.03862917423248291,Response time exceeds threshold.
+3,-0.04299759864807129,NullPointerException at line 45.
+4,-1.022125005722046,Initializing cache.
+5,0.9142732620239258,User login successful.
+6,-0.19024085998535156,Unable to connect to database.
+7,-0.13838624954223633,Configuration loaded.
+8,-0.03727579116821289,Deprecated API usage detected.
+9,-0.1913442611694336,Processing transaction ID 123456.
+10,-0.28739261627197266,Session timeout set to 30 minutes.
+11,-0.31040477752685547,OutOfMemoryError: GC overhead limit exceeded.
+12,-0.18608474731445312,Disk space running low.
+13,-1.164210319519043,Data sync completed.
+14,0.8242759704589844,Retrying failed operation.
+15,-0.25649356842041016,IllegalArgumentException at line 89.
+16,-1.4397659301757812,User session created.
+17,0.8044643402099609,Network latency detected.
+18,-0.29959869384765625,Cache cleared successfully.
+19,-0.3240833282470703,Database connection timeout.
+20,-0.7609100341796875,Configuration file missing.
+21,-0.21875953674316406,Validating input data.
+22,-0.5187625885009766,Transaction processed.
+23,-0.43752288818359375,IndexOutOfBoundsException at line 32.
+24,-1.5136280059814453,Starting cleanup routine.
+25,0.401611328125,Memory usage exceeds 80%.
+26,-0.38663291931152344,Process completed successfully.
+27,-0.5577068328857422,Unauthorized access attempt detected.
+28,-1.50933837890625,Backup completed.
+29,0.3716411590576172,API call latency: 300ms.
+30,-1.2697811126708984,Failed to initialize cache.
+31,0.4734649658203125,Password complexity check failed.
+32,-0.512542724609375,Database connection re-established.
+33,-0.5948448181152344,Loading user preferences.
+34,-0.6295051574707031,IOException: Disk write failure.
+35,-0.6504402160644531,Transaction ID 123456 retry limit reached.
+36,-0.4992103576660156,Setting user permissions.
+37,-0.6517601013183594,Garbage collection completed.
+38,-0.8198814392089844,Failed to complete cleanup.
+39,-0.7131385803222656,Deprecated method used in Component2.
+40,-3.642436981201172,Session ID mismatch.
+41,-2.795703887939453,Session ID mismatch.
+42,-1.7388648986816406,Session ID mismatch.
+43,-0.728302001953125,Session ID mismatch.
+44,-0.7455482482910156,Cache refreshed.
+45,-0.7775230407714844,Query execution time: 500ms.
+46,-0.7637519836425781,Failed to save user preferences.
+47,-0.8876190185546875,API call succeeded.
+48,-0.6371307373046875,Low memory condition detected.
+49,-0.8683280944824219,Initializing user roles.
