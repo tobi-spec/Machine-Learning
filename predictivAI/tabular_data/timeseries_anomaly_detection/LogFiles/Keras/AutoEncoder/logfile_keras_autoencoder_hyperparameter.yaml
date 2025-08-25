@@ -1,4 +1,0 @@
-name: autoencoder
-epochs: 30
-learning_rate: 0.0005
-batch_size: 2
