@@ -7,3 +7,6 @@ pyvenv.cfg
 .venv
 __pycache__
 api-key.yaml
+
+predictivAI/computer_vision/classification_RF_DETR/rf-detr-base.pth
+predictivAI/computer_vision/classification_yoloV12/yolo12n.pt
