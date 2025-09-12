@@ -1,19 +1,22 @@
 from langchain_core.chat_history import BaseChatMessageHistory, InMemoryChatMessageHistory
 from langchain_core.messages import HumanMessage
-from langchain_core.runnables import RunnableWithMessageHistory
-from langchain_ollama import OllamaLLM, ChatOllama
+from langchain_core.runnables import RunnableWithMessageHistory, RunnableConfig
+from langchain_ollama import ChatOllama
 
 llm = ChatOllama(model="mistral")
 
 store = {}
+
+
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     if session_id not in store:
         store[session_id] = InMemoryChatMessageHistory()
     return store[session_id]
 
-with_message_history = RunnableWithMessageHistory(llm, get_session_history)
 
-config = {"configurable": {"session_id": "session1"}}
+with_message_history = RunnableWithMessageHistory(runnable=llm, get_session_history=get_session_history)
+
+config: RunnableConfig = {"configurable": {"session_id": "session1"}}
 
 message = HumanMessage(content="Hi! I'm Bob")
 print(message)
