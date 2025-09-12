@@ -37,7 +37,16 @@ chain_with_history = RunnableWithMessageHistory(
 
 config: RunnableConfig = {"configurable": {"session_id": "session1"}}
 
-print(chain_with_history.invoke({"input": "Hello! My name is Charlie"}, config=config))
-print(chain_with_history.invoke({"input": "What's my name?"}, config=config))
+print("Hello! My name is Charlie")
+for chunk in chain_with_history.stream({"input": "Hello! My name is Charlie"}, config=config):
+    if chunk:
+        print(chunk.content, end="", flush=True)
+
+print("\n")
+
+print("What's my name?")
+for chunk in chain_with_history.stream({"input": "What's my name?"}, config=config):
+    if chunk:
+        print(chunk.content, end="", flush=True)
 
 
