@@ -9,8 +9,7 @@ from langchain_ollama import ChatOllama
 
 
 documents = [
-    Document(page_content="Kevin likes ice cream."),
-    Document(page_content="Kevin dont likes cookies"),
+    Document(page_content="Kevin likes cookies"),
 ]
 
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
@@ -19,7 +18,6 @@ retriever = vector_store.as_retriever()
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
-
 
 
 
