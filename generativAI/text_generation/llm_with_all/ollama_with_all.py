@@ -9,7 +9,7 @@ from langchain_ollama import ChatOllama
 
 
 documents = [
-    Document(page_content="Kevin likes cookies"),
+    Document(page_content="Tomorrow is a important appointment"),
 ]
 
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
@@ -23,7 +23,7 @@ def format_docs(docs):
 
 prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(
-        "You are a helpful assistant. Use the following context when relevant:\n\n{context}"
+        "Make short answers, use the following context when relevant:\n\n{context}"
     ),
     MessagesPlaceholder(variable_name="history"),
     HumanMessagePromptTemplate.from_template("{input}")
@@ -71,8 +71,8 @@ for chunk in chain_with_history.stream({"input": "What's my name?"}, config=conf
 
 print("\n")
 
-print("What does Kevin like?")
-for chunk in chain_with_history.stream({"input": "What does Kevin like?"}, config=config):
+print("What is tomorrow?")
+for chunk in chain_with_history.stream({"input": "Is tomorrow something important?"}, config=config):
     if chunk:
         print(chunk.content, end="", flush=True)
 
