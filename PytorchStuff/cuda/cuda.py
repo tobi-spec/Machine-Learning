@@ -24,8 +24,8 @@ b_cuda = b.to(device)
 
 # Warm-up (important to avoid first-time CUDA overhead skewing results)
 torch.mm(a_cuda, b_cuda)
-
 torch.cuda.synchronize() # Ensure warm-up is complete
+
 start_gpu = time.time()
 for i in range(10):
     result_gpu = torch.mm(a_cuda, b_cuda)
