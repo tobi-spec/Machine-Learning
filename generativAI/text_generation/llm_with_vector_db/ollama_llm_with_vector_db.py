@@ -18,7 +18,7 @@ retriever = vector_store.as_retriever()
 qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
 
 query = "What is LangChain used for?"
-result = qa_chain.run(query)
+result = qa_chain.invoke(query)
 
 print("\n🔍 Question:", query)
 print("🧠 Answer:", result)
