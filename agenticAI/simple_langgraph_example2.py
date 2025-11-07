@@ -22,16 +22,16 @@ class State(TypedDict):
 
 def classify_message(state: State) -> State:
     last_message = state["messages"][-1]
-    classifier_llm = llm.with_structured_output(MessageClassifier)
 
-    result = classifier_llm.invoke([
-        {
-            "role": "system",
-            "content": "Classify the following message as either 'emotional' or 'logical'."
-        },
-        {"role": "user", "content": last_message.content}
-    ])
-    return {"message_type": result.message_type}
+    prompt = f"""Classify the following message as either 'emotional' or 'logical'.
+    Message: {last_message.content} Reply with ONLY ONE WORD: either 'emotional' or 'logical'. Nothing else."""
+
+    result = llm.invoke(prompt)
+
+    # Parse the result - check if 'emotional' is in the response
+    message_type = "emotional" if "emotional" in result.lower() else "logical"
+
+    return {"message_type": message_type}
 
 
 def router(state: State) -> State:
@@ -44,23 +44,21 @@ def router(state: State) -> State:
 def therapist_agent(state: State) -> State:
     last_message = state["messages"][-1]
 
-    messages = [
-        {"role": "system", "content": "You are a compassionate therapist. Provide emotional support."},
-        {"role": "user", "content": last_message.content}
-    ]
-    reply = llm.invoke(messages)
-    return {"messages": [{"role": "assistant", "content": reply.content}]}
+    prompt = f"""You are a compassionate therapist. Provide emotional support.
+                User message: {last_message.content}"""
+
+    reply = llm.invoke(prompt)
+    return {"messages": [{"role": "assistant", "content": reply}]}
 
 
 def logical_agent(state: State) -> State:
     last_message = state["messages"][-1]
 
-    messages = [
-        {"role": "system", "content": "You are a logical assistant. Provide clear and rational responses."},
-        {"role": "user", "content": last_message.content}
-    ]
-    reply = llm.invoke(messages)
-    return {"messages": [{"role": "assistant", "content": reply.content}]}
+    prompt = f"""You are a logical assistant. Provide clear and rational responses.
+    User message: {last_message.content}"""
+
+    reply = llm.invoke(prompt)
+    return {"messages": [{"role": "assistant", "content": reply}]}
 
 
 graph_builder = StateGraph(State)
@@ -96,7 +94,7 @@ def run_chatbot():
         state = graph.invoke(state)
 
         if state.get("messages") and len(state["messages"]) > 0:
-            print("Bot:", state["messages"][-1]["content"])
+            print(state["messages"][-1].content)
 
 if __name__ == "__main__":
     run_chatbot()
