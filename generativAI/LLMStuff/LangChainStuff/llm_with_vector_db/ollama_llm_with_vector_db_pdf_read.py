@@ -4,7 +4,7 @@ from langchain.chains import RetrievalQA
 from langchain_ollama.llms import OllamaLLM
 from langchain_community.document_loaders import PyPDFLoader
 
-loader = PyPDFLoader("./pdf/layout-parser-paper.pdf")
+loader = PyPDFLoader("pdf/layout-parser-paper.pdf")
 documents = []
 for page in loader.load():
     documents.append(page)
