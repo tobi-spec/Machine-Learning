@@ -1,1 +1,1 @@
-# https://medium.com/@anixlynch/7-chunking-strategies-for-langchain-b50dac194813
+# https://medium.com/@anixlynch/7-ch-unking-strategies-for-langchain-b50dac194813
