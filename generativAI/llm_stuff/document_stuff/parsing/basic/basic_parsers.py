@@ -7,7 +7,7 @@ import pypdf
 import docx
 
 def resolve_relative_path(path: str) -> Path:
-    base_dir = Path(__file__).resolve().parent.parent.parent / "SampleDocuments"
+    base_dir = Path(__file__).resolve().parent.parent.parent / "sample_documents"
     return base_dir / path
 
 

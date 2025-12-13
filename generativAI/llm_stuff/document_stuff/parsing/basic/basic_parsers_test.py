@@ -1,7 +1,7 @@
 import unittest
-from pathlib import Path
 
-from generativAI.LLMStuff.DocumentStuff.Parsing.Basic.BasicParsers import BasicPDFParser, BasicWordParser, ExcelParser
+from generativAI.llm_stuff.document_stuff.parsing.basic.basic_parsers import BasicPDFParser, BasicWordParser, \
+    ExcelParser
 
 
 class MyTestCase(unittest.TestCase):
