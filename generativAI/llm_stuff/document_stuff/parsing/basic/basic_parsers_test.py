@@ -1,5 +1,7 @@
 import unittest
 
+from langchain_core.documents import Document
+
 from generativAI.llm_stuff.document_stuff.parsing.basic.basic_parsers import BasicPDFParser, BasicWordParser, \
     ExcelParser
 
@@ -7,17 +9,17 @@ from generativAI.llm_stuff.document_stuff.parsing.basic.basic_parsers import Bas
 class MyTestCase(unittest.TestCase):
     def test_pdf_parser(self) -> None:
         parser: BasicPDFParser = BasicPDFParser()
-        documents = parser.read("./invoicesample.pdf")
+        documents: list[Document] = parser.read("./invoicesample.pdf")
         print(documents)
 
     def test_word_parser(self) -> None:
         parser: BasicWordParser = BasicWordParser()
-        documents = parser.read("./sample.docx")
+        documents: list[Document] = parser.read("./sample.docx")
         print(documents)
 
     def test_excel_parser(self) -> None:
         parser: ExcelParser = ExcelParser()
-        documents = parser.read("./sample.xlsx")
+        documents: list[Document] = parser.read("./sample.xlsx")
         print(documents)
 
 
