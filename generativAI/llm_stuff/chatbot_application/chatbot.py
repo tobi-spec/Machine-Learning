@@ -18,8 +18,12 @@ if prompt:
         st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    with st.chat_message("asssistant"):
-        response = model.invoke(prompt)
-        st.markdown(response.content)
-    st.session_state.messages.append({"role": "assistant", "content": response.content})
+    with st.chat_message("assistant"):
+        response_placeholder = st.empty()
+        full_response = ""
+        for chunk in model.stream(prompt):
+            full_response += chunk.content
+            response_placeholder.markdown(full_response + "▌")
+        response_placeholder.markdown(full_response)
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
 
