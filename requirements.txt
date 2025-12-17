@@ -45,4 +45,5 @@ docling~=2.64.1
 langchain-huggingface~=1.2.0
 fastembed~=0.7.4
 
-
+# UI
+streamlit~=1.52.1
