@@ -1,8 +1,7 @@
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 
 from langchain_ollama import ChatOllama
-
-from langchain.schema import HumanMessage, AIMessage, SystemMessage
 
 
 humane_message = HumanMessage(content="I am a human message")
