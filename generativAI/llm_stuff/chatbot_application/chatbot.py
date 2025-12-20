@@ -1,5 +1,6 @@
 import streamlit as st
 from langchain_core.chat_history import InMemoryChatMessageHistory, BaseChatMessageHistory
+from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, MessagesPlaceholder, \
     HumanMessagePromptTemplate
 from langchain_core.runnables import RunnableWithMessageHistory, Runnable, RunnableConfig
@@ -32,26 +33,24 @@ chain_with_history = RunnableWithMessageHistory(
 
 session_id = "session1"
 config: RunnableConfig = {"configurable": {"session_id": session_id}}
-history = get_session_history(session_id)
-st.write(history)
 
 
 st.title("Chatbot Application")
 
-if "messages" not in st.session_state:
-    st.session_state["messages"] = []
+history = get_session_history(session_id)
+for message in history.messages:
+    if isinstance(message, HumanMessage):
+        with st.chat_message("user"):
+            st.markdown(message.content)
+    else:
+        with st.chat_message("assistant"):
+            st.markdown(message.content)
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-st.write(st.session_state.messages)
 
 user_input = st.chat_input("Ask me anything!")
 if user_input:
     with st.chat_message("user"):
         st.markdown(user_input)
-    st.session_state.messages.append({"role": "user", "content": user_input})
 
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
@@ -60,6 +59,4 @@ if user_input:
             full_response += chunk.content
             response_placeholder.markdown(full_response + "▌")
         response_placeholder.markdown(full_response)
-
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
 
