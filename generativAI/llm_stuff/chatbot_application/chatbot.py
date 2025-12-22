@@ -17,22 +17,24 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+# TODOS:
+# history in sqllite
+# web scraper
+# wikipedia?
+# ragas tests
 
 if "vectordb" not in st.session_state:
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
     st.session_state["vectordb"] = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
 
-retriever = st.session_state["vectordb"].as_retriever(search_kwargs={"k": 4})
-
-result = retriever.invoke("Wo liegt der größte Solarpark Deutschlands")
-print(result)
+retriever = st.session_state["vectordb"].as_retriever(search_type="similarity_score_threshold", search_kwargs={"k": 4, "score_threshold": 0.35})
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 
 prompt: Runnable = ChatPromptTemplate.from_messages([
-    SystemMessagePromptTemplate.from_template("Make short answers, use the following context when relevant:\n\n{context}"),
+    SystemMessagePromptTemplate.from_template("Make short answers, use the following context only when relevant:\n\n{context}"),
     MessagesPlaceholder(variable_name="history"),
     HumanMessagePromptTemplate.from_template("{input}")
 ])
@@ -99,7 +101,7 @@ with st.sidebar:
         result = converter.convert(source)
         markdown = result.document.export_to_markdown()
 
-        splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=150)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
         docs = splitter.split_documents([
             Document(page_content=markdown, metadata={"source": uploaded_file.name})
         ])
