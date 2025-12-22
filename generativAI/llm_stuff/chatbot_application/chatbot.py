@@ -1,24 +1,50 @@
 import os
 from io import BytesIO
+from operator import itemgetter
+from uuid import uuid4
 
 import streamlit as st
 from docling.document_converter import DocumentConverter
 from docling_core.types.io import DocumentStream
+from langchain_chroma import Chroma
 from langchain_core.chat_history import InMemoryChatMessageHistory, BaseChatMessageHistory
+from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, MessagesPlaceholder, \
     HumanMessagePromptTemplate
 from langchain_core.runnables import RunnableWithMessageHistory, Runnable, RunnableConfig
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-model: Runnable = ChatOllama(model="mistral")
+
+if "vectordb" not in st.session_state:
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+    st.session_state["vectordb"] = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
+
+retriever = st.session_state["vectordb"].as_retriever(search_kwargs={"k": 4})
+
+result = retriever.invoke("Wo liegt der größte Solarpark Deutschlands")
+print(result)
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
 
 prompt: Runnable = ChatPromptTemplate.from_messages([
+    SystemMessagePromptTemplate.from_template("Make short answers, use the following context when relevant:\n\n{context}"),
     MessagesPlaceholder(variable_name="history"),
     HumanMessagePromptTemplate.from_template("{input}")
 ])
 
-chain: Runnable = prompt | model
+model: Runnable = ChatOllama(model="mistral")
+
+retrieval_chain = {
+    "context": itemgetter("input") | retriever | format_docs,
+    "input": lambda x: x["input"],
+    "history": lambda x: x["history"]
+} | prompt | model
+
 
 if "lc_store" not in st.session_state:
     st.session_state["lc_store"] = {}
@@ -30,7 +56,7 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
     return store[session_id]
 
 chain_with_history = RunnableWithMessageHistory(
-    runnable=chain,
+    runnable=retrieval_chain,
     get_session_history=get_session_history,
     input_messages_key="input",
     history_messages_key="history"
@@ -72,5 +98,12 @@ with st.sidebar:
         converter = DocumentConverter()
         result = converter.convert(source)
         markdown = result.document.export_to_markdown()
-        st.markdown(markdown)
+
+        splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=150)
+        docs = splitter.split_documents([
+            Document(page_content=markdown, metadata={"source": uploaded_file.name})
+        ])
+
+        st.session_state["vectordb"].add_documents(docs, ids=[str(uuid4())])
+        st.success(f"Added {len(docs)} chunks from {uploaded_file.name}")
 
