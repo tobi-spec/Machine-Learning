@@ -7,6 +7,7 @@ import streamlit as st
 from docling.document_converter import DocumentConverter
 from docling_core.types.io import DocumentStream
 from langchain_chroma import Chroma
+from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain_core.chat_history import InMemoryChatMessageHistory, BaseChatMessageHistory
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
@@ -18,7 +19,6 @@ from langchain_ollama import ChatOllama
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # TODOS:
-# history in sqllite
 # web scraper
 # wikipedia?
 # ragas tests
@@ -48,14 +48,8 @@ retrieval_chain = {
 } | prompt | model
 
 
-if "lc_store" not in st.session_state:
-    st.session_state["lc_store"] = {}
-
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    store = st.session_state["lc_store"]
-    if session_id not in store:
-        store[session_id] = InMemoryChatMessageHistory()
-    return store[session_id]
+    return SQLChatMessageHistory(f"{session_id}", "sqlite:///chat_history.db")
 
 chain_with_history = RunnableWithMessageHistory(
     runnable=retrieval_chain,
