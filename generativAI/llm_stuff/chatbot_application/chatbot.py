@@ -8,6 +8,7 @@ from docling.document_converter import DocumentConverter
 from docling_core.types.io import DocumentStream
 from langchain_chroma import Chroma
 from langchain_community.chat_message_histories import SQLChatMessageHistory
+from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.chat_history import InMemoryChatMessageHistory, BaseChatMessageHistory
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
@@ -102,4 +103,19 @@ with st.sidebar:
 
         st.session_state["vectordb"].add_documents(docs, ids=[str(uuid4())])
         st.success(f"Added {len(docs)} chunks from {uploaded_file.name}")
+
+    with st.form("webload"):
+        link = st.text_input("Enter a link")
+        submitted = st.form_submit_button("Submit")
+
+    if submitted:
+        link = link.strip()
+        if not link:
+            st.warning("Enter a URL.")
+        elif not link.startswith(("http://", "https://")):
+            st.error("Please include http:// or https://")
+        else:
+            web_doc = WebBaseLoader(link).load()
+            st.write(web_doc)
+
 
