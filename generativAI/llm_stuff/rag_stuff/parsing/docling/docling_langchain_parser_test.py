@@ -3,7 +3,7 @@ from typing import List
 
 from langchain_core.documents import Document
 
-from generativAI.llm_stuff.document_stuff.parsing.docling.docling_langchain_parser import DoclingLangchainParser
+from generativAI.llm_stuff.rag_stuff.parsing.docling.docling_langchain_parser import *
 
 
 class MyTestCase(unittest.TestCase):

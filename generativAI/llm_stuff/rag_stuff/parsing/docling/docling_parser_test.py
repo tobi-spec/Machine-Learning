@@ -1,6 +1,6 @@
 import unittest
 
-from generativAI.llm_stuff.document_stuff.parsing.docling.docling_parsers import DoclingParser
+from generativAI.llm_stuff.rag_stuff.parsing.docling.docling_parsers import *
 
 
 class MyTestCase(unittest.TestCase):

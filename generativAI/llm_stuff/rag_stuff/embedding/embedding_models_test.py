@@ -1,6 +1,7 @@
 import unittest
 
-from generativAI.llm_stuff.document_stuff.embedding.embedding_models import *
+from generativAI.llm_stuff.rag_stuff.embedding.embedding_models import HuggingFaceAllMpnetBaseV2, \
+    HuggingFaceAllMiniLML6V2, HuggingFaceE5BaseV2, OllamaNomicEmbed, FastEmbed
 
 texts = ['LangChain simplifies AI workflows.', ' It enables advanced retrieval-augmented generation systems for NLP tasks.', ' LangChain simplifies AI workflows.']
 

@@ -2,8 +2,7 @@ import unittest
 
 from langchain_core.documents import Document
 
-from generativAI.llm_stuff.document_stuff.parsing.basic.basic_parsers import BasicPDFParser, BasicWordParser, \
-    ExcelParser
+from generativAI.llm_stuff.rag_stuff.parsing.basic.basic_parsers import *
 
 
 class MyTestCase(unittest.TestCase):

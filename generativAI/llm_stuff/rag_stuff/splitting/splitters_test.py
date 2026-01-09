@@ -1,6 +1,6 @@
 import unittest
 
-from generativAI.llm_stuff.document_stuff.splitting.splitters import *
+from generativAI.llm_stuff.rag_stuff.splitting.splitters import *
 
 text: str = "LangChain simplifies AI workflows.\n It enables advanced retrieval-augmented generation systems for NLP tasks.\n LangChain simplifies AI workflows.\n"
 
