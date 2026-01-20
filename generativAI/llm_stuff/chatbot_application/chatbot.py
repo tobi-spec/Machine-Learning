@@ -21,7 +21,6 @@ from langchain_ollama import ChatOllama
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # TODOS:
-# web scraper
 # ragas tests
 
 if "vectordb" not in st.session_state:
@@ -154,5 +153,5 @@ with st.sidebar:
             st.error("Please include http:// or https://")
         else:
             web_doc = WebBaseLoader(link).load()
-            st.session_state["web_context"] = web_doc[0].page_content
+            st.session_state["web_context"] = web_doc[0].page_content.replace("\n", "")
             st.success(f"Added Link to Context")
