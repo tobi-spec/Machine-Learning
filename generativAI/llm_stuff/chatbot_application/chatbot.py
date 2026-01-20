@@ -59,16 +59,12 @@ def build_context(x: AddableDict) -> str:
     retrieved = format_docs(retriever.invoke(x["input"]))
     if retrieved and web_ctx:
         result = "\n[Retrieved]\n" + retrieved + "\n[Web page]\n" + web_ctx
-        print(1)
     elif retrieved:
         result = "\n[Retrieved]\n" + retrieved
-        print(2)
     elif web_ctx:
         result = "\n[Web page]\n" + web_ctx
-        print(3)
     else:
         result = "None"
-        print(4)
     return result
 
 
