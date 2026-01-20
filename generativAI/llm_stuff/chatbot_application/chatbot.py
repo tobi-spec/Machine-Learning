@@ -84,7 +84,7 @@ prompt: Runnable = ChatPromptTemplate.from_messages([
 model: Runnable = ChatOllama(model="mistral")
 
 retrieval_chain = ({
-    "context": build_context | retriever | format_docs,
+    "context": build_context,
     "input": lambda x: x["input"],
     "history": lambda x: x["history"]
 }
@@ -160,5 +160,3 @@ with st.sidebar:
             web_doc = WebBaseLoader(link).load()
             st.session_state["web_context"] = web_doc[0].page_content
             st.success(f"Added Link to Context")
-
-
