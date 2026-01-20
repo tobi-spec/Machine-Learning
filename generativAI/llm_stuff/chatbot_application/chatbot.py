@@ -14,25 +14,66 @@ from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, MessagesPlaceholder, \
     HumanMessagePromptTemplate
-from langchain_core.runnables import RunnableWithMessageHistory, Runnable, RunnableConfig
+from langchain_core.runnables import RunnableWithMessageHistory, Runnable, RunnableConfig, RunnablePassthrough, \
+    RunnableLambda, AddableDict
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # TODOS:
 # web scraper
-# wikipedia?
 # ragas tests
 
 if "vectordb" not in st.session_state:
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
     st.session_state["vectordb"] = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
 
+if "web_context" not in st.session_state:
+    st.session_state["web_context"] = "Test my web context."
+
 retriever = st.session_state["vectordb"].as_retriever(search_type="similarity_score_threshold", search_kwargs={"k": 4, "score_threshold": 0.35})
 
-def format_docs(docs):
+def format_docs(docs: list[Document]) -> str:
     return "\n\n".join(doc.page_content for doc in docs)
 
+
+def debug(x: AddableDict) -> AddableDict:
+    print("-----------")
+    print("Debug Information")
+    print("-----------")
+    print("Keys:", list(x.keys()))
+    print("-----------")
+    print("Input:", x["input"])
+    print("-----------")
+    print("History:")
+    for i in x["history"]:
+        print(i.content)
+    print("-----------")
+    print("Context:", x["context"])
+    print("-----------")
+    return x
+
+
+web_ctx = st.session_state["web_context"]
+def build_context(x: AddableDict) -> str:
+    retrieved = format_docs(retriever.invoke(x["input"]))
+    if retrieved and web_ctx:
+        result = "\n[Retrieved]\n" + retrieved + "\n[Web page]\n" + web_ctx
+        print(1)
+    elif retrieved:
+        result = "\n[Retrieved]\n" + retrieved
+        print(2)
+    elif web_ctx:
+        result = "\n[Web page]\n" + web_ctx
+        print(3)
+    else:
+        result = "None"
+        print(4)
+    return result
+
+
+def get_session_history(session_id: str) -> BaseChatMessageHistory:
+    return SQLChatMessageHistory(f"{session_id}", "sqlite:///chat_history.db")
 
 prompt: Runnable = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template("Make short answers, use the following context only when relevant:\n\n{context}"),
@@ -42,15 +83,15 @@ prompt: Runnable = ChatPromptTemplate.from_messages([
 
 model: Runnable = ChatOllama(model="mistral")
 
-retrieval_chain = {
-    "context": itemgetter("input") | retriever | format_docs,
+retrieval_chain = ({
+    "context": build_context | retriever | format_docs,
     "input": lambda x: x["input"],
     "history": lambda x: x["history"]
-} | prompt | model
+}
+    | RunnableLambda(debug)
+    | prompt
+    | model)
 
-
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    return SQLChatMessageHistory(f"{session_id}", "sqlite:///chat_history.db")
 
 chain_with_history = RunnableWithMessageHistory(
     runnable=retrieval_chain,
@@ -101,7 +142,8 @@ with st.sidebar:
             Document(page_content=markdown, metadata={"source": uploaded_file.name})
         ])
 
-        st.session_state["vectordb"].add_documents(docs, ids=[str(uuid4())])
+        ids = [str(uuid4()) for _ in range(len(docs))]
+        st.session_state["vectordb"].add_documents(docs, ids=ids)
         st.success(f"Added {len(docs)} chunks from {uploaded_file.name}")
 
     with st.form("webload"):
@@ -116,6 +158,7 @@ with st.sidebar:
             st.error("Please include http:// or https://")
         else:
             web_doc = WebBaseLoader(link).load()
-            st.write(web_doc)
+            st.session_state["web_context"] = web_doc[0].page_content
+            st.success(f"Added Link to Context")
 
 
