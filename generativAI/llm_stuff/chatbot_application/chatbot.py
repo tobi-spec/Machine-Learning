@@ -1,25 +1,17 @@
-import os
-from io import BytesIO
-from operator import itemgetter
-from uuid import uuid4
-
 import streamlit as st
-from docling.document_converter import DocumentConverter
-from docling_core.types.io import DocumentStream
 from langchain_chroma import Chroma
 from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain_community.document_loaders import WebBaseLoader
-from langchain_core.chat_history import InMemoryChatMessageHistory, BaseChatMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, MessagesPlaceholder, \
     HumanMessagePromptTemplate
-from langchain_core.runnables import RunnableWithMessageHistory, Runnable, RunnableConfig, RunnablePassthrough, \
+from langchain_core.runnables import RunnableWithMessageHistory, Runnable, RunnableConfig, \
     RunnableLambda, AddableDict
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-
+from rag_pipeline import RAGPipeline
 
 '''
 langchain, at its base, creates a dict which is passed through the chain and get altered by the different components.
@@ -31,14 +23,17 @@ Following keys are added during the process:
 }
 '''
 
+# in klasse auslagern, client in state
 if "vectordb" not in st.session_state:
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-    st.session_state["vectordb"] = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
+    database = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
+    st.session_state["vectordb"] = RAGPipeline(database)
 
 if "web_context" not in st.session_state:
-    st.session_state["web_context"] = "Test my web context."
+    st.session_state["web_context"] = None
 
-retriever = st.session_state["vectordb"].as_retriever(search_type="similarity_score_threshold", search_kwargs={"k": 4, "score_threshold": 0.35})
+# in klasse auslagern
+retriever = st.session_state["vectordb"].get_retriever()
 
 def format_docs(docs: list[Document]) -> str:
     return "\n\n".join(doc.page_content for doc in docs)
@@ -64,6 +59,7 @@ def debug(x: AddableDict) -> AddableDict:
 web_ctx = st.session_state["web_context"]
 def build_context(x: AddableDict) -> str:
     retrieved = format_docs(retriever.invoke(x["input"]))
+    print("Retrieved:", retrieved)
     if retrieved and web_ctx:
         result = "\n[Retrieved]\n" + retrieved + "\n[Web page]\n" + web_ctx
     elif retrieved:
@@ -134,20 +130,8 @@ with st.sidebar:
     uploaded_file = st.file_uploader(label="Add to RAG", type=["pdf", "docx", "csv"])
 
     if uploaded_file is not None:
-        buf = BytesIO(uploaded_file.getvalue())
-        source = DocumentStream(name=uploaded_file.name, stream=buf)
-        converter = DocumentConverter()
-        result = converter.convert(source)
-        markdown = result.document.export_to_markdown()
-
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
-        docs = splitter.split_documents([
-            Document(page_content=markdown, metadata={"source": uploaded_file.name})
-        ])
-
-        ids = [str(uuid4()) for _ in range(len(docs))]
-        st.session_state["vectordb"].add_documents(docs, ids=ids)
-        st.success(f"Added {len(docs)} chunks from {uploaded_file.name}")
+        st.session_state["vectordb"].digest(uploaded_file)
+        st.success(f"Digest {uploaded_file.name}")
 
     with st.form("webload"):
         link = st.text_input("Enter a link")
