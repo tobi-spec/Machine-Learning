@@ -9,6 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTempla
     HumanMessagePromptTemplate
 from langchain_core.runnables import RunnableWithMessageHistory, Runnable, RunnableConfig, \
     RunnableLambda, AddableDict
+from langchain_core.vectorstores import VectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
 from rag_pipeline import RAGPipeline
@@ -23,16 +24,16 @@ Following keys are added during the process:
 }
 '''
 
-# in klasse auslagern, client in state
+model: Runnable = ChatOllama(model="mistral")
+
 if "vectordb" not in st.session_state:
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-    database = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
-    st.session_state["vectordb"] = RAGPipeline(database)
+    embeddings: HuggingFaceEmbeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+    database: VectorStore = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
+    st.session_state["vectordb"] = RAGPipeline(database, model)
 
 if "web_context" not in st.session_state:
     st.session_state["web_context"] = None
 
-# in klasse auslagern
 retriever = st.session_state["vectordb"].get_retriever()
 
 def format_docs(docs: list[Document]) -> str:
@@ -79,8 +80,6 @@ prompt: Runnable = ChatPromptTemplate.from_messages([
     MessagesPlaceholder(variable_name="history"),
     HumanMessagePromptTemplate.from_template("{input}")
 ])
-
-model: Runnable = ChatOllama(model="mistral")
 
 retrieval_chain = ({
     "context": build_context,
