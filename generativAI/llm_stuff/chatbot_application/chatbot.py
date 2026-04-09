@@ -60,7 +60,6 @@ def debug(x: AddableDict) -> AddableDict:
 web_ctx = st.session_state["web_context"]
 def build_context(x: AddableDict) -> str:
     retrieved = format_docs(retriever.invoke(x["input"]))
-    print("Retrieved:", retrieved)
     if retrieved and web_ctx:
         result = "\n[Retrieved]\n" + retrieved + "\n[Web page]\n" + web_ctx
     elif retrieved:
