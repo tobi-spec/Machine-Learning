@@ -1,17 +1,13 @@
 import streamlit as st
 from langchain_chroma import Chroma
-from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain_community.document_loaders import WebBaseLoader
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, MessagesPlaceholder, \
-    HumanMessagePromptTemplate
-from langchain_core.runnables import RunnableWithMessageHistory, Runnable, RunnableConfig, \
-    RunnableLambda, AddableDict
+from langchain_core.runnables import RunnableConfig
 from langchain_core.vectorstores import VectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
+
+from chatbot_chain import ChatbotChain
 from rag_pipeline import RAGPipeline
 
 '''
@@ -24,85 +20,25 @@ Following keys are added during the process:
 }
 '''
 
-model: Runnable = ChatOllama(model="mistral")
+if "chatbot" not in st.session_state:
+    model = ChatOllama(model="mistral")
 
-if "vectordb" not in st.session_state:
     embeddings: HuggingFaceEmbeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
     database: VectorStore = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
-    st.session_state["vectordb"] = RAGPipeline(database, model)
+    rag_retriever = RAGPipeline(database, model).get_retriever()
 
-if "web_context" not in st.session_state:
-    st.session_state["web_context"] = None
-
-retriever = st.session_state["vectordb"].get_retriever()
-
-def format_docs(docs: list[Document]) -> str:
-    return "\n\n".join(doc.page_content for doc in docs)
+    st.session_state["chatbot"] = ChatbotChain(model, rag_retriever,"sqlite:///chat_history.db" )
 
 
-def debug(x: AddableDict) -> AddableDict:
-    print("-----------")
-    print("Debug Information")
-    print("-----------")
-    print("Keys:", list(x.keys()))
-    print("-----------")
-    print("Input:", x["input"])
-    print("-----------")
-    print("History:")
-    for i in x["history"]:
-        print(i.content)
-    print("-----------")
-    print("Context:", x["context"])
-    print("-----------")
-    return x
-
-
-web_ctx = st.session_state["web_context"]
-def build_context(x: AddableDict) -> str:
-    retrieved = format_docs(retriever.invoke(x["input"]))
-    if retrieved and web_ctx:
-        result = "\n[Retrieved]\n" + retrieved + "\n[Web page]\n" + web_ctx
-    elif retrieved:
-        result = "\n[Retrieved]\n" + retrieved
-    elif web_ctx:
-        result = "\n[Web page]\n" + web_ctx
-    else:
-        result = "None"
-    return result
-
-
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    return SQLChatMessageHistory(f"{session_id}", "sqlite:///chat_history.db")
-
-prompt: Runnable = ChatPromptTemplate.from_messages([
-    SystemMessagePromptTemplate.from_template("Make short answers, use the following context only when relevant:\n\n{context}"),
-    MessagesPlaceholder(variable_name="history"),
-    HumanMessagePromptTemplate.from_template("{input}")
-])
-
-retrieval_chain = ({
-    "context": build_context,
-    "input": lambda x: x["input"],
-    "history": lambda x: x["history"]
-}
-    | RunnableLambda(debug)
-    | prompt
-    | model)
-
-
-chain_with_history = RunnableWithMessageHistory(
-    runnable=retrieval_chain,
-    get_session_history=get_session_history,
-    input_messages_key="input",
-    history_messages_key="history"
-)
+chatbot: ChatbotChain = st.session_state["chatbot"]
+chain = chatbot.retriever_chain_link() | chatbot.prompt_chain_link() | chatbot.model_chain_link()
+chain_with_history = chatbot.history_chain_wrapper(chain)
 
 session_id = "session1"
 config: RunnableConfig = {"configurable": {"session_id": session_id}}
 
-
 st.title("Chatbot Application")
-history = get_session_history(session_id)
+history = chatbot.get_session_history(session_id)
 for message in history.messages:
     if isinstance(message, HumanMessage):
         with st.chat_message("user"):
@@ -119,7 +55,7 @@ if user_input:
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
         full_response = ""
-        for chunk in chain_with_history.stream(input={"input": user_input}, config=config):
+        for chunk in chain_with_history.stream({"input": user_input}, config=config):
             full_response += chunk.content
             response_placeholder.markdown(full_response + "▌")
         response_placeholder.markdown(full_response)
@@ -143,5 +79,5 @@ with st.sidebar:
             st.error("Please include http:// or https://")
         else:
             web_doc = WebBaseLoader(link).load()
-            st.session_state["web_context"] = web_doc[0].page_content.replace("\n", "")
+            chatbot.add_webcontext(web_doc[0].page_content.replace("\n", ""))
             st.success(f"Added Link to Context")
