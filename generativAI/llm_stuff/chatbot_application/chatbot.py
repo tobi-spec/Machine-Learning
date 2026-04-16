@@ -1,6 +1,7 @@
 import streamlit as st
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
+from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_core.vectorstores import VectorStore
@@ -8,6 +9,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
 
 from chatbot_chain import ChatbotChain
+from chatbot_chain import ChatHistoryDatabase
 from rag_pipeline import RAGPipeline
 
 '''
@@ -20,25 +22,28 @@ Following keys are added during the process:
 }
 '''
 
+session_id = "session1"
+
 if "chatbot" not in st.session_state:
     model = ChatOllama(model="mistral")
 
     embeddings: HuggingFaceEmbeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-    database: VectorStore = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
-    rag_retriever = RAGPipeline(database, model).get_retriever()
+    vector_database: VectorStore = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
+    history_database: BaseChatMessageHistory = ChatHistoryDatabase().get_sql_lite(session_id, "sqlite:///chat_history.db")
+    rag_retriever = RAGPipeline(vector_database, model).get_retriever()
 
-    st.session_state["chatbot"] = ChatbotChain(model, rag_retriever,"sqlite:///chat_history.db" )
+    st.session_state["chatbot"] = ChatbotChain(model, rag_retriever, history_database)
 
 
 chatbot: ChatbotChain = st.session_state["chatbot"]
 chain = chatbot.retriever_chain_link() | chatbot.prompt_chain_link() | chatbot.model_chain_link()
 chain_with_history = chatbot.history_chain_wrapper(chain)
 
-session_id = "session1"
+
 config: RunnableConfig = {"configurable": {"session_id": session_id}}
 
 st.title("Chatbot Application")
-history = chatbot.get_session_history(session_id)
+history = chatbot.get_history_database()
 for message in history.messages:
     if isinstance(message, HumanMessage):
         with st.chat_message("user"):
