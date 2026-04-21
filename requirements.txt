@@ -41,6 +41,7 @@ langchain-community~=0.4.1
 langchain-chroma>=1.1.0
 langchain-ollama~=1.0.1
 langchain-docling~=2.0.0
+langchain-postgres==0.0.17
 docling~=2.64.1
 langchain-huggingface~=1.2.0
 fastembed~=0.7.4
