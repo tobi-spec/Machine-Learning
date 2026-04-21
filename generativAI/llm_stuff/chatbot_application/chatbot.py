@@ -3,7 +3,7 @@ from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import HumanMessage
-from langchain_core.runnables import RunnableConfig
+from langchain_core.runnables import RunnableConfig, Runnable
 from langchain_core.vectorstores import VectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
@@ -25,14 +25,14 @@ Following keys are added during the process:
 session_id = "session1"
 
 if "chatbot" not in st.session_state:
-    model = ChatOllama(model="mistral")
+    model: Runnable = ChatOllama(model="mistral")
 
     embeddings: HuggingFaceEmbeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
     vector_database: VectorStore = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
     history_database: BaseChatMessageHistory = ChatHistoryDatabase().get_sql_lite(session_id, "sqlite:///chat_history.db")
-    rag_retriever = RAGPipeline(vector_database, model).get_retriever()
+    rag_pipeline: RAGPipeline = RAGPipeline(vector_database, model)
 
-    st.session_state["chatbot"] = ChatbotChain(model, rag_retriever, history_database)
+    st.session_state["chatbot"] = ChatbotChain(model, rag_pipeline, history_database)
 
 
 chatbot: ChatbotChain = st.session_state["chatbot"]
@@ -69,7 +69,7 @@ with st.sidebar:
     uploaded_file = st.file_uploader(label="Add to RAG", type=["pdf", "docx", "csv"])
 
     if uploaded_file is not None:
-        st.session_state["vectordb"].digest(uploaded_file)
+        chatbot.get_rag_pipeline().digest(uploaded_file)
         st.success(f"Digest {uploaded_file.name}")
 
     with st.form("webload"):

@@ -6,9 +6,16 @@ from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTempla
     HumanMessagePromptTemplate
 from langchain_core.runnables import Runnable, AddableDict, RunnableWithMessageHistory
 from langchain_core.vectorstores import VectorStoreRetriever
+from langchain_postgres import PostgresChatMessageHistory
+
+from rag_pipeline import RAGPipeline
 
 
-class ChatHistoryDatabase():
+class ChatHistoryDatabase:
+    @staticmethod
+    def get_postgres(table_name, session_id):
+        return PostgresChatMessageHistory(table_name, session_id)
+
     @staticmethod
     def get_sql_lite(session_id, path) -> BaseChatMessageHistory:
         return SQLChatMessageHistory(session_id, path)
@@ -19,9 +26,10 @@ class ChatHistoryDatabase():
 
 
 class ChatbotChain:
-    def __init__(self, model, retriever, history_database: BaseChatMessageHistory):
+    def __init__(self, model: Runnable, rag_pipeline: RAGPipeline, history_database: BaseChatMessageHistory):
         self.model: Runnable = model
-        self.retriever: EnsembleRetriever | VectorStoreRetriever = retriever
+        self.rag_pipeline: RAGPipeline = rag_pipeline
+        self.retriever: EnsembleRetriever | VectorStoreRetriever = rag_pipeline.get_retriever()
         self.history_database: BaseChatMessageHistory = history_database
         self.web_context = None
 
@@ -87,3 +95,6 @@ class ChatbotChain:
 
     def get_history_database(self) -> BaseChatMessageHistory:
         return self.history_database
+
+    def get_rag_pipeline(self) -> RAGPipeline:
+        return self.rag_pipeline
