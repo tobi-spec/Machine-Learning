@@ -25,7 +25,7 @@ Following keys are added during the process:
 session_id = "session1"
 
 if "chatbot" not in st.session_state:
-    model: Runnable = ChatOllama(model="mistral")
+    model: Runnable = ChatOllama(model="gemma4:e4b")
 
     embeddings: HuggingFaceEmbeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
     vector_database: VectorStore = Chroma(collection_name="example_collection", embedding_function=embeddings, host="localhost")
