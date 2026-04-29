@@ -1,5 +1,7 @@
 from langchain_classic.chains.retrieval_qa.base import RetrievalQA
 from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_ollama.llms import OllamaLLM
@@ -10,15 +12,30 @@ documents = [
     Document(page_content="HuggingFace hosts open-source models and datasets for machine learning.")
 ]
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-vector_store = FAISS.from_documents(documents, embedding_model)
+vector_store_retriever = FAISS.from_documents(documents, embedding_model).as_retriever()
 
 llm = OllamaLLM(model="mistral")
 
-retriever = vector_store.as_retriever()
-qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+prompt = ChatPromptTemplate.from_template(
+    """
+            Answer the question using only the context below.
+    
+            Context:
+            {context}
+    
+            Question:
+            {question}
+    """
+)
 
-query = "What is LangChain used for?"
-result = qa_chain.invoke(query)
+rag_chain = ({
+                 "context": vector_store_retriever,
+                 "question": RunnablePassthrough(),
+             }
+             | prompt
+             | llm)
 
-print("\n🔍 Question:", query)
-print("🧠 Answer:", result)
+question = "What is FAISS?"
+response = rag_chain.invoke(question)
+print(question)
+print(response)
