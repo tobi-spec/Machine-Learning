@@ -1,3 +1,1 @@
-https://docs.langchain.com/oss/python/deepagents/skills
-https://docs.langchain.com/oss/python/langchain/mcp
 https://medium.com/data-science/safeguarding-llms-with-guardrails-4f5d9f57cff2
