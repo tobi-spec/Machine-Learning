@@ -8,6 +8,6 @@ pyvenv.cfg
 __pycache__
 api-key.yaml
 
-predictivAI/computer_vision/classification_RF_DETR/rf-detr-base.pth
+predictivAI/computer_vision/detection_RF_DETR/rf-detr-base.pth
 predictivAI/computer_vision/classification_yoloV12/yolo12n.pt
 generativAI/llm_stuff/chatbot_application/chat_history.db
