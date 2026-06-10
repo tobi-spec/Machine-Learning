@@ -12,8 +12,7 @@ def create_results(model_name, output_name):
     result_images = []
 
     for index, result in enumerate(results, start=1):
-        suffix = f" {index}" if len(results) > 1 else ""
-        title = f"{output_name.replace('_', ' ').title()}{suffix}"
+        title = f"{output_name}"
         result_images.append((title, result.plot()))
 
     return result_images
@@ -21,12 +20,12 @@ def create_results(model_name, output_name):
 
 def show_comparison(result_images):
     columns = 3
-    rows = (len(result_images) + columns - 1) // columns
+    rows = 2
     fig, axes = plt.subplots(rows, columns, figsize=(15, 5 * rows))
     axes = axes.flatten()
 
     for ax, (title, image) in zip(axes, result_images):
-        ax.imshow(image[..., ::-1])
+        ax.imshow(image[..., ::-1]) # BGR -> RGB
         ax.set_title(title)
         ax.axis("off")
 
