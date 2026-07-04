@@ -40,7 +40,6 @@ result_images = []
 result_images.extend(create_results("yolo26n-cls.pt", "classification"))
 result_images.extend(create_results("yolo26n.pt", "detection"))
 result_images.extend(create_results("yolo26n-seg.pt", "segmentation"))
-result_images.extend(create_results("yolo26n-sem.pt", "semantic_segmentation"))
 result_images.extend(create_results("yolo26n-pose.pt", "pose_estimation"))
 
 show_comparison(result_images)
