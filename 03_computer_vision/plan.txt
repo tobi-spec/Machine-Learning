@@ -1,0 +1,11 @@
+Labeling
+Datasettyps (Coco)
+Model Architecture (CNN, Transformer)
+Big Architectures (AlexNet, ResNet, ...)
+Self-trained Models (OCR, Classification, Detection, Segementation, Pose Detection)
+    Training
+    Evaluation (Precision, Recall, F1)
+    Validation over time
+Pre-trained Models (OCR, Classification, Detection, Segementation, Pose Detection)
+    Evaluation (Precision, Recall, F1)
+    Validation over time
