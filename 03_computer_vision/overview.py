@@ -33,7 +33,7 @@ def show_comparison(result_images):
         ax.axis("off")
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig("comparison.png")
 
 
 result_images = []
