@@ -1,0 +1,40 @@
+name: labelstudio
+services:
+  app:
+    image: heartexlabs/label-studio:1.14.0.post0
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_DB=default
+      - POSTGRE_NAME=postgres
+      - POSTGRE_USER=postgres
+      - POSTGRE_PASSWORD=password
+      - POSTGRE_PORT=5432
+      - POSTGRE_HOST=db
+      - SSRF_PROTECTION_ENABLED=true
+      - COLLECT_ANALYTICS=false
+      - JSON_LOG=1
+    volumes:
+      - label-studio-data:/label-studio/data:rw
+    command: label-studio-uwsgi
+
+  db:
+    image: postgres:17-alpine3.21
+    hostname: db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data:rw
+
+volumes:
+  label-studio-data:
+  postgres-data:
+  nginx-data:
