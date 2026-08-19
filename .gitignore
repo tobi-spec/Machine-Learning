@@ -10,4 +10,5 @@ api-key.yaml
 
 03_computer_vision/03_detection_models/detection_RF_DETR/rf-detr-base.pth
 03_computer_vision/classification_yoloV12/yolo12n.pt
+03_computer_vision/01_architectures/02_convolutional_neuronal_network/data
 06_ml_systems/chatbot_application/chat_history.db

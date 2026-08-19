@@ -2,6 +2,12 @@ import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
+from torchmetrics.classification import (
+    MulticlassAccuracy,
+    MulticlassPrecision,
+    MulticlassRecall,
+    MulticlassF1Score,
+)
 import tarfile
 from pathlib import Path
 
@@ -106,13 +112,26 @@ for epoch in range(number_of_epochs):
 with torch.no_grad():
     correct = 0
     total = 0
+    predictions = []
+    targets = []
     for images, labels in test_loader:
         images = images.to(device)
         labels = labels.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
+        predictions.extend(predicted.tolist())
+        targets.extend(labels.tolist())
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
     print('Accuracy of the network on the {} test images: {} %'.format(total, 100 * correct / total))
+
+    accuracy = MulticlassAccuracy(num_classes=10)
+    precision = MulticlassPrecision(num_classes=10, average=None)
+    recall = MulticlassRecall(num_classes=10, average=None)
+    f1 = MulticlassF1Score(num_classes=10, average=None)
+    print("Accuracy:", accuracy(torch.tensor(predictions), torch.tensor(targets)))
+    print("Precision:", precision(torch.tensor(predictions), torch.tensor(targets)))
+    print("Recall:", recall(torch.tensor(predictions), torch.tensor(targets)))
+    print("F1:", f1(torch.tensor(predictions), torch.tensor(targets)))
 
