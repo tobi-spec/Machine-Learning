@@ -10,6 +10,7 @@ from torchmetrics.classification import (
 )
 import tarfile
 from pathlib import Path
+from models import ConvolutionalNeuronalNetwork
 
 batch_size: int = 64
 num_classes: int = 10
@@ -53,11 +54,10 @@ test_dataset = torchvision.datasets.CIFAR10(root=data_dir, train=False, transfor
 train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 
-
 class ConvolutionalNeuronalNetwork(nn.Module):
     def __init__(self, number_of_classes):
         super(ConvolutionalNeuronalNetwork, self).__init__()
-        self.conv_layer1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3) # 3 channels -> rgb
+        self.conv_layer1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3) #TODO: relu einbauen
         self.conv_layer2 = nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3)
         self.max_pooling1 = nn.MaxPool2d(kernel_size=2, stride=2)
 
@@ -86,6 +86,8 @@ class ConvolutionalNeuronalNetwork(nn.Module):
         return out
 
 model = ConvolutionalNeuronalNetwork(num_classes).to(device)
+
+
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay=0.005, momentum=0.9)
 
