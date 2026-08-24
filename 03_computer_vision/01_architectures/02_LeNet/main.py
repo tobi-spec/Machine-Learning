@@ -30,6 +30,7 @@ test_dataset = torchvision.datasets.MNIST(root='./data',
 train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 
+
 class LeNet5(nn.Module):
     def __init__(self, number_of_classes):
         super(LeNet5, self).__init__()
