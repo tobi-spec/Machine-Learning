@@ -11,7 +11,6 @@ from torchmetrics.classification import (
 
 batch_size: int = 64
 num_classes: int = 10
-learning_rate: float = 0.001
 number_of_epochs: int = 2
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

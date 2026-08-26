@@ -6,8 +6,7 @@ from torchmetrics.classification import MulticlassAccuracy, MulticlassPrecision,
 
 batch_size:int = 64
 number_of_feature:int = 10
-learning_rate:float = 0.001
-number_of_epochs = 10
+number_of_epochs = 2
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -54,6 +53,9 @@ class LeNet5(nn.Module):
         self.relu2 = nn.ReLU()
         self.fc3 = nn.Linear(84, number_of_classes)
 
+        self.loss_function = nn.CrossEntropyLoss()
+        self.optimizer_function = torch.optim.Adam(self.parameters(), lr=0.001)
+
     def forward(self, x):
         out = self.layer1(x)
         out = self.layer2(out)
@@ -65,52 +67,50 @@ class LeNet5(nn.Module):
         out = self.fc3(out)
         return out
 
+    def backward(self, train_loader, epoch, num_epochs):
+        self.train()
+        cumulative_loss = 0
+
+        for x_values, y_values in train_loader:
+            images = x_values.to(device)
+            labels = y_values.to(device)
+            prediction = self.forward(images)
+            loss = self.loss_function(prediction, labels)
+            loss.backward()
+            self.optimizer_function.step()
+            self.optimizer_function.zero_grad()
+            cumulative_loss += loss.item()
+
+        print(f"Epoch [{epoch + 1}/{num_epochs}] | Train Loss: {cumulative_loss / len(train_loader):.4f}")
+
+    def validate(self, val_loader):
+        self.eval()
+        loss = 0
+
+        with torch.no_grad():
+            for x_values, y_values in val_loader:
+                prediction = self.forward(x_values)
+                loss += self.loss_function(prediction, y_values).item()
+
+        print(f'Validation Loss: {loss / len(val_loader):.4f}')
+
 
 model = LeNet5(number_of_classes=10).to(device)
 
-# Setting the loss function
-cost = nn.CrossEntropyLoss()
-
-# Setting the optimizer with the model parameters and learning rate
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-
-# this is defined to print how many steps are remaining when training
-total_step = len(train_loader)
-
 for epoch in range(number_of_epochs):
-    for i, (images, labels) in enumerate(train_loader):
-        images = images.to(device)
-        labels = labels.to(device)
+    model.backward(train_loader, epoch, number_of_epochs)
 
-        # Forward pass
-        outputs = model(images)
-        loss = cost(outputs, labels)
-        # Backward and optimize
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        if (i + 1) % 400 == 0:
-            print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(epoch + 1, number_of_epochs, i + 1, total_step,
-                                                                     loss.item()))
-
-model.eval()  # Set the model to evaluation mode
-
+model.eval()
 with torch.no_grad():
-    correct = 0
-    total = 0
     predictions = []
     targets = []
-    for images, labels in test_loader:
-        images = images.to(device)
-        labels = labels.to(device)
+    for x_values, y_values in test_loader:
+        images = x_values.to(device)
+        labels = y_values.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
         predictions.extend(predicted.tolist())
         targets.extend(labels.tolist())
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
-
-    print('Accuracy of the network on the {} test images: {} %'.format(total, 100 * correct / total))
 
     accuracy = MulticlassAccuracy(num_classes=10)
     precision = MulticlassPrecision(num_classes=10, average=None)
