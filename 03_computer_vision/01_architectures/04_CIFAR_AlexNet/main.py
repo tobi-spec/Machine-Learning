@@ -83,11 +83,12 @@ class AlexNet(nn.Module):
         for x_values, y_values in train_loader:
             images = x_values.to(device)
             labels = y_values.to(device)
-            prediction = self.forward(images)
+
+            self.optimizer_function.zero_grad()
+            prediction = self(images)
             loss = self.loss_function(prediction, labels)
             loss.backward()
             self.optimizer_function.step()
-            self.optimizer_function.zero_grad()
             cumulative_loss += loss.item()
 
         print(f"Epoch [{epoch + 1}/{num_epochs}] | Train Loss: {cumulative_loss / len(train_loader):.4f}")
@@ -98,8 +99,10 @@ class AlexNet(nn.Module):
 
         with torch.no_grad():
             for x_values, y_values in val_loader:
-                prediction = self.forward(x_values)
-                loss += self.loss_function(prediction, y_values).item()
+                images = x_values.to(device)
+                labels = y_values.to(device)
+                prediction = self(images)
+                loss += self.loss_function(prediction, labels).item()
 
         print(f'Validation Loss: {loss / len(val_loader):.4f}')
 
@@ -127,7 +130,7 @@ with torch.no_grad():
         images = x_values.to(device)
         labels = y_values.to(device)
         outputs = model(images)
-        _, predicted = torch.max(outputs.data, 1)
+        _, predicted = torch.max(outputs, 1)
         predictions.extend(predicted.tolist())
         targets.extend(labels.tolist())
 
