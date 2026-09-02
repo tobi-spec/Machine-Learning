@@ -4,8 +4,17 @@ from torch.utils.data import DataLoader, Dataset
 import idx2numpy
 import numpy as np
 import timeit
+from torchmetrics.classification import (
+    MulticlassAccuracy,
+    MulticlassPrecision,
+    MulticlassRecall,
+    MulticlassF1Score,
+)
 
 start = timeit.default_timer()
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Runs on device:", device)
 
 class MNISTDataset(Dataset):
     def __init__(self, images, labels):
@@ -48,8 +57,10 @@ class MNISTClassificationModel(nn.Module):
         cumulative_loss = 0
 
         for x_values, y_values in train_loader:
-            prediction = self.forward(x_values)
-            loss = self.loss_function(prediction, y_values)
+            images = x_values.to(device)
+            labels = y_values.to(device)
+            prediction = self.forward(images)
+            loss = self.loss_function(prediction, labels)
             loss.backward()
             self.optimizer_function.step()
             self.optimizer_function.zero_grad()
@@ -87,13 +98,34 @@ model = MNISTClassificationModel()
 num_epochs = 10
 for epoch in range(num_epochs):
     model.backward(train_loader, epoch, num_epochs)
-    model.validate(test_loader)
 
-prediction = model.forward(torch.Tensor(mnist_test.images[786:]).view(1, -1))
-stop = timeit.default_timer()
-print("predicted number: ", np.argmax(prediction.detach().numpy()))
-print("correct number ",mnist_test.labels[786])
-print(f"run time[s]: {stop-start}")
+with torch.no_grad():
+    predictions = []
+    targets = []
+    for x_values, y_values in test_loader:
+        images = x_values.to(device)
+        labels = y_values.to(device)
+        outputs = model(images)
+        _, predicted = torch.max(outputs.data, 1)
+        predictions.extend(predicted.tolist())
+        targets.extend(labels.tolist())
+
+    accuracy = MulticlassAccuracy(num_classes=10)
+    precision = MulticlassPrecision(num_classes=10, average=None)
+    recall = MulticlassRecall(num_classes=10, average=None)
+    f1 = MulticlassF1Score(num_classes=10, average=None)
+    print("Accuracy:", accuracy(torch.tensor(predictions), torch.tensor(targets)))
+    print("Precision:", precision(torch.tensor(predictions), torch.tensor(targets)))
+    print("Recall:", recall(torch.tensor(predictions), torch.tensor(targets)))
+    print("F1:", f1(torch.tensor(predictions), torch.tensor(targets)))
+
+with open("results.txt", 'a') as file:
+    file.write("\nNext Run")
+    file.write("\nAccuracy:" + str(accuracy(torch.tensor(predictions), torch.tensor(targets))))
+    file.write("\nPrecision:" + str(precision(torch.tensor(predictions), torch.tensor(targets))))
+    file.write("\nRecall:" + str(recall(torch.tensor(predictions), torch.tensor(targets))))
+    file.write("\nF1:" + str(f1(torch.tensor(predictions), torch.tensor(targets))))
+    file.write("\n")
 
 
 

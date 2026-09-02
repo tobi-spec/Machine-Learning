@@ -119,3 +119,11 @@ with torch.no_grad():
     print("Precision:", precision(torch.tensor(predictions), torch.tensor(targets)))
     print("Recall:", recall(torch.tensor(predictions), torch.tensor(targets)))
     print("F1:", f1(torch.tensor(predictions), torch.tensor(targets)))
+
+with open("results.txt", 'a' ) as file:
+    file.write("\nNext Run")
+    file.write("\nAccuracy:" + str(accuracy(torch.tensor(predictions), torch.tensor(targets))))
+    file.write("\nPrecision:" + str(precision(torch.tensor(predictions), torch.tensor(targets))))
+    file.write("\nRecall:" + str(recall(torch.tensor(predictions), torch.tensor(targets))))
+    file.write("\nF1:" + str(f1(torch.tensor(predictions), torch.tensor(targets))))
+    file.write("\n")
