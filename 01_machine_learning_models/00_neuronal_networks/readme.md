@@ -2,6 +2,6 @@ activations functions
 loss functions 
 epochs
 learning rate
-dropout regularization
-l1/l2 regularization
+overfitting - dropout regularization, l1/l2 regularization
 early stopping
+vanihing gradient - residuals
