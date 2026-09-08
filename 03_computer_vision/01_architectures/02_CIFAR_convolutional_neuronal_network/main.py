@@ -11,7 +11,7 @@ from torchmetrics.classification import (
 
 batch_size: int = 64
 num_classes: int = 10
-number_of_epochs: int = 2
+number_of_epochs: int = 10
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Runs on device:", device)
