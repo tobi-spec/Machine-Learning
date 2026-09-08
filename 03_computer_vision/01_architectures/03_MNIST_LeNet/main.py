@@ -6,7 +6,7 @@ from torchmetrics.classification import MulticlassAccuracy, MulticlassPrecision,
 
 batch_size:int = 64
 number_of_feature:int = 10
-number_of_epochs = 2
+number_of_epochs = 10
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
