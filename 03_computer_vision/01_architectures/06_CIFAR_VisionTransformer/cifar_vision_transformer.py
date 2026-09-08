@@ -19,9 +19,9 @@ torch.manual_seed(42)
 torch.cuda.manual_seed(42)
 random.seed(42)
 
-BATCH_SIZE = 128
-EPOCHS = 2
-LEARNING_RATE = 0.0003
+BATCH_SIZE = 64
+EPOCHS = 10
+LEARNING_RATE = 0.001
 PATCH_SIZE = 4
 CHANNELS = 3
 NUMBER_OF_CLASSES = 10
