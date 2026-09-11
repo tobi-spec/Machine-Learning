@@ -3,7 +3,7 @@ import requests
 from PIL import Image
 from ultralytics import YOLO
 
-model = YOLO("yolo12n.pt")
+model = YOLO("yolo26n-seg.pt")
 
 url = "https://media.roboflow.com/notebooks/examples/dog-2.jpeg"
 
