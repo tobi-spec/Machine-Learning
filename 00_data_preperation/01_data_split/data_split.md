@@ -2,7 +2,7 @@
 
 ## Train/test
 
-Use part of the data for traning and part of the data for testing. Aim is, that the model never saw the test data
+Use part of the data for training and part of the data for testing. Aim is, that the model never saw the test data
 to get real, unbiased results
 
 Dataset
@@ -64,7 +64,7 @@ Overall Workflow:
 
 ## Stratified Split - for classification
 
-In classifiaction task it can happen that one class as significaten more data then the other
+In classification task it can happen that one class as significant more data than the other
 
 95% → class 0
  5% → class 1
